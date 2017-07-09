@@ -1,0 +1,2372 @@
+﻿1
+00:00:01,449 --> 00:00:06,072
+TED:
+And so, due to one
+architectural oversight,
+
+2
+00:00:03,664 --> 00:00:05,465
+the Toledo Bridge Disaster
+of 1906
+
+3
+00:00:06,396 --> 00:00:08,900
+claimed the lives of 75 people.
+
+4
+00:00:08,901 --> 00:00:12,104
+Now, I hate to stop
+while I'm on a roll,
+
+5
+00:00:12,105 --> 00:00:14,542
+but happy Halloween, ya crazies!
+
+6
+00:00:14,543 --> 00:00:16,010
+(class cheering)
+
+7
+00:00:16,011 --> 00:00:17,644
+Hey, Professor Brosby,
+
+8
+00:00:17,645 --> 00:00:19,480
+you gonna come get beers
+with us later?
+
+9
+00:00:19,481 --> 00:00:20,749
+Nah, I got a thing.
+
+10
+00:00:20,750 --> 00:00:22,950
+But you kids have fun
+trick or treating.
+
+11
+00:00:22,951 --> 00:00:24,118
+This is a treat.
+
+12
+00:00:24,119 --> 00:00:26,521
+You're the coolest,
+Professor Mosby.
+
+13
+00:00:26,522 --> 00:00:27,722
+Well, hot dog.
+
+14
+00:00:27,723 --> 00:00:29,690
+(class laughs)
+LILY: <i>Did it hurt?</i>
+
+15
+00:00:29,691 --> 00:00:30,691
+What?
+
+16
+00:00:30,692 --> 00:00:32,125
+Getting that kid's nose
+
+17
+00:00:32,126 --> 00:00:34,427
+surgically removed
+from your ass.
+
+18
+00:00:34,428 --> 00:00:38,364
+It's not her nose that's in
+my ass, Lily, it's her heart.
+
+19
+00:00:38,365 --> 00:00:40,565
+My class loves me;
+I-I'm really making
+
+20
+00:00:40,566 --> 00:00:42,500
+an impression
+on those guys.
+
+21
+00:00:43,937 --> 00:00:45,971
+I'd like to make impression
+on those guys.
+
+22
+00:00:45,972 --> 00:00:48,708
+Man, I love the office
+Halloween party.
+
+23
+00:00:48,709 --> 00:00:51,912
+It is so much sluttier
+than the office Christmas party.
+
+24
+00:00:51,913 --> 00:00:53,448
+Though not as freaky
+
+25
+00:00:53,449 --> 00:00:55,851
+as the office President's
+Day Rave.
+
+26
+00:00:55,852 --> 00:00:58,955
+Or the office Tu B'Shvat
+Pajama Jammy-Jam.
+
+27
+00:00:59,724 --> 00:01:01,390
+Hey, guys.
+Hey, Boss.
+
+28
+00:01:01,391 --> 00:01:03,027
+Hey, Randy.
+Uh, you want a beer?
+
+29
+00:01:03,028 --> 00:01:04,761
+Oh, no, thank you.
+I brew my own.
+
+30
+00:01:04,762 --> 00:01:05,762
+At the risk of bragging,
+
+31
+00:01:05,763 --> 00:01:08,299
+my Hazelnut Pilsner
+won fourth prize
+
+32
+00:01:08,300 --> 00:01:09,767
+at the Weehawken Retirement Home
+
+33
+00:01:09,768 --> 00:01:12,303
+Clam Bake and Wheelchair
+Maintenance Picnic.
+
+34
+00:01:12,304 --> 00:01:15,239
+I wouldn't consider any
+part of that bragging.
+
+35
+00:01:15,240 --> 00:01:17,774
+Hey, it just occurred to me,
+is your friend--
+
+36
+00:01:17,775 --> 00:01:19,509
+what's her name?--
+Garbin, Flabin...
+
+37
+00:01:19,510 --> 00:01:21,044
+Robin?
+Robin.
+That's it, yeah.
+
+38
+00:01:21,045 --> 00:01:23,346
+Is she gonna be here?
+Oh, not that I really care.
+
+39
+00:01:23,347 --> 00:01:24,981
+Robin has another
+party to go to.
+
+40
+00:01:24,982 --> 00:01:26,482
+No! Damn it!
+
+41
+00:01:26,483 --> 00:01:28,185
+I'm leaving.
+
+42
+00:01:28,186 --> 00:01:29,353
+But she might stop by later.
+
+43
+00:01:29,354 --> 00:01:31,588
+I guess I can
+hang out a little longer.
+
+44
+00:01:37,729 --> 00:01:40,331
+So, anyone going to see
+the Halloween parade?
+
+45
+00:01:40,332 --> 00:01:43,400
+NARRATOR:
+<i>Oh, we were big fans of New</i>
+<i>York's annual Halloween parade.</i>
+
+46
+00:01:43,401 --> 00:01:45,068
+<i>I don't mean the one</i>
+<i>that takes place</i>
+
+47
+00:01:45,069 --> 00:01:46,636
+<i>Halloween night</i>
+<i>in the Village.</i>
+
+48
+00:01:46,637 --> 00:01:49,005
+I mean the one that takes place
+<i>the morning of November 1st--</i>
+
+49
+00:01:49,006 --> 00:01:52,509
+<i>the Annual Post Halloween</i>
+<i>Walk of Shame Parade.</i>
+
+50
+00:01:52,510 --> 00:01:54,277
+Look at them
+heading home
+
+51
+00:01:54,278 --> 00:01:56,846
+after their
+dirty, filthy hookups.
+
+52
+00:01:56,847 --> 00:02:00,182
+(shudders) Looks like
+that bee got busy.
+
+53
+00:02:00,183 --> 00:02:01,684
+(chuckles)
+
+54
+00:02:01,685 --> 00:02:04,453
+Looks like that French maid
+didn't turn down somebody's bed.
+
+55
+00:02:04,454 --> 00:02:07,924
+Oh, looks like Pocahontas
+has a couple of wounded knees.
+
+56
+00:02:07,925 --> 00:02:09,759
+Come on, Marshall.
+That's a line.
+
+57
+00:02:09,760 --> 00:02:11,761
+No, it's because of the...
+We get it.
+
+58
+00:02:11,762 --> 00:02:13,630
+Does it get any better
+than this?
+
+59
+00:02:13,631 --> 00:02:15,766
+Uh, yes.
+
+60
+00:02:15,767 --> 00:02:17,635
+Yes, it does.
+
+61
+00:02:19,137 --> 00:02:20,270
+(sighs)
+
+62
+00:02:20,271 --> 00:02:22,072
+Crap.
+
+63
+00:02:22,073 --> 00:02:26,144
+<font color=#ffff00>♪ How I Met Your Mother 6x07 ♪</font>
+<font color=#00ffff>Canning Randy</font>
+<font color=#ffff00>Original Air Date on November 1, 2010</font>
+
+64
+00:02:26,145 --> 00:02:30,148
+-- Sync, corrected by <font color="#00ff00">elderman</font> --
+-- for <font color=00FFFF>www.addic7ed.com</font> --
+
+65
+00:02:37,906 --> 00:02:41,476
+There she is-- Florence
+Night-In-Bed-With-A-Stranger.
+
+66
+00:02:42,271 --> 00:02:44,439
+So, who's the lucky patient?
+
+67
+00:02:44,440 --> 00:02:45,774
+I don't want to
+talk about it.
+
+68
+00:02:45,775 --> 00:02:47,242
+Please tell me
+you're not hooking up
+
+69
+00:02:47,243 --> 00:02:48,811
+with one of your
+co-anchors again.
+
+70
+00:02:48,812 --> 00:02:50,379
+My co-anchor's a woman.
+Please tell me
+you are hooking up
+
+71
+00:02:50,380 --> 00:02:51,714
+with one of your
+co-anchors again.
+
+72
+00:02:51,715 --> 00:02:53,583
+(laughing)
+NARRATOR: <i>Robin had</i>
+<i>always believed</i>
+
+73
+00:02:53,584 --> 00:02:55,151
+<i>that the key to success</i>
+
+74
+00:02:55,152 --> 00:02:56,886
+<i>was intelligence,</i>
+<i>hard work and professionalism.</i>
+
+75
+00:02:56,887 --> 00:02:59,088
+<i>Her new co-anchor Becky</i>
+<i>had a different philosophy.</i>
+
+76
+00:02:59,089 --> 00:03:02,224
+(techno music playing)
+Boats! Boats! Boats!
+
+77
+00:03:02,225 --> 00:03:04,226
+ANNOUNCER:
+<i>It's the Farhampton Boat Show!</i>
+
+78
+00:03:04,227 --> 00:03:07,730
+Boats! Boats! Boats!
+
+79
+00:03:07,731 --> 00:03:09,198
+<i>Remember 5th, 6th and 7th</i>
+
+80
+00:03:09,199 --> 00:03:10,866
+at the Farhampton Civic Center.
+
+81
+00:03:10,867 --> 00:03:12,167
+Boats! Boats! Boats!
+
+82
+00:03:12,168 --> 00:03:13,635
+<i>Come on down.</i>
+
+83
+00:03:13,636 --> 00:03:16,004
+B-B-B-Boats!
+
+84
+00:03:17,240 --> 00:03:18,874
+You did a commercial?
+
+85
+00:03:18,875 --> 00:03:20,176
+Why not?
+
+86
+00:03:20,177 --> 00:03:21,210
+You're a journalist!
+
+87
+00:03:21,211 --> 00:03:23,045
+Don't you want
+to be taken seriously?
+
+88
+00:03:23,046 --> 00:03:24,480
+No. I'm cute.
+
+89
+00:03:24,481 --> 00:03:26,082
+Okay, well, if you
+really think
+
+90
+00:03:26,083 --> 00:03:27,950
+this is going to
+help your image.
+
+91
+00:03:27,951 --> 00:03:30,920
+Hi, Becky. Boats, boats, boats!
+
+92
+00:03:31,988 --> 00:03:35,090
+Robin, a little help here?
+
+93
+00:03:35,091 --> 00:03:36,792
+Aw...
+Oh...
+Robin,
+
+94
+00:03:36,793 --> 00:03:38,994
+you gotta not worry so much
+about being liked.
+
+95
+00:03:38,995 --> 00:03:40,430
+Oh, easy for you to say.
+
+96
+00:03:40,431 --> 00:03:42,031
+Everybody loves you
+at your job.
+
+97
+00:03:42,032 --> 00:03:44,066
+Mm.
+<i>That was true</i>
+<i>of my teaching job.</i>
+
+98
+00:03:44,067 --> 00:03:46,603
+<i>But I was also designing</i>
+<i>the new headquarters</i>
+
+99
+00:03:46,604 --> 00:03:48,438
+<i>for Goliath National Bank,</i>
+<i>and well...</i>
+
+100
+00:03:48,439 --> 00:03:51,842
+Ted Mosby, we don't like you!
+
+101
+00:03:51,843 --> 00:03:53,577
+What do you have to say
+for yourself,
+
+102
+00:03:53,578 --> 00:03:55,145
+tearing down a beautiful,
+old building
+
+103
+00:03:55,146 --> 00:03:57,281
+just to put up a stupid
+band headquarters?
+
+104
+00:03:57,282 --> 00:03:58,482
+Hmm...
+
+105
+00:03:58,483 --> 00:03:59,883
+Boo...
+
+106
+00:03:59,884 --> 00:04:01,285
+freakin'...
+
+107
+00:04:01,286 --> 00:04:02,553
+hoo.
+
+108
+00:04:02,554 --> 00:04:04,888
+Boo freakin' hoo? That's it?
+
+109
+00:04:05,557 --> 00:04:06,724
+The Arcadian
+
+110
+00:04:06,725 --> 00:04:08,792
+is an architecturally
+significant...
+
+111
+00:04:08,793 --> 00:04:10,628
+Architecturally significant?!
+
+112
+00:04:10,629 --> 00:04:12,797
+Zoey, you're very pretty.
+
+113
+00:04:12,798 --> 00:04:14,098
+Your hair smells great.
+
+114
+00:04:14,099 --> 00:04:16,100
+Shampoo.
+You should try it sometime.
+
+115
+00:04:16,101 --> 00:04:18,769
+You don't know the first thing
+about architecture.
+
+116
+00:04:18,770 --> 00:04:21,105
+Key Ted Mosby's car.
+
+117
+00:04:21,106 --> 00:04:22,573
+Go on.
+
+118
+00:04:22,574 --> 00:04:23,974
+I'm a professor, okay?
+
+119
+00:04:23,975 --> 00:04:26,744
+I teach this stuff at one of the
+best colleges in the country.
+
+120
+00:04:26,745 --> 00:04:28,846
+I don't go down
+to your place of non-employment
+
+121
+00:04:28,847 --> 00:04:31,015
+and lecture you
+about how your little protest
+
+122
+00:04:31,016 --> 00:04:32,716
+is a misguided waste of time,
+
+123
+00:04:32,717 --> 00:04:34,618
+except whoops, I just did.
+
+124
+00:04:34,619 --> 00:04:35,919
+Ha-burn.
+
+125
+00:04:35,920 --> 00:04:38,489
+Oh, good, the eggs are here.
+Well, I should head up.
+
+126
+00:04:38,490 --> 00:04:40,524
+NARRATOR:
+<i>No, GNB was not popular.</i>
+
+127
+00:04:40,525 --> 00:04:42,626
+<i>That's why every year they</i>
+<i>produced a feel-good video</i>
+
+128
+00:04:42,627 --> 00:04:44,028
+<i>to improve the bank's image.</i>
+
+129
+00:04:44,029 --> 00:04:46,129
+GNB ANNOUNCER: <i>What makes</i>
+<i>Goliath National Bank</i>
+
+130
+00:04:46,130 --> 00:04:47,564
+different from other big banks?
+
+131
+00:04:47,565 --> 00:04:49,632
+<i>Here at GNB, we care.</i>
+
+132
+00:04:49,633 --> 00:04:53,236
+I care about our precious Earth.
+
+133
+00:04:54,071 --> 00:04:57,840
+I care about old people.
+
+134
+00:04:57,841 --> 00:05:01,276
+I care about high-yield
+offshore investments.
+
+135
+00:05:01,277 --> 00:05:02,811
+And so does Tugboat here.
+
+136
+00:05:02,812 --> 00:05:04,979
+Isn't that right, Tugboat?
+Yeah.
+
+137
+00:05:05,814 --> 00:05:08,082
+Okay, get that camera
+out of my face
+
+138
+00:05:08,083 --> 00:05:10,317
+before I flip you
+like a cheese omelet.
+
+139
+00:05:10,318 --> 00:05:11,786
+All you have to do is say
+
+140
+00:05:11,787 --> 00:05:15,323
+"I care about
+making dreams come true."
+
+141
+00:05:15,324 --> 00:05:18,093
+First of all, that line
+makes me sound like a hooker
+
+142
+00:05:18,094 --> 00:05:20,796
+and saying it makes me
+feel like a hooker, so.
+
+143
+00:05:20,797 --> 00:05:22,298
+Everyone is in this video.
+
+144
+00:05:22,299 --> 00:05:24,434
+Randy's in the video.
+
+145
+00:05:24,435 --> 00:05:26,937
+I don't want to brag,
+but in 29 takes,
+
+146
+00:05:26,938 --> 00:05:28,438
+I only threw up thrice.
+
+147
+00:05:28,439 --> 00:05:31,909
+Wait. Randy, did you send the
+Hermanson contracts downtown?
+
+148
+00:05:31,910 --> 00:05:33,010
+I did.
+
+149
+00:05:33,011 --> 00:05:34,578
+I sent them downtown.
+
+150
+00:05:34,579 --> 00:05:35,980
+Why are you saying it like that?
+
+151
+00:05:35,981 --> 00:05:37,581
+They never arrived
+at the downtown office.
+
+152
+00:05:37,582 --> 00:05:38,782
+They...
+
+153
+00:05:38,783 --> 00:05:41,085
+Well, just to make sure
+we're on the same page,
+
+154
+00:05:41,086 --> 00:05:42,353
+is "send them downtown"
+
+155
+00:05:42,354 --> 00:05:44,721
+not an expression
+for shredding a document?
+
+156
+00:05:45,523 --> 00:05:46,656
+You shredded them?!
+
+157
+00:05:46,657 --> 00:05:48,391
+Yeah. I sent them downtown.
+
+158
+00:05:48,392 --> 00:05:50,093
+You know, down
+into the shredder.
+
+159
+00:05:50,094 --> 00:05:51,394
+You-you feed the paper
+
+160
+00:05:51,395 --> 00:05:52,495
+in a downwards fashion,
+
+161
+00:05:52,496 --> 00:05:54,163
+so that's where the expression
+comes from.
+
+162
+00:05:54,164 --> 00:05:55,264
+That's not an expression!
+
+163
+00:05:55,265 --> 00:05:56,699
+That has never
+been an expression!
+
+164
+00:05:56,700 --> 00:05:57,867
+Okay, I can fix this.
+
+165
+00:05:57,868 --> 00:05:59,502
+I am all over this project.
+
+166
+00:06:02,106 --> 00:06:03,840
+I'll say this:
+
+167
+00:06:03,841 --> 00:06:05,810
+There is no quit in that guy.
+
+168
+00:06:05,811 --> 00:06:07,011
+You should fire him.
+
+169
+00:06:07,012 --> 00:06:08,880
+Okay, that, that right there.
+
+170
+00:06:08,881 --> 00:06:11,182
+That attitude is exactly why
+I won't be in your video.
+
+171
+00:06:11,183 --> 00:06:12,951
+Because GNB doesn't care.
+
+172
+00:06:12,952 --> 00:06:14,986
+They hand out pink slips
+like they're hors d'oevres.
+
+173
+00:06:14,987 --> 00:06:17,255
+Just last week,
+I was talking to Arthur...
+
+174
+00:06:17,256 --> 00:06:20,391
+Oh, whoa, you're wearing
+a green tie now.
+
+175
+00:06:20,392 --> 00:06:22,359
+I'm wearing a green tie.
+
+176
+00:06:22,360 --> 00:06:23,627
+(elevator bell dings)
+
+177
+00:06:23,628 --> 00:06:25,996
+GNB treats people like
+they're disposable,
+
+178
+00:06:25,997 --> 00:06:28,031
+and I will not be
+a part of that.
+
+179
+00:06:28,032 --> 00:06:32,234
+Marshall Eriksen
+does not fire people, period.
+
+180
+00:06:32,235 --> 00:06:34,135
+Uh, just want you to know,
+
+181
+00:06:34,136 --> 00:06:36,872
+we are making good progress
+on this new project.
+
+182
+00:06:36,873 --> 00:06:37,840
+(phone rings)
+
+183
+00:06:37,841 --> 00:06:39,241
+Oh, you gentlemen
+keep talking,
+
+184
+00:06:39,242 --> 00:06:40,976
+I will answer that.
+
+185
+00:06:40,977 --> 00:06:42,577
+Marshall Eriksen's office.
+
+186
+00:06:42,578 --> 00:06:44,079
+Yeah, I can get that for you.
+
+187
+00:06:44,080 --> 00:06:45,580
+Just a second.
+
+188
+00:06:48,118 --> 00:06:50,820
+Uh... bank.
+The "B" stands for bank.
+
+189
+00:06:50,821 --> 00:06:52,921
+Okay, Mother, I'll see you
+tonight.
+
+190
+00:06:52,922 --> 00:06:55,624
+Oh, yikes. I'd better
+get Mr. Messy a napkin.
+
+191
+00:06:58,729 --> 00:07:03,099
+(loud clattering)
+
+192
+00:07:03,100 --> 00:07:05,768
+Period.
+
+193
+00:07:05,769 --> 00:07:07,670
+Just tell me who
+you slept with!
+
+194
+00:07:07,671 --> 00:07:09,572
+Lily, I don't want
+to get into it, okay?
+
+195
+00:07:09,573 --> 00:07:11,975
+Aha, it's someone we know.
+
+196
+00:07:11,976 --> 00:07:13,977
+If it was some ding dong
+we didn't know,
+
+197
+00:07:13,978 --> 00:07:15,178
+you'd just give me his name.
+
+198
+00:07:15,179 --> 00:07:18,648
+Fine. It's Bill Pepper.
+
+199
+00:07:18,649 --> 00:07:19,883
+Bill Pepper?
+
+200
+00:07:19,884 --> 00:07:21,184
+Mm-hmm.
+
+201
+00:07:21,185 --> 00:07:23,353
+Kind of a coincidence
+there happens
+
+202
+00:07:23,354 --> 00:07:25,655
+to be a bill and a pepper
+shaker here on the table.
+
+203
+00:07:25,656 --> 00:07:29,793
+(gasps)
+Any chance you and Bill had a
+three-way with Fork Napkin?
+
+204
+00:07:29,794 --> 00:07:30,960
+Oh...
+
+205
+00:07:30,961 --> 00:07:33,330
+It's someone we know!
+
+206
+00:07:33,331 --> 00:07:36,633
+So, I'm assuming
+you all read the chapters
+
+207
+00:07:36,634 --> 00:07:38,169
+on the Greek Revival
+architecture.
+
+208
+00:07:38,170 --> 00:07:39,103
+Any questions?
+
+209
+00:07:39,104 --> 00:07:41,271
+Yes.
+How do you sleep at night?
+
+210
+00:07:44,399 --> 00:07:46,733
+What are you doing here?
+It was recently made clear to me
+
+211
+00:07:46,734 --> 00:07:48,835
+that I don't know the first
+thing about architecture,
+
+212
+00:07:48,836 --> 00:07:50,804
+so here I am.
+
+213
+00:07:52,854 --> 00:07:55,323
+Very well, then,
+let's get started.
+
+214
+00:07:55,377 --> 00:07:56,511
+(clears throat)
+
+215
+00:07:56,512 --> 00:07:58,613
+Some examples of Greek Revival
+architecture...
+
+216
+00:07:58,614 --> 00:07:59,581
+Ooh! Ooh!
+
+217
+00:07:59,582 --> 00:08:02,318
+Is The Arcadian Greek Revival?
+
+218
+00:08:02,319 --> 00:08:04,420
+No.
+
+219
+00:08:04,421 --> 00:08:06,890
+What's The Arcadian?
+
+220
+00:08:06,891 --> 00:08:09,159
+Oh, it's just this
+beautiful, old building
+
+221
+00:08:09,160 --> 00:08:11,428
+that Professor Mosby
+wants to tear down.
+
+222
+00:08:11,429 --> 00:08:12,563
+BETTY:
+What?! No,
+
+223
+00:08:12,564 --> 00:08:14,531
+Professor Mosby
+loves old buildings.
+
+224
+00:08:14,532 --> 00:08:16,467
+He wouldn't do that.
+Right, Ted?
+
+225
+00:08:18,303 --> 00:08:20,604
+Getting back to Greek Revival...
+
+226
+00:08:21,672 --> 00:08:22,938
+I lost them.
+
+227
+00:08:22,939 --> 00:08:24,707
+Look, you're new at teaching.
+
+228
+00:08:24,708 --> 00:08:25,908
+In my kindergarten class,
+
+229
+00:08:25,909 --> 00:08:28,577
+I have had plenty
+of troublesome students.
+
+230
+00:08:28,578 --> 00:08:30,912
+Like Johnny Marley...
+
+231
+00:08:30,913 --> 00:08:33,280
+(boy shouting playfully)
+
+232
+00:08:34,349 --> 00:08:35,783
+Johnny?
+
+233
+00:08:36,518 --> 00:08:38,019
+Johnny!
+
+234
+00:08:38,020 --> 00:08:42,223
+He and that little stuffed
+horsey raised all kinds of hell.
+
+235
+00:08:42,224 --> 00:08:45,593
+But I have a simple method for
+shutting down troublemakers.
+
+236
+00:08:45,594 --> 00:08:48,763
+You know that '98 Taurus
+that's always parked outside?
+
+237
+00:08:48,764 --> 00:08:50,898
+The one with the really
+annoying alarm?
+
+238
+00:08:50,899 --> 00:09:00,307
+(both mimicking long, complex
+car alarm blaring)
+
+239
+00:09:00,308 --> 00:09:02,343
+We're familiar with it.
+
+240
+00:09:02,344 --> 00:09:05,312
+Well, when a kid like Johnny
+acts up in my class...
+
+241
+00:09:05,313 --> 00:09:06,847
+(kids laughing and shouting
+playfully)
+
+242
+00:09:06,848 --> 00:09:15,856
+(mimicking long, complex
+car alarm blaring)
+
+243
+00:09:17,025 --> 00:09:19,159
+Shuts them right up.
+TED: Lily,
+
+244
+00:09:19,160 --> 00:09:21,495
+my students are adults,
+and I treat them that way.
+
+245
+00:09:21,496 --> 00:09:24,197
+I'll just give them more candy
+and make them a mix CD.
+
+246
+00:09:24,198 --> 00:09:25,766
+Problem solved.
+
+247
+00:09:25,767 --> 00:09:27,768
+Oh, baby, what's wrong?
+
+248
+00:09:28,637 --> 00:09:31,339
+Something bad happened.
+
+249
+00:09:31,340 --> 00:09:34,242
+(knocking)
+Randy, hey, have you seen the...
+
+250
+00:09:34,243 --> 00:09:35,643
+Before you get to that,
+
+251
+00:09:35,644 --> 00:09:37,912
+regarding the earlier project
+I was working on...
+
+252
+00:09:37,913 --> 00:09:39,347
+Voilà!
+
+253
+00:09:39,348 --> 00:09:40,782
+That's the Hermanson contract?
+
+254
+00:09:40,783 --> 00:09:42,350
+The Hermanson contract?
+
+255
+00:09:42,351 --> 00:09:44,986
+Oh, man, this is
+the Filbert contract.
+
+256
+00:09:44,987 --> 00:09:47,389
+Damn it!
+No...
+
+257
+00:09:47,390 --> 00:09:49,691
+Anyway, what's your thing?
+
+258
+00:09:49,692 --> 00:09:51,426
+I need the Filbert contract!
+
+259
+00:09:51,427 --> 00:09:53,595
+No!!
+
+260
+00:09:55,364 --> 00:09:57,833
+Well, I'll do what I can.
+
+261
+00:09:57,834 --> 00:10:02,138
+But in my experience, twice
+shredded is fairly permanent.
+
+262
+00:10:02,139 --> 00:10:05,576
+Sorry, Randy, but...
+
+263
+00:10:05,577 --> 00:10:07,644
+this just isn't working out.
+
+264
+00:10:07,645 --> 00:10:10,581
+Marshall popped his cherry!
+(popping)
+Oh!
+
+265
+00:10:10,582 --> 00:10:13,751
+Come on, Marshall, you have to
+admit, the guy was a disaster.
+
+266
+00:10:13,752 --> 00:10:16,154
+I mean, it reflected badly
+on the company.
+
+267
+00:10:16,155 --> 00:10:18,523
+He was an embarrassment.
+
+268
+00:10:18,524 --> 00:10:19,891
+A huge embarrassment.
+
+269
+00:10:19,892 --> 00:10:22,394
+(pounds table)
+You slept with Randy!
+
+270
+00:10:22,395 --> 00:10:23,562
+What?!
+
+271
+00:10:23,563 --> 00:10:26,431
+Why, it's elementary,
+my dear Scherbatson.
+
+272
+00:10:26,432 --> 00:10:29,134
+LILY:
+<i>Your co-host</i>
+<i>is getting super-popular</i>
+
+273
+00:10:29,135 --> 00:10:31,003
+<i>because of her stupid</i>
+<i>commercial,</i>
+
+274
+00:10:31,004 --> 00:10:32,471
+<i>"Boats! Boats! Boats!"</i>
+
+275
+00:10:32,472 --> 00:10:35,374
+So, when you arrived at the GNB
+<i>party</i> <i>after we left,</i>
+
+276
+00:10:35,375 --> 00:10:38,510
+<i>you were feeling vulnerable</i>
+<i>and drunk.</i>
+
+277
+00:10:38,511 --> 00:10:42,414
+<i>Then, from across the</i>
+<i>not-so-crowded conference room,</i>
+
+278
+00:10:42,415 --> 00:10:44,450
+<i>your eyes met.</i>
+
+279
+00:10:48,888 --> 00:10:50,689
+<i>And as we all remember...</i>
+
+280
+00:10:50,690 --> 00:10:52,057
+<i>Randy has a unique condition.</i>
+
+281
+00:10:52,058 --> 00:10:55,428
+Yeah, your nose is bleeding
+like a faucet.
+
+282
+00:10:55,429 --> 00:10:58,131
+Oh, God, this happens
+every time I get an erection.
+
+283
+00:10:58,132 --> 00:10:59,465
+I am so sorry.
+
+284
+00:11:02,436 --> 00:11:03,770
+That's...
+
+285
+00:11:05,373 --> 00:11:07,308
+...exactly what happened.
+
+286
+00:11:07,309 --> 00:11:08,309
+BARNEY:
+See, Marshall,
+
+287
+00:11:08,310 --> 00:11:10,577
+if getting fired
+is an execution,
+
+288
+00:11:10,578 --> 00:11:12,947
+at least the guy
+had a last meal.
+
+289
+00:11:12,948 --> 00:11:14,115
+I promise you,
+
+290
+00:11:14,116 --> 00:11:15,950
+tomorrow you'll feel
+a lot better.
+
+291
+00:11:17,486 --> 00:11:19,720
+Randy, hey, what's going on?
+
+292
+00:11:19,721 --> 00:11:22,188
+I just wanted to say
+no hard feelings.
+
+293
+00:11:22,189 --> 00:11:24,224
+(sighs)
+Thank you.
+
+294
+00:11:24,225 --> 00:11:26,192
+So where you headed now?
+
+295
+00:11:29,029 --> 00:11:30,796
+Downtown.
+
+296
+00:11:33,967 --> 00:11:35,501
+No!!
+
+297
+00:11:35,502 --> 00:11:36,569
+(gasps)
+
+298
+00:11:36,570 --> 00:11:38,404
+It's okay, baby.
+
+299
+00:11:38,405 --> 00:11:39,840
+<i>It wasn't okay.</i>
+
+300
+00:11:39,841 --> 00:11:41,141
+<i>So the next morning...</i>
+
+301
+00:11:41,142 --> 00:11:43,577
+Arthur, I'm here
+because I made a mistake.
+
+302
+00:11:43,578 --> 00:11:45,012
+I fired Randy yesterday.
+
+303
+00:11:45,013 --> 00:11:46,080
+That was a mistake.
+
+304
+00:11:46,081 --> 00:11:47,749
+You should have fired him
+a year ago.
+
+305
+00:11:47,750 --> 00:11:50,686
+No, sir, that is what's
+wrong with this company.
+
+306
+00:11:50,687 --> 00:11:52,788
+How can we say "GNB Cares,"
+
+307
+00:11:52,789 --> 00:11:55,424
+and then turn around
+and treat someone like that?
+
+308
+00:11:55,425 --> 00:11:57,092
+I mean, sure,
+he made a few mistakes,
+
+309
+00:11:57,093 --> 00:11:58,427
+but everybody makes mistakes.
+
+310
+00:11:58,428 --> 00:12:00,629
+Like, like Tugboat here.
+
+311
+00:12:00,630 --> 00:12:03,132
+Aw. I bet you
+he's made some mistakes.
+
+312
+00:12:03,133 --> 00:12:05,667
+And you didn't fire Tugboat,
+did you?
+
+313
+00:12:05,668 --> 00:12:08,103
+No, I got him fixed,
+and he calmed down.
+
+314
+00:12:08,104 --> 00:12:10,172
+Exactly-- kind of.
+
+315
+00:12:10,173 --> 00:12:11,641
+Randy doesn't need to be fired.
+
+316
+00:12:11,642 --> 00:12:13,242
+He needs to be fixed.
+
+317
+00:12:13,243 --> 00:12:16,546
+Marshall, we do some pretty bad
+things around here, but I...
+
+318
+00:12:16,547 --> 00:12:18,815
+No, sir, I'm saying instead
+of getting rid of someone
+
+319
+00:12:18,816 --> 00:12:22,019
+when they screw up, we should...
+we should help them.
+
+320
+00:12:22,787 --> 00:12:24,888
+We should nurture them.
+
+321
+00:12:24,889 --> 00:12:26,357
+Oh...
+
+322
+00:12:29,161 --> 00:12:31,296
+I changed the ice pack
+on his crotch
+
+323
+00:12:31,297 --> 00:12:33,064
+every hour for three days.
+
+324
+00:12:33,065 --> 00:12:39,303
+Wow, Eriksen, if you want to
+un-fire Randy, I support you,
+
+325
+00:12:39,304 --> 00:12:41,604
+because to come in here
+and say what you just said,
+
+326
+00:12:41,605 --> 00:12:44,040
+well, you've got a couple
+things that Tugboat doesn't.
+
+327
+00:12:45,175 --> 00:12:47,843
+(angry shouting)
+
+328
+00:12:47,844 --> 00:12:51,447
+Guys, Prof Rock is
+a really good mix, okay?
+
+329
+00:12:51,448 --> 00:12:53,749
+A piece of New York history
+is being torn down,
+
+330
+00:12:53,750 --> 00:12:57,086
+and all you could say
+was "Boo freakin' hoo"?
+
+331
+00:12:57,087 --> 00:12:58,188
+Boo... freakin'...
+
+332
+00:12:58,189 --> 00:13:00,057
+I may have mentioned
+our conversation
+
+333
+00:13:00,058 --> 00:13:01,892
+over a session of hacky sack.
+
+334
+00:13:01,893 --> 00:13:03,861
+The one day I miss
+the sack circle,
+
+335
+00:13:03,862 --> 00:13:05,763
+you guys sub her in?
+
+336
+00:13:05,764 --> 00:13:06,964
+Why'd you miss?
+
+337
+00:13:06,965 --> 00:13:09,334
+Too busy tearing down
+the Statue of Liberty?
+
+338
+00:13:09,335 --> 00:13:14,440
+No. I was returning a hot dog
+costume that you all enjoyed.
+
+339
+00:13:14,441 --> 00:13:15,440
+(angry shouting)
+
+340
+00:13:15,441 --> 00:13:18,110
+<i>They were all</i>
+<i>turning against me,</i>
+
+341
+00:13:18,111 --> 00:13:20,111
+<i>so I figured, what the hell.</i>
+
+342
+00:13:20,112 --> 00:13:22,280
+(shouting continues)
+
+343
+00:13:24,950 --> 00:13:34,225
+(mimicking long, complex
+car alarm blaring)
+
+344
+00:13:34,226 --> 00:13:35,193
+And did it work?
+
+345
+00:13:35,194 --> 00:13:36,327
+Like gangbusters.
+
+346
+00:13:36,328 --> 00:13:37,262
+We're buddies again.
+
+347
+00:13:37,263 --> 00:13:38,964
+After class, we
+hacked a little sack
+
+348
+00:13:38,965 --> 00:13:41,100
+to the thumpin' strains
+of my Prof Rock CD.
+
+349
+00:13:41,101 --> 00:13:43,436
+And no, none of them had
+heard the Pixies B-side.
+
+350
+00:13:43,437 --> 00:13:45,739
+Actually, none of them
+had heard of the Pixies.
+
+351
+00:13:45,740 --> 00:13:47,007
+Or a B-side.
+
+352
+00:13:47,008 --> 00:13:48,776
+Hey, guys.
+
+353
+00:13:48,777 --> 00:13:50,344
+Uh-oh. I know that smile.
+
+354
+00:13:50,345 --> 00:13:52,480
+Lily, there's no easy way
+to say this.
+
+355
+00:13:52,481 --> 00:13:53,715
+Marshall's dead.
+
+356
+00:13:53,716 --> 00:13:55,283
+Randy murdered him.
+
+357
+00:13:55,284 --> 00:13:58,086
+No. I know why
+Randy is smiling.
+
+358
+00:13:58,087 --> 00:14:00,555
+You're smiling
+because of Robin.
+
+359
+00:14:00,556 --> 00:14:03,659
+Robin? Like how I think about
+her when I'm in the shower?
+
+360
+00:14:03,660 --> 00:14:05,127
+I'm trying to eat
+here, buddy.
+
+361
+00:14:05,128 --> 00:14:08,397
+No. Because you slept
+with her on Halloween.
+
+362
+00:14:08,398 --> 00:14:10,298
+What? No.
+
+363
+00:14:10,299 --> 00:14:13,668
+I went home, had a shower
+an-and went to bed.
+
+364
+00:14:13,669 --> 00:14:14,736
+You didn't sleep with her?
+
+365
+00:14:14,737 --> 00:14:16,271
+No.
+
+366
+00:14:16,272 --> 00:14:17,472
+Even in the shower,
+
+367
+00:14:17,473 --> 00:14:19,307
+the farthest we ever get
+is hugging.
+
+368
+00:14:19,308 --> 00:14:21,843
+So why are
+you smiling?
+
+369
+00:14:21,844 --> 00:14:23,378
+I'll tell you why.
+
+370
+00:14:23,379 --> 00:14:25,648
+This just isn't working out.
+
+371
+00:14:25,649 --> 00:14:28,383
+RANDY:
+<i>I'm fired. Great.</i>
+
+372
+00:14:28,384 --> 00:14:32,221
+<i>This is the candle kiosk</i>
+<i>at the mall all over again.</i>
+
+373
+00:14:32,222 --> 00:14:33,589
+<i>Wait a minute.</i>
+
+374
+00:14:33,590 --> 00:14:35,658
+<i>I can get a severance check.</i>
+
+375
+00:14:35,659 --> 00:14:37,561
+<i>If I don't shred it,</i>
+
+376
+00:14:37,562 --> 00:14:40,631
+<i>I can use that money to start</i>
+<i>my own brewery.</i>
+
+377
+00:14:40,632 --> 00:14:43,234
+<i>Imagine a beer</i>
+<i>with my name on it.</i>
+
+378
+00:14:43,235 --> 00:14:47,305
+<i>Randy Wharmpiss, this is</i>
+<i>the best day of your life.</i>
+
+379
+00:14:48,909 --> 00:14:50,776
+Thanks to that severance check,
+
+380
+00:14:50,777 --> 00:14:52,945
+this time next year,
+you'll all be enjoying
+
+381
+00:14:52,946 --> 00:14:54,647
+a frothy mug of Wharmpiss.
+
+382
+00:14:54,648 --> 00:14:56,615
+MARSHALL:
+Randy, great news!
+
+383
+00:14:56,616 --> 00:14:58,083
+You're not fired!
+
+384
+00:15:00,554 --> 00:15:05,357
+(wailing):
+No...!
+
+385
+00:15:05,358 --> 00:15:08,727
+Good morning, everybody...
+
+386
+00:15:11,931 --> 00:15:13,566
+Where's my class?
+
+387
+00:15:13,567 --> 00:15:16,034
+(angry shouting)
+
+388
+00:15:16,035 --> 00:15:17,436
+Hello, Professor.
+
+389
+00:15:18,439 --> 00:15:20,573
+Ha-boom.
+
+390
+00:15:23,588 --> 00:15:25,481
+I got you your
+job back, Randy.
+
+391
+00:15:25,581 --> 00:15:27,014
+I thought that you'd be happy.
+
+392
+00:15:27,015 --> 00:15:28,515
+But I don't belong here.
+
+393
+00:15:28,516 --> 00:15:31,351
+I'm born to be a brewer!
+A... a hopsmeister!
+
+394
+00:15:31,352 --> 00:15:33,453
+Well, then quit.
+No one's stopping you.
+
+395
+00:15:33,454 --> 00:15:35,621
+I-I can't.
+I need my severance check.
+
+396
+00:15:35,622 --> 00:15:38,024
+Well, I'm sorry Randy,
+but that's called fraud.
+
+397
+00:15:38,025 --> 00:15:39,458
+It's not fraud.
+
+398
+00:15:39,459 --> 00:15:40,826
+I'm just asking you to get me
+
+399
+00:15:40,827 --> 00:15:42,194
+a lot of money to not work here
+
+400
+00:15:42,195 --> 00:15:43,595
+and not tell anyone about it.
+
+401
+00:15:43,596 --> 00:15:46,097
+Even if I wanted to fire you,
+after my talk with Arthur...
+
+402
+00:15:46,098 --> 00:15:48,600
+Oh, come on,
+Arthur can't remember that.
+
+403
+00:15:48,601 --> 00:15:51,169
+Marshall, what a memorable
+talk we had yesterday.
+
+404
+00:15:51,170 --> 00:15:55,607
+Randy, on behalf of everyone at
+GNB, both in and out of prison,
+
+405
+00:15:55,608 --> 00:15:57,142
+we're sorry.
+
+406
+00:15:57,143 --> 00:15:58,610
+And I want to assure you
+
+407
+00:15:58,611 --> 00:16:00,078
+you will never
+be fired again.
+
+408
+00:16:00,079 --> 00:16:02,514
+You're going to work
+here until you die, huh?
+
+409
+00:16:02,515 --> 00:16:03,515
+Huh?
+
+410
+00:16:03,516 --> 00:16:04,916
+Green tie?
+
+411
+00:16:04,917 --> 00:16:06,218
+(clears throat)
+
+412
+00:16:06,219 --> 00:16:07,653
+Nice choice.
+
+413
+00:16:07,654 --> 00:16:09,354
+Thanks. It brings
+out my eyes.
+
+414
+00:16:09,355 --> 00:16:11,857
+Yeah. I'll bring
+out your eyes.
+
+415
+00:16:13,359 --> 00:16:14,626
+Listen, Randy, I'm sorry,
+
+416
+00:16:14,627 --> 00:16:16,394
+but I broke
+my own moral code once
+
+417
+00:16:16,395 --> 00:16:18,029
+and I felt evil.
+
+418
+00:16:18,030 --> 00:16:19,797
+I will not let GNB change me.
+
+419
+00:16:19,798 --> 00:16:23,900
+I will never fire
+anyone again ever.
+
+420
+00:16:23,901 --> 00:16:25,736
+Oh, we'll see about that.
+
+421
+00:16:30,275 --> 00:16:31,241
+Anyhoo, while I got you--
+
+422
+00:16:31,242 --> 00:16:32,709
+big smile.
+
+423
+00:16:32,710 --> 00:16:34,845
+"We care about
+making dreams come true,"
+
+424
+00:16:34,846 --> 00:16:36,280
+in three, two...
+
+425
+00:16:36,281 --> 00:16:38,082
+No!
+
+426
+00:16:38,083 --> 00:16:39,150
+What are you doing?
+
+427
+00:16:39,151 --> 00:16:41,652
+Oh, are you unhappy
+with my performance?
+
+428
+00:16:41,653 --> 00:16:43,954
+Well, I guess I'm fired, then.
+I'd better turn in my I.D.
+
+429
+00:16:43,955 --> 00:16:46,957
+No, it's actually, um, nice
+
+430
+00:16:46,958 --> 00:16:48,760
+having some of this clutter
+off my desk.
+
+431
+00:16:48,761 --> 00:16:50,227
+So thank you, Randy.
+
+432
+00:16:54,767 --> 00:16:56,935
+And there's more.
+
+433
+00:16:58,205 --> 00:17:00,206
+I don't know
+what I'm going to use this for,
+
+434
+00:17:00,207 --> 00:17:01,307
+but it's great stuff.
+
+435
+00:17:01,308 --> 00:17:02,742
+Now am I fired?
+
+436
+00:17:04,010 --> 00:17:07,647
+I've been meaning to clean out
+that file cabinet for ages.
+
+437
+00:17:07,648 --> 00:17:08,915
+I'm not even here.
+
+438
+00:17:08,916 --> 00:17:10,484
+Randy, the coffee.
+
+439
+00:17:11,085 --> 00:17:12,953
+Oh! Okay.
+
+440
+00:17:12,954 --> 00:17:14,622
+Okay.
+
+441
+00:17:15,357 --> 00:17:17,057
+Thank you, Randy.
+
+442
+00:17:17,058 --> 00:17:19,394
+I've been meaning to cut back
+on my caffeine.
+
+443
+00:17:19,395 --> 00:17:21,596
+Here, try this,
+but really go for it.
+
+444
+00:17:21,597 --> 00:17:23,265
+Remember, this guy
+ruined your life.
+
+445
+00:17:29,706 --> 00:17:32,207
+That's just
+the pick-me-up I needed.
+
+446
+00:17:33,276 --> 00:17:36,745
+Speaking of pickups, can we try
+the first one again?
+
+447
+00:17:36,746 --> 00:17:39,181
+(phone ringing)
+
+448
+00:17:39,182 --> 00:17:40,181
+Hello.
+
+449
+00:17:40,182 --> 00:17:41,583
+It didn't work. They hate me.
+
+450
+00:17:41,584 --> 00:17:43,651
+How do I get them
+to like me again?
+
+451
+00:17:43,652 --> 00:17:44,785
+You don't.
+
+452
+00:17:44,786 --> 00:17:46,320
+Ted, you're their teacher.
+
+453
+00:17:46,321 --> 00:17:48,389
+The only people that
+like their teachers...
+
+454
+00:17:48,390 --> 00:17:49,423
+I like my teachers.
+
+455
+00:17:49,424 --> 00:17:51,024
+...are dorks.
+
+456
+00:17:51,025 --> 00:17:52,626
+Except for you, Miles.
+
+457
+00:17:55,264 --> 00:17:57,933
+Ted, you just have to learn
+to embrace their hatred.
+
+458
+00:17:57,934 --> 00:18:00,603
+Because behind that hatred
+lies fear.
+
+459
+00:18:00,604 --> 00:18:01,704
+And you can use
+
+460
+00:18:01,705 --> 00:18:04,841
+use that fear,
+like I did with Johnny Marley.
+
+461
+00:18:04,842 --> 00:18:06,309
+Was there more to that story?
+
+462
+00:18:06,310 --> 00:18:08,411
+A little bit.
+
+463
+00:18:20,756 --> 00:18:25,994
+(sustained screaming)
+
+464
+00:18:25,995 --> 00:18:28,829
+Lily, you're a psychopath.
+
+465
+00:18:28,830 --> 00:18:30,031
+A little bit.
+
+466
+00:18:30,032 --> 00:18:32,600
+Oh, a panda!
+
+467
+00:18:34,870 --> 00:18:36,837
+I thought about Lily's advice.
+
+468
+00:18:36,838 --> 00:18:40,942
+<i>And I figured fear</i>
+<i>was worth a try.</i>
+
+469
+00:18:40,943 --> 00:18:42,877
+Well, Professor Mosby,
+
+470
+00:18:42,878 --> 00:18:44,479
+is there anything
+you want to say to us?
+
+471
+00:18:44,480 --> 00:18:48,884
+Anyone not in class tomorrow
+gets an "F."
+
+472
+00:18:51,555 --> 00:18:53,355
+You said that?
+
+473
+00:18:53,356 --> 00:18:55,024
+Well, technically,
+they'd get an incomplete,
+
+474
+00:18:55,025 --> 00:18:57,627
+but I thought "F" had a nice,
+scary ring to it.
+
+475
+00:18:57,628 --> 00:18:58,695
+Right?
+Yeah.
+
+476
+00:18:58,696 --> 00:18:59,896
+Hey, guys.
+Hey.
+
+477
+00:18:59,897 --> 00:19:01,097
+Robin, who'd you sleep with?
+
+478
+00:19:01,098 --> 00:19:02,766
+I told you-- Randy.
+
+479
+00:19:02,767 --> 00:19:04,568
+He was a machine.
+
+480
+00:19:04,569 --> 00:19:06,937
+Where's the poop, Robin?
+
+481
+00:19:06,938 --> 00:19:08,071
+(sighs)
+
+482
+00:19:08,072 --> 00:19:10,907
+Fine. I didn't sleep
+with anyone.
+
+483
+00:19:10,908 --> 00:19:13,242
+The thing is, ever since
+Becky did that commercial,
+
+484
+00:19:13,243 --> 00:19:15,077
+everyone at work loves her.
+
+485
+00:19:15,078 --> 00:19:18,180
+So, the day after Halloween,
+I was in a commercial.
+
+486
+00:19:18,181 --> 00:19:20,215
+What... Why didn't you tell us?
+
+487
+00:19:21,450 --> 00:19:23,818
+ANNOUNCER:
+<i>Bladder trouble--</i>
+<i>it's embarrassing,</i>
+
+488
+00:19:23,819 --> 00:19:27,021
+<i>it's uncomfortable,</i>
+<i>and it can affect anyone.</i>
+
+489
+00:19:27,022 --> 00:19:29,757
+I'm going to the bathroom
+right now.
+
+490
+00:19:29,758 --> 00:19:32,026
+Neat and discreet adult diapers
+
+491
+00:19:32,027 --> 00:19:33,294
+<i>for anyone.</i>
+
+492
+00:19:33,295 --> 00:19:34,496
+Say...
+
+493
+00:19:34,497 --> 00:19:37,333
+"Ah..."
+
+494
+00:19:41,305 --> 00:19:42,505
+(laughing)
+(Ted laughing)
+
+495
+00:19:42,506 --> 00:19:45,876
+Wow! I can't wait to see it.
+
+496
+00:19:45,877 --> 00:19:47,044
+Well, hopefully
+you never will.
+
+497
+00:19:47,045 --> 00:19:49,045
+They said that they
+might not even use it.
+
+498
+00:19:49,046 --> 00:19:50,513
+TED:
+<i>It ran for seven years.</i>
+
+499
+00:19:53,050 --> 00:19:54,584
+Okay, you win.
+
+500
+00:19:54,585 --> 00:19:57,687
+Maybe trashing your office
+was a mistake.
+
+501
+00:19:57,688 --> 00:20:00,824
+It's just,
+uh, as long as I can remember,
+
+502
+00:20:00,825 --> 00:20:03,126
+making beer has been my dream.
+
+503
+00:20:04,261 --> 00:20:06,162
+Wharmpiss?
+
+504
+00:20:07,798 --> 00:20:10,066
+I know
+it sounds dumb
+
+505
+00:20:10,067 --> 00:20:12,836
+to someone who's already
+achieved his dream--
+
+506
+00:20:12,837 --> 00:20:14,805
+big-time lawyer
+at a huge corporation.
+
+507
+00:20:14,806 --> 00:20:17,208
+You think working here
+is my dream?
+
+508
+00:20:17,209 --> 00:20:18,409
+Of course.
+
+509
+00:20:19,244 --> 00:20:21,913
+Anyways, I'll clean
+this stuff up.
+
+510
+00:20:21,914 --> 00:20:24,549
+Have someone get that dead
+squirrel out of your desk.
+
+511
+00:20:26,886 --> 00:20:28,620
+Randy.
+
+512
+00:20:29,888 --> 00:20:31,956
+This is delicious.
+
+513
+00:20:33,225 --> 00:20:35,526
+You're fired.
+
+514
+00:20:37,228 --> 00:20:38,595
+<i>Kids, the next morning--</i>
+
+515
+00:20:38,596 --> 00:20:43,765
+<i>my class had the highest</i>
+<i>attendance it had ever had.</i>
+
+516
+00:20:43,766 --> 00:20:45,767
+<i>And not long after that,</i>
+
+517
+00:20:45,768 --> 00:20:48,337
+Randy used his severance money
+<i>to start a little brewery.</i>
+
+518
+00:20:48,338 --> 00:20:52,607
+<i>Now you can have a Wharmpiss</i>
+<i>at every bar in America.</i>
+
+519
+00:20:52,608 --> 00:20:53,642
+<i>And all because...</i>
+
+520
+00:20:53,643 --> 00:20:57,412
+I care about
+making dreams come true.
+
+521
+00:20:57,413 --> 00:20:59,581
+You got what you need?
+
+522
+00:20:59,582 --> 00:21:01,549
+BARNEY:
+Yep. That's a wrap.
+
+523
+00:21:01,550 --> 00:21:04,920
+-- Sync, corrected by <font color="#00ff00">elderman</font> --
+-- for <font color=00FFFF>www.addic7ed.com</font> --
+access.wgbh.org
+
+9999
+00:00:0,500 --> 00:00:2,00
+<font color="#ffff00" size=14>www.tvsubtitles.net</font>
