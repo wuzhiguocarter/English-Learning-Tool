@@ -10,3 +10,5 @@
 Pj = Fi + G - Mj
 
 M(j+1) = Mj + Delta_Mj
+
+## 4. 80/20 rules verfication
