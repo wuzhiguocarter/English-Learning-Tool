@@ -11,9 +11,13 @@ sed 's/^ //g' |
 sed 's/ /\n/g' |
 sed '/^$/d' |
 sed -e 's/\(.*\)/\L\1/' |
-# analysis and extract
+# sort and extract
 sort |
 uniq -c |
 sort -rn |
 sed -e 's/^[ \t]*//' |
 head -1000 > output/himym-s02-1000.csv
+
+## analysis: 80/20 rules verification
+# awk ‘{sum +=$1} END {print sum}’
+# awk ‘{sum +=$1} END {print sum}’ himym-1000.csv
