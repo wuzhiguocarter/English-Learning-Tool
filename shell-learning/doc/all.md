@@ -1,0 +1,17450 @@
+GAWK(1)                                               Utility Commands                                               GAWK(1)
+
+
+
+NAME
+       gawk - pattern scanning and processing language
+
+SYNOPSIS
+       gawk [ POSIX or GNU style options ] -f program-file [ -- ] file ...
+       gawk [ POSIX or GNU style options ] [ -- ] program-text file ...
+
+       pgawk [ POSIX or GNU style options ] -f program-file [ -- ] file ...
+       pgawk [ POSIX or GNU style options ] [ -- ] program-text file ...
+
+       dgawk [ POSIX or GNU style options ] -f program-file [ -- ] file ...
+
+DESCRIPTION
+       Gawk  is the GNU Project's implementation of the AWK programming language.  It conforms to the definition of the lan‐
+       guage in the POSIX 1003.1 Standard.  This version in turn is based on the description in  The  AWK  Programming  Lan‐
+       guage, by Aho, Kernighan, and Weinberger.  Gawk provides the additional features found in the current version of UNIX
+       awk and a number of GNU-specific extensions.
+
+       The command line consists of options to gawk itself, the AWK program text (if not  supplied  via  the  -f  or  --file
+       options), and values to be made available in the ARGC and ARGV pre-defined AWK variables.
+
+       Pgawk  is the profiling version of gawk.  It is identical in every way to gawk, except that programs run more slowly,
+       and it automatically produces an execution profile in the file awkprof.out when  done.   See  the  --profile  option,
+       below.
+
+       Dgawk  is an awk debugger. Instead of running the program directly, it loads the AWK source code and then prompts for
+       debugging commands.  Unlike gawk and pgawk, dgawk only processes AWK program source provided with the -f option.  The
+       debugger is documented in GAWK: Effective AWK Programming.
+
+OPTION FORMAT
+       Gawk  options  may  be  either  traditional POSIX-style one letter options, or GNU-style long options.  POSIX options
+       start with a single “-”, while long options start with “--”.  Long options are provided for  both  GNU-specific  fea‐
+       tures and for POSIX-mandated features.
+
+       Gawk-  specific options are typically used in long-option form.  Arguments to long options are either joined with the
+       option by an = sign, with no intervening spaces, or they may be provided in the next  command  line  argument.   Long
+       options may be abbreviated, as long as the abbreviation remains unique.
+
+       Additionally,  each long option has a corresponding short option, so that the option's functionality may be used from
+       within #!  executable scripts.
+
+OPTIONS
+       Gawk accepts the following options.  Standard options are listed first, followed  by  options  for  gawk  extensions,
+       listed alphabetically by short option.
+
+       -f program-file
+       --file program-file
+              Read the AWK program source from the file program-file, instead of from the first command line argument.  Mul‐
+              tiple -f (or --file) options may be used.
+
+       -F fs
+       --field-separator fs
+              Use fs for the input field separator (the value of the FS predefined variable).
+
+       -v var=val
+       --assign var=val
+              Assign the value val to the variable var, before execution of the program begins.  Such  variable  values  are
+              available to the BEGIN block of an AWK program.
+
+       -b
+       --characters-as-bytes
+              Treat all input data as single-byte characters. In other words, don't pay any attention to the locale informa‐
+              tion when attempting to process strings as multibyte characters.  The --posix option overrides this one.
+
+       -c
+       --traditional
+              Run in compatibility mode.  In compatibility mode, gawk behaves identically to UNIX awk; none of the  GNU-spe‐
+              cific extensions are recognized.  See GNU EXTENSIONS, below, for more information.
+
+       -C
+       --copyright
+              Print the short version of the GNU copyright information message on the standard output and exit successfully.
+
+       -d[file]
+       --dump-variables[=file]
+              Print  a  sorted list of global variables, their types and final values to file.  If no file is provided, gawk
+              uses a file named awkvars.out in the current directory.
+              Having a list of all the global variables is a good way to look for typographical  errors  in  your  programs.
+              You  would  also  use this option if you have a large program with a lot of functions, and you want to be sure
+              that your functions don't inadvertently use global variables that you meant to be local.  (This is a  particu‐
+              larly easy mistake to make with simple variable names like i, j, and so on.)
+
+       -e program-text
+       --source program-text
+              Use  program-text  as  AWK  program source code.  This option allows the easy intermixing of library functions
+              (used via the -f and --file options) with source code entered on the command line.  It is  intended  primarily
+              for medium to large AWK programs used in shell scripts.
+
+       -E file
+       --exec file
+              Similar  to -f, however, this is option is the last one processed.  This should be used with #!  scripts, par‐
+              ticularly for CGI applications, to avoid passing in options or source code (!) on the command line from a URL.
+              This option disables command-line variable assignments.
+
+       -g
+       --gen-pot
+              Scan  and  parse  the  AWK program, and generate a GNU .pot (Portable Object Template) format file on standard
+              output with entries for all localizable strings in the program.  The program itself is not executed.  See  the
+              GNU gettext distribution for more information on .pot files.
+
+       -h
+       --help Print  a  relatively short summary of the available options on the standard output.  (Per the GNU Coding Stan‐
+              dards, these options cause an immediate, successful exit.)
+
+       -L [value]
+       --lint[=value]
+              Provide warnings about constructs that are dubious or non-portable to  other  AWK  implementations.   With  an
+              optional  argument  of  fatal,  lint warnings become fatal errors.  This may be drastic, but its use will cer‐
+              tainly encourage the development of cleaner AWK programs.  With an optional argument of invalid, only warnings
+              about things that are actually invalid are issued. (This is not fully implemented yet.)
+
+       -n
+       --non-decimal-data
+              Recognize octal and hexadecimal values in input data.  Use this option with great caution!
+
+       -N
+       --use-lc-numeric
+              This  forces  gawk  to  use  the locale's decimal point character when parsing input data.  Although the POSIX
+              standard requires this behavior, and gawk does so when --posix is in effect, the default is to  follow  tradi‐
+              tional  behavior  and  use  a period as the decimal point, even in locales where the period is not the decimal
+              point character.  This option overrides the default behavior, without the full  draconian  strictness  of  the
+              --posix option.
+
+       -O
+       --optimize
+              Enable  optimizations  upon  the internal representation of the program.  Currently, this includes just simple
+              constant-folding. The gawk maintainer hopes to add additional optimizations over time.
+
+       -p[prof_file]
+       --profile[=prof_file]
+              Send profiling data to prof_file.  The default is awkprof.out.  When run with gawk,  the  profile  is  just  a
+              “pretty  printed”  version of the program.  When run with pgawk, the profile contains execution counts of each
+              statement in the program in the left margin and function call counts for each user-defined function.
+
+       -P
+       --posix
+              This turns on compatibility mode, with the following additional restrictions:
+
+              · \x escape sequences are not recognized.
+
+              · Only space and tab act as field separators when FS is set to a single space, newline does not.
+
+              · You cannot continue lines after ?  and :.
+
+              · The synonym func for the keyword function is not recognized.
+
+              · The operators ** and **= cannot be used in place of ^ and ^=.
+
+              · The fflush() function is not available.
+
+       -r
+       --re-interval
+              Enable the use of interval expressions in  regular  expression  matching  (see  Regular  Expressions,  below).
+              Interval  expressions were not traditionally available in the AWK language.  The POSIX standard added them, to
+              make awk and egrep consistent with each other.  They are enabled by default, but this option remains  for  use
+              with --traditional.
+
+       -R
+       --command file
+              Dgawk only.  Read stored debugger commands from file.
+
+       -S
+       --sandbox
+              Runs gawk in sandbox mode, disabling the system() function, input redirection with getline, output redirection
+              with print and printf, and loading dynamic extensions.  Command execution (through  pipelines)  is  also  dis‐
+              abled.  This effectively blocks a script from accessing local resources (except for the files specified on the
+              command line).
+
+       -t
+       --lint-old
+              Provide warnings about constructs that are not portable to the original version of Unix awk.
+
+       -V
+       --version
+              Print version information for this particular copy of gawk on the standard output.  This is useful mainly  for
+              knowing  if  the  current copy of gawk on your system is up to date with respect to whatever the Free Software
+              Foundation is distributing.  This is also useful when reporting bugs.  (Per the GNU  Coding  Standards,  these
+              options cause an immediate, successful exit.)
+
+       --     Signal the end of options. This is useful to allow further arguments to the AWK program itself to start with a
+              “-”.  This provides consistency with the argument parsing convention used by most other POSIX programs.
+
+       In compatibility mode, any other options are flagged as invalid, but are otherwise ignored.  In normal operation,  as
+       long  as  program text has been supplied, unknown options are passed on to the AWK program in the ARGV array for pro‐
+       cessing.  This is particularly useful for running AWK programs via the “#!” executable interpreter mechanism.
+
+AWK PROGRAM EXECUTION
+       An AWK program consists of a sequence of pattern-action statements and optional function definitions.
+
+              @include "filename" pattern   { action statements }
+              function name(parameter list) { statements }
+
+       Gawk first reads the program source from the program-file(s) if specified, from arguments to --source,  or  from  the
+       first non-option argument on the command line.  The -f and --source options may be used multiple times on the command
+       line.  Gawk reads the program text as if all the program-files and command line source texts  had  been  concatenated
+       together.   This  is  useful  for building libraries of AWK functions, without having to include them in each new AWK
+       program that uses them.  It also provides the ability to mix library functions with command line programs.
+
+       In addition, lines beginning with @include may be used to include  other  source  files  into  your  program,  making
+       library use even easier.
+
+       The  environment  variable AWKPATH specifies a search path to use when finding source files named with the -f option.
+       If this variable does not exist, the default path is  ".:/usr/local/share/awk".   (The  actual  directory  may  vary,
+       depending upon how gawk was built and installed.)  If a file name given to the -f option contains a “/” character, no
+       path search is performed.
+
+       Gawk executes AWK programs in the following order.  First, all variable assignments specified via the -v  option  are
+       performed.   Next,  gawk  compiles  the  program  into  an  internal form.  Then, gawk executes the code in the BEGIN
+       block(s) (if any), and then proceeds to read each file named in the ARGV array (up to ARGV[ARGC]).  If there  are  no
+       files named on the command line, gawk reads the standard input.
+
+       If a filename on the command line has the form var=val it is treated as a variable assignment.  The variable var will
+       be assigned the value val.  (This happens after any BEGIN block(s) have been run.)  Command line variable  assignment
+       is  most useful for dynamically assigning values to the variables AWK uses to control how input is broken into fields
+       and records.  It is also useful for controlling state if multiple passes are needed over a single data file.
+
+       If the value of a particular element of ARGV is empty (""), gawk skips over it.
+
+       For each input file, if a BEGINFILE rule exists, gawk executes the associated code before processing the contents  of
+       the file. Similarly, gawk executes the code associated with ENDFILE after processing the file.
+
+       For  each record in the input, gawk tests to see if it matches any pattern in the AWK program.  For each pattern that
+       the record matches, the associated action is executed.  The patterns are tested in the order they occur in  the  pro‐
+       gram.
+
+       Finally, after all the input is exhausted, gawk executes the code in the END block(s) (if any).
+
+   Command Line Directories
+       According  to  POSIX,  files named on the awk command line must be text files.  The behavior is ``undefined'' if they
+       are not.  Most versions of awk treat a directory on the command line as a fatal error.
+
+       Starting with version 4.0 of gawk, a directory on the command line produces a warning, but is otherwise skipped.   If
+       either  of  the  --posix  or --traditional options is given, then gawk reverts to treating directories on the command
+       line as a fatal error.
+
+VARIABLES, RECORDS AND FIELDS
+       AWK variables are dynamic; they come into existence when they are first used.  Their values are either floating-point
+       numbers or strings, or both, depending upon how they are used.  AWK also has one dimensional arrays; arrays with mul‐
+       tiple dimensions may be simulated.  Several pre-defined variables are set as a program runs; these are  described  as
+       needed and summarized below.
+
+   Records
+       Normally, records are separated by newline characters.  You can control how records are separated by assigning values
+       to the built-in variable RS.  If RS is any single character, that character separates records.  Otherwise,  RS  is  a
+       regular  expression.   Text in the input that matches this regular expression separates the record.  However, in com‐
+       patibility mode, only the first character of its string value is used for separating records.  If RS is  set  to  the
+       null  string,  then  records  are separated by blank lines.  When RS is set to the null string, the newline character
+       always acts as a field separator, in addition to whatever value FS may have.
+
+   Fields
+       As each input record is read, gawk splits the record into fields, using the value of the FS  variable  as  the  field
+       separator.  If FS is a single character, fields are separated by that character.  If FS is the null string, then each
+       individual character becomes a separate field.  Otherwise, FS is expected to be a full regular  expression.   In  the
+       special case that FS is a single space, fields are separated by runs of spaces and/or tabs and/or newlines.  (But see
+       the section POSIX COMPATIBILITY, below).  NOTE: The value of IGNORECASE (see below) also affects how fields are split
+       when FS is a regular expression, and how records are separated when RS is a regular expression.
+
+       If  the FIELDWIDTHS variable is set to a space separated list of numbers, each field is expected to have fixed width,
+       and gawk splits up the record using the specified widths.  The value of FS is ignored.  Assigning a new value  to  FS
+       or FPAT overrides the use of FIELDWIDTHS.
+
+       Similarly,  if  the FPAT variable is set to a string representing a regular expression, each field is made up of text
+       that matches that regular expression. In this case, the regular expression describes the fields  themselves,  instead
+       of the text that separates the fields.  Assigning a new value to FS or FIELDWIDTHS overrides the use of FPAT.
+
+       Each field in the input record may be referenced by its position, $1, $2, and so on.  $0 is the whole record.  Fields
+       need not be referenced by constants:
+
+              n = 5
+              print $n
+
+       prints the fifth field in the input record.
+
+       The variable NF is set to the total number of fields in the input record.
+
+       References to non-existent fields (i.e. fields after $NF) produce the null-string.  However, assigning to a non-exis‐
+       tent  field  (e.g.,  $(NF+2)  =  5) increases the value of NF, creates any intervening fields with the null string as
+       their value, and causes the value of $0 to be recomputed, with the fields being separated by the value of OFS.   Ref‐
+       erences  to  negative  numbered fields cause a fatal error.  Decrementing NF causes the values of fields past the new
+       value to be lost, and the value of $0 to be recomputed, with the fields being separated by the value of OFS.
+
+       Assigning a value to an existing field causes the whole record to be  rebuilt  when  $0  is  referenced.   Similarly,
+       assigning a value to $0 causes the record to be resplit, creating new values for the fields.
+
+   Built-in Variables
+       Gawk's built-in variables are:
+
+       ARGC        The number of command line arguments (does not include options to gawk, or the program source).
+
+       ARGIND      The index in ARGV of the current file being processed.
+
+       ARGV        Array of command line arguments.  The array is indexed from 0 to ARGC - 1.  Dynamically changing the con‐
+                   tents of ARGV can control the files used for data.
+
+       BINMODE     On non-POSIX systems, specifies use of “binary” mode for all file I/O.  Numeric values of  1,  2,  or  3,
+                   specify that input files, output files, or all files, respectively, should use binary I/O.  String values
+                   of "r", or "w" specify that input files, or output files, respectively, should use  binary  I/O.   String
+                   values  of  "rw" or "wr" specify that all files should use binary I/O.  Any other string value is treated
+                   as "rw", but generates a warning message.
+
+       CONVFMT     The conversion format for numbers, "%.6g", by default.
+
+       ENVIRON     An array containing the values of the current environment.  The array is indexed by the environment vari‐
+                   ables,  each  element  being  the  value  of that variable (e.g., ENVIRON["HOME"] might be /home/arnold).
+                   Changing this array does not affect the environment seen by programs which gawk spawns via redirection or
+                   the system() function.
+
+       ERRNO       If  a  system error occurs either doing a redirection for getline, during a read for getline, or during a
+                   close(), then ERRNO will contain a string describing the error.  The value is subject to  translation  in
+                   non-English locales.
+
+       FIELDWIDTHS A whitespace separated list of field widths.  When set, gawk parses the input into fields of fixed width,
+                   instead of using the value of the FS variable as the field separator.  See Fields, above.
+
+       FILENAME    The name of the current input file.  If no files are specified on the command line, the value of FILENAME
+                   is “-”.  However, FILENAME is undefined inside the BEGIN block (unless set by getline).
+
+       FNR         The input record number in the current input file.
+
+       FPAT        A  regular expression describing the contents of the fields in a record.  When set, gawk parses the input
+                   into fields, where the fields match the regular expression, instead of using the value of the FS variable
+                   as the field separator.  See Fields, above.
+
+       FS          The input field separator, a space by default.  See Fields, above.
+
+       IGNORECASE  Controls  the case-sensitivity of all regular expression and string operations.  If IGNORECASE has a non-
+                   zero value, then string comparisons and pattern matching in rules, field  splitting  with  FS  and  FPAT,
+                   record  separating with RS, regular expression matching with ~ and !~, and the gensub(), gsub(), index(),
+                   match(), patsplit(), split(), and sub() built-in functions all ignore case when doing regular  expression
+                   operations.   NOTE:  Array subscripting is not affected.  However, the asort() and asorti() functions are
+                   affected.
+                   Thus, if IGNORECASE is not equal to zero, /aB/ matches all of the strings "ab", "aB", "Ab", and "AB".  As
+                   with  all  AWK  variables,  the initial value of IGNORECASE is zero, so all regular expression and string
+                   operations are normally case-sensitive.
+
+       LINT        Provides dynamic control of the --lint option from within an AWK program.  When true,  gawk  prints  lint
+                   warnings.  When  false,  it does not.  When assigned the string value "fatal", lint warnings become fatal
+                   errors, exactly like --lint=fatal.  Any other true value just prints warnings.
+
+       NF          The number of fields in the current input record.
+
+       NR          The total number of input records seen so far.
+
+       OFMT        The output format for numbers, "%.6g", by default.
+
+       OFS         The output field separator, a space by default.
+
+       ORS         The output record separator, by default a newline.
+
+       PROCINFO    The elements of this array provide access to information about the running AWK program.  On some systems,
+                   there  may be elements in the array, "group1" through "groupn" for some n, which is the number of supple‐
+                   mentary groups that the process has.  Use the in operator to test for these elements.  The following ele‐
+                   ments are guaranteed to be available:
+
+                   PROCINFO["egid"]    the value of the getegid(2) system call.
+
+                   PROCINFO["strftime"]
+                                       The default time format string for strftime().
+
+                   PROCINFO["euid"]    the value of the geteuid(2) system call.
+
+                   PROCINFO["FS"]      "FS"  if field splitting with FS is in effect, "FPAT" if field splitting with FPAT is
+                                       in effect, or "FIELDWIDTHS" if field splitting with FIELDWIDTHS is in effect.
+
+                   PROCINFO["gid"]     the value of the getgid(2) system call.
+
+                   PROCINFO["pgrpid"]  the process group ID of the current process.
+
+                   PROCINFO["pid"]     the process ID of the current process.
+
+                   PROCINFO["ppid"]    the parent process ID of the current process.
+
+                   PROCINFO["uid"]     the value of the getuid(2) system call.
+
+                   PROCINFO["sorted_in"]
+                                       If this element exists in PROCINFO, then its value controls the order in which  array
+                                       elements   are   traversed  in  for  loops.   Supported  values  are  "@ind_str_asc",
+                                       "@ind_num_asc",  "@val_type_asc",  "@val_str_asc",  "@val_num_asc",  "@ind_str_desc",
+                                       "@ind_num_desc", "@val_type_desc", "@val_str_desc", "@val_num_desc", and "@unsorted".
+                                       The value can also be the name of any comparison function defined as follows:
+
+                          function cmp_func(i1, v1, i2, v2)
+
+                   where i1 and i2 are the indices, and v1 and v2 are the corresponding values of  the  two  elements  being
+                   compared.   It  should  return a number less than, equal to, or greater than 0, depending on how the ele‐
+                   ments of the array are to be ordered.
+
+                   PROCINFO["version"]
+                          the version of gawk.
+
+       RS          The input record separator, by default a newline.
+
+       RT          The record terminator.  Gawk sets RT to the input text that matched the character or  regular  expression
+                   specified by RS.
+
+       RSTART      The index of the first character matched by match(); 0 if no match.  (This implies that character indices
+                   start at one.)
+
+       RLENGTH     The length of the string matched by match(); -1 if no match.
+
+       SUBSEP      The character used to separate multiple subscripts in array elements, by default "\034".
+
+       TEXTDOMAIN  The text domain of the AWK program; used to find the localized translations for the program's strings.
+
+   Arrays
+       Arrays are subscripted with an expression between square brackets ([ and ]).  If the expression is an expression list
+       (expr,  expr ...)  then the array subscript is a string consisting of the concatenation of the (string) value of each
+       expression, separated by the value of the SUBSEP variable.  This facility is used to  simulate  multiply  dimensioned
+       arrays.  For example:
+
+              i = "A"; j = "B"; k = "C"
+              x[i, j, k] = "hello, world\n"
+
+       assigns  the string "hello, world\n" to the element of the array x which is indexed by the string "A\034B\034C".  All
+       arrays in AWK are associative, i.e. indexed by string values.
+
+       The special operator in may be used to test if an array has an index consisting of a particular value:
+
+              if (val in array)
+                   print array[val]
+
+       If the array has multiple subscripts, use (i, j) in array.
+
+       The in construct may also be used in a for loop to iterate over all the elements of an array.
+
+       An element may be deleted from an array using the delete statement.  The delete statement may also be used to  delete
+       the entire contents of an array, just by specifying the array name without a subscript.
+
+       gawk  supports  true multidimensional arrays. It does not require that such arrays be ``rectangular'' as in C or C++.
+       For example:
+              a[1] = 5
+              a[2][1] = 6
+              a[2][2] = 7
+
+   Variable Typing And Conversion
+       Variables and fields may be (floating point) numbers, or strings, or both.  How the value of  a  variable  is  inter‐
+       preted  depends  upon  its  context.   If  used in a numeric expression, it will be treated as a number; if used as a
+       string it will be treated as a string.
+
+       To force a variable to be treated as a number, add 0 to it; to force it to be treated as  a  string,  concatenate  it
+       with the null string.
+
+       When  a  string must be converted to a number, the conversion is accomplished using strtod(3).  A number is converted
+       to a string by using the value of CONVFMT as a format string for sprintf(3), with the numeric value of  the  variable
+       as the argument.  However, even though all numbers in AWK are floating-point, integral values are always converted as
+       integers.  Thus, given
+
+              CONVFMT = "%2.2f"
+              a = 12
+              b = a ""
+
+       the variable b has a string value of "12" and not "12.00".
+
+       NOTE: When operating in POSIX mode (such as with the --posix command line option), beware that  locale  settings  may
+       interfere with the way decimal numbers are treated: the decimal separator of the numbers you are feeding to gawk must
+       conform to what your locale would expect, be it a comma (,) or a period (.).
+
+       Gawk performs comparisons as follows: If two variables are numeric, they are compared numerically.  If one  value  is
+       numeric  and  the  other  has  a string value that is a “numeric string,” then comparisons are also done numerically.
+       Otherwise, the numeric value is converted to a string and a string comparison is performed.   Two  strings  are  com‐
+       pared, of course, as strings.
+
+       Note  that  string constants, such as "57", are not numeric strings, they are string constants.  The idea of “numeric
+       string” only applies to fields, getline input, FILENAME, ARGV elements, ENVIRON elements and the elements of an array
+       created  by  split() or patsplit() that are numeric strings.  The basic idea is that user input, and only user input,
+       that looks numeric, should be treated that way.
+
+       Uninitialized variables have the numeric value 0 and the string value "" (the null, or empty, string).
+
+   Octal and Hexadecimal Constants
+       You may use C-style octal and hexadecimal constants in your AWK program source code.  For example,  the  octal  value
+       011 is equal to decimal 9, and the hexadecimal value 0x11 is equal to decimal 17.
+
+   String Constants
+       String  constants  in AWK are sequences of characters enclosed between double quotes (like "value").  Within strings,
+       certain escape sequences are recognized, as in C.  These are:
+
+       \\   A literal backslash.
+
+       \a   The “alert” character; usually the ASCII BEL character.
+
+       \b   backspace.
+
+       \f   form-feed.
+
+       \n   newline.
+
+       \r   carriage return.
+
+       \t   horizontal tab.
+
+       \v   vertical tab.
+
+       \xhex digits
+            The character represented by the string of hexadecimal digits following the \x.  As in  ANSI  C,  all  following
+            hexadecimal  digits  are  considered  part of the escape sequence.  (This feature should tell us something about
+            language design by committee.)  E.g., "\x1B" is the ASCII ESC (escape) character.
+
+       \ddd The character represented by the 1-, 2-, or 3-digit sequence of octal digits.  E.g., "\033"  is  the  ASCII  ESC
+            (escape) character.
+
+       \c   The literal character c.
+
+       The  escape  sequences may also be used inside constant regular expressions (e.g., /[ \t\f\n\r\v]/ matches whitespace
+       characters).
+
+       In compatibility mode, the characters represented by octal and hexadecimal escape  sequences  are  treated  literally
+       when used in regular expression constants.  Thus, /a\52b/ is equivalent to /a\*b/.
+
+PATTERNS AND ACTIONS
+       AWK  is a line-oriented language.  The pattern comes first, and then the action.  Action statements are enclosed in {
+       and }.  Either the pattern may be missing, or the action may be missing, but, of course, not both.  If the pattern is
+       missing, the action is executed for every single record of input.  A missing action is equivalent to
+
+              { print }
+
+       which prints the entire record.
+
+       Comments  begin  with  the  # character, and continue until the end of the line.  Blank lines may be used to separate
+       statements.  Normally, a statement ends with a newline, however, this is not the case for lines ending in a comma, {,
+       ?,  :,  &&,  or  ||.   Lines ending in do or else also have their statements automatically continued on the following
+       line.  In other cases, a line can be continued by ending it with a “\”, in which case the newline is ignored.
+
+       Multiple statements may be put on one line by separating them with a “;”.  This applies to both the statements within
+       the action part of a pattern-action pair (the usual case), and to the pattern-action statements themselves.
+
+   Patterns
+       AWK patterns may be one of the following:
+
+              BEGIN
+              END
+              BEGINFILE
+              ENDFILE
+              /regular expression/
+              relational expression
+              pattern && pattern
+              pattern || pattern
+              pattern ? pattern : pattern
+              (pattern)
+              ! pattern
+              pattern1, pattern2
+
+       BEGIN  and  END  are  two  special kinds of patterns which are not tested against the input.  The action parts of all
+       BEGIN patterns are merged as if all the statements had been written in a  single  BEGIN  block.   They  are  executed
+       before  any  of  the  input  is  read.   Similarly, all the END blocks are merged, and executed when all the input is
+       exhausted (or when an exit statement is executed).  BEGIN and END patterns cannot be combined with other patterns  in
+       pattern expressions.  BEGIN and END patterns cannot have missing action parts.
+
+       BEGINFILE  and  ENDFILE  are additional special patterns whose bodies are executed before reading the first record of
+       each command line input file and after reading the last record of each file.  Inside the BEGINFILE rule, the value of
+       ERRNO  will  be the empty string if the file could be opened successfully.  Otherwise, there is some problem with the
+       file and the code should use nextfile to skip it. If that is not done, gawk produces its usual fatal error for  files
+       that cannot be opened.
+
+       For  /regular expression/ patterns, the associated statement is executed for each input record that matches the regu‐
+       lar expression.  Regular expressions are the same as those in egrep(1), and are summarized below.
+
+       A relational expression may use any of the operators defined below in the section on actions.  These  generally  test
+       whether certain fields match certain regular expressions.
+
+       The &&, ||, and !  operators are logical AND, logical OR, and logical NOT, respectively, as in C.  They do short-cir‐
+       cuit evaluation, also as in C, and are used for combining more primitive pattern expressions.  As in most  languages,
+       parentheses may be used to change the order of evaluation.
+
+       The  ?:  operator  is like the same operator in C.  If the first pattern is true then the pattern used for testing is
+       the second pattern, otherwise it is the third.  Only one of the second and third patterns is evaluated.
+
+       The pattern1, pattern2 form of an expression is called a range pattern.  It matches all input records starting with a
+       record  that  matches  pattern1, and continuing until a record that matches pattern2, inclusive.  It does not combine
+       with any other sort of pattern expression.
+
+   Regular Expressions
+       Regular expressions are the extended kind found in egrep.  They are composed of characters as follows:
+
+       c          matches the non-metacharacter c.
+
+       \c         matches the literal character c.
+
+       .          matches any character including newline.
+
+       ^          matches the beginning of a string.
+
+       $          matches the end of a string.
+
+       [abc...]   character list, matches any of the characters abc....
+
+       [^abc...]  negated character list, matches any character except abc....
+
+       r1|r2      alternation: matches either r1 or r2.
+
+       r1r2       concatenation: matches r1, and then r2.
+
+       r+         matches one or more r's.
+
+       r*         matches zero or more r's.
+
+       r?         matches zero or one r's.
+
+       (r)        grouping: matches r.
+
+       r{n}
+       r{n,}
+       r{n,m}     One or two numbers inside braces denote an interval expression.  If there is one number in the braces, the
+                  preceding  regular  expression r is repeated n times.  If there are two numbers separated by a comma, r is
+                  repeated n to m times.  If there is one number followed by a comma, then r is repeated at least n times.
+
+       \y         matches the empty string at either the beginning or the end of a word.
+
+       \B         matches the empty string within a word.
+
+       \<         matches the empty string at the beginning of a word.
+
+       \>         matches the empty string at the end of a word.
+
+       \s         matches any whitespace character.
+
+       \S         matches any nonwhitespace character.
+
+       \w         matches any word-constituent character (letter, digit, or underscore).
+
+       \W         matches any character that is not word-constituent.
+
+       \`         matches the empty string at the beginning of a buffer (string).
+
+       \'         matches the empty string at the end of a buffer.
+
+       The escape sequences that are valid in string constants (see below) are also valid in regular expressions.
+
+       Character classes are a feature introduced in the POSIX standard.  A  character  class  is  a  special  notation  for
+       describing  lists  of  characters that have a specific attribute, but where the actual characters themselves can vary
+       from country to country and/or from character set to character set.  For example, the notion of what is an alphabetic
+       character differs in the USA and in France.
+
+       A  character  class is only valid in a regular expression inside the brackets of a character list.  Character classes
+       consist of [:, a keyword denoting the class, and :].  The character classes defined by the POSIX standard are:
+
+       [:alnum:]  Alphanumeric characters.
+
+       [:alpha:]  Alphabetic characters.
+
+       [:blank:]  Space or tab characters.
+
+       [:cntrl:]  Control characters.
+
+       [:digit:]  Numeric characters.
+
+       [:graph:]  Characters that are both printable and visible.  (A space is printable, but not visible,  while  an  a  is
+                  both.)
+
+       [:lower:]  Lowercase alphabetic characters.
+
+       [:print:]  Printable characters (characters that are not control characters.)
+
+       [:punct:]  Punctuation characters (characters that are not letter, digits, control characters, or space characters).
+
+       [:space:]  Space characters (such as space, tab, and formfeed, to name a few).
+
+       [:upper:]  Uppercase alphabetic characters.
+
+       [:xdigit:] Characters that are hexadecimal digits.
+
+       For  example, before the POSIX standard, to match alphanumeric characters, you would have had to write /[A-Za-z0-9]/.
+       If your character set had other alphabetic characters in it, this would not match them, and  if  your  character  set
+       collated differently from ASCII, this might not even match the ASCII alphanumeric characters.  With the POSIX charac‐
+       ter classes, you can write /[[:alnum:]]/, and this matches the alphabetic and numeric characters  in  your  character
+       set, no matter what it is.
+
+       Two  additional  special sequences can appear in character lists.  These apply to non-ASCII character sets, which can
+       have single symbols (called collating elements) that are represented with more than one character, as well as several
+       characters  that  are  equivalent  for  collating,  or sorting, purposes.  (E.g., in French, a plain “e” and a grave-
+       accented “`” are equivalent.)
+
+       Collating Symbols
+              A collating symbol is a multi-character collating element enclosed in [.  and .].  For example,  if  ch  is  a
+              collating element, then [[.ch.]]  is a regular expression that matches this collating element, while [ch] is a
+              regular expression that matches either c or h.
+
+       Equivalence Classes
+              An equivalence class is a locale-specific name for a list of characters that  are  equivalent.   The  name  is
+              enclosed  in [= and =].  For example, the name e might be used to represent all of “e,” “´,” and “`.”  In this
+              case, [[=e=]] is a regular expression that matches any of e, ´, or `.
+
+       These features are very valuable in non-English speaking locales.  The library functions that gawk uses  for  regular
+       expression  matching  currently  only  recognize  POSIX character classes; they do not recognize collating symbols or
+       equivalence classes.
+
+       The \y, \B, \<, \>, \s, \S, \w, \W, \`, and \' operators are specific to gawk; they are extensions based  on  facili‐
+       ties in the GNU regular expression libraries.
+
+       The various command line options control how gawk interprets characters in regular expressions.
+
+       No options
+              In  the default case, gawk provide all the facilities of POSIX regular expressions and the GNU regular expres‐
+              sion operators described above.
+
+       --posix
+              Only POSIX regular expressions are supported, the GNU operators are not special.  (E.g., \w matches a  literal
+              w).
+
+       --traditional
+              Traditional Unix awk regular expressions are matched.  The GNU operators are not special, and interval expres‐
+              sions are not available.  Characters described by octal and hexadecimal escape sequences  are  treated  liter‐
+              ally, even if they represent regular expression metacharacters.
+
+       --re-interval
+              Allow interval expressions in regular expressions, even if --traditional has been provided.
+
+   Actions
+       Action  statements  are enclosed in braces, { and }.  Action statements consist of the usual assignment, conditional,
+       and looping statements found in most languages.  The  operators,  control  statements,  and  input/output  statements
+       available are patterned after those in C.
+
+   Operators
+       The operators in AWK, in order of decreasing precedence, are
+
+       (...)       Grouping
+
+       $           Field reference.
+
+       ++ --       Increment and decrement, both prefix and postfix.
+
+       ^           Exponentiation (** may also be used, and **= for the assignment operator).
+
+       + - !       Unary plus, unary minus, and logical negation.
+
+       * / %       Multiplication, division, and modulus.
+
+       + -         Addition and subtraction.
+
+       space       String concatenation.
+
+       |   |&      Piped I/O for getline, print, and printf.
+
+       < > <= >= != ==
+                   The regular relational operators.
+
+       ~ !~        Regular  expression  match, negated match.  NOTE: Do not use a constant regular expression (/foo/) on the
+                   left-hand side of a ~ or !~.  Only use one on the right-hand side.  The expression /foo/ ~  exp  has  the
+                   same meaning as (($0 ~ /foo/) ~ exp).  This is usually not what was intended.
+
+       in          Array membership.
+
+       &&          Logical AND.
+
+       ||          Logical OR.
+
+       ?:          The  C  conditional expression.  This has the form expr1 ? expr2 : expr3.  If expr1 is true, the value of
+                   the expression is expr2, otherwise it is expr3.  Only one of expr2 and expr3 is evaluated.
+
+       = += -= *= /= %= ^=
+                   Assignment.  Both absolute assignment (var = value) and operator-assignment (the other  forms)  are  sup‐
+                   ported.
+
+   Control Statements
+       The control statements are as follows:
+
+              if (condition) statement [ else statement ]
+              while (condition) statement
+              do statement while (condition)
+              for (expr1; expr2; expr3) statement
+              for (var in array) statement
+              break
+              continue
+              delete array[index]
+              delete array
+              exit [ expression ]
+              { statements }
+              switch (expression) {
+              case value|regex : statement
+              ...
+              [ default: statement ]
+              }
+
+   I/O Statements
+       The input/output statements are as follows:
+
+       close(file [, how])   Close file, pipe or co-process.  The optional how should only be used when closing one end of a
+                             two-way pipe to a co-process.  It must be a string value, either "to" or "from".
+
+       getline               Set $0 from next input record; set NF, NR, FNR.
+
+       getline <file         Set $0 from next record of file; set NF.
+
+       getline var           Set var from next input record; set NR, FNR.
+
+       getline var <file     Set var from next record of file.
+
+       command | getline [var]
+                             Run command piping the output either into $0 or var, as above.
+
+       command |& getline [var]
+                             Run command as a co-process piping the output either into $0 or var,  as  above.   Co-processes
+                             are  a  gawk extension.  (command can also be a socket.  See the subsection Special File Names,
+                             below.)
+
+       next                  Stop processing the current input record.  The next input record is read and processing  starts
+                             over  with  the first pattern in the AWK program.  If the end of the input data is reached, the
+                             END block(s), if any, are executed.
+
+       nextfile              Stop processing the current input file.  The next input record read comes from the  next  input
+                             file.   FILENAME and ARGIND are updated, FNR is reset to 1, and processing starts over with the
+                             first pattern in the AWK program. If the end of the input data is reached, the END block(s), if
+                             any, are executed.
+
+       print                 Print the current record.  The output record is terminated with the value of the ORS variable.
+
+       print expr-list       Print  expressions.  Each expression is separated by the value of the OFS variable.  The output
+                             record is terminated with the value of the ORS variable.
+
+       print expr-list >file Print expressions on file.  Each expression is separated by the value of the OFS variable.  The
+                             output record is terminated with the value of the ORS variable.
+
+       printf fmt, expr-list Format and print.  See The printf Statement, below.
+
+       printf fmt, expr-list >file
+                             Format and print on file.
+
+       system(cmd-line)      Execute  the  command cmd-line, and return the exit status.  (This may not be available on non-
+                             POSIX systems.)
+
+       fflush([file])        Flush any buffers associated with the open output file or pipe file.  If file is missing,  then
+                             flush standard output.  If file is the null string, then flush all open output files and pipes.
+
+       Additional output redirections are allowed for print and printf.
+
+       print ... >> file
+              Appends output to the file.
+
+       print ... | command
+              Writes on a pipe.
+
+       print ... |& command
+              Sends data to a co-process or socket.  (See also the subsection Special File Names, below.)
+
+       The  getline  command  returns  1  on success, 0 on end of file, and -1 on an error.  Upon an error, ERRNO contains a
+       string describing the problem.
+
+       NOTE: Failure in opening a two-way socket will result in a non-fatal error being returned to the calling function. If
+       using a pipe, co-process, or socket to getline, or from print or printf within a loop, you must use close() to create
+       new instances of the command or socket.  AWK does not automatically close pipes, sockets, or co-processes  when  they
+       return EOF.
+
+   The printf Statement
+       The  AWK versions of the printf statement and sprintf() function (see below) accept the following conversion specifi‐
+       cation formats:
+
+       %c      A single character.  If the argument used for %c is numeric, it is treated as a character and printed.   Oth‐
+               erwise, the argument is assumed to be a string, and the only first character of that string is printed.
+
+       %d, %i  A decimal number (the integer part).
+
+       %e, %E  A floating point number of the form [-]d.dddddde[+-]dd.  The %E format uses E instead of e.
+
+       %f, %F  A  floating  point  number  of the form [-]ddd.dddddd.  If the system library supports it, %F is available as
+               well. This is like %f, but uses capital letters for special “not a number” and “infinity” values.  If  %F  is
+               not available, gawk uses %f.
+
+       %g, %G  Use  %e  or %f conversion, whichever is shorter, with nonsignificant zeros suppressed.  The %G format uses %E
+               instead of %e.
+
+       %o      An unsigned octal number (also an integer).
+
+       %u      An unsigned decimal number (again, an integer).
+
+       %s      A character string.
+
+       %x, %X  An unsigned hexadecimal number (an integer).  The %X format uses ABCDEF instead of abcdef.
+
+       %%      A single % character; no argument is converted.
+
+       Optional, additional parameters may lie between the % and the control letter:
+
+       count$ Use the count'th argument at this point in the formatting.  This is  called  a  positional  specifier  and  is
+              intended  primarily  for use in translated versions of format strings, not in the original text of an AWK pro‐
+              gram.  It is a gawk extension.
+
+       -      The expression should be left-justified within its field.
+
+       space  For numeric conversions, prefix positive values with a space, and negative values with a minus sign.
+
+       +      The plus sign, used before the width modifier (see below), says to always supply a sign  for  numeric  conver‐
+              sions, even if the data to be formatted is positive.  The + overrides the space modifier.
+
+       #      Use an “alternate form” for certain control letters.  For %o, supply a leading zero.  For %x, and %X, supply a
+              leading 0x or 0X for a nonzero result.  For %e, %E, %f and %F, the result always  contains  a  decimal  point.
+              For %g, and %G, trailing zeros are not removed from the result.
+
+       0      A leading 0 (zero) acts as a flag, that indicates output should be padded with zeroes instead of spaces.  This
+              applies only to the numeric output formats.  This flag only has an effect when the field width is  wider  than
+              the value to be printed.
+
+       width  The  field  should be padded to this width.  The field is normally padded with spaces.  If the 0 flag has been
+              used, it is padded with zeroes.
+
+       .prec  A number that specifies the precision to use when printing.  For the %e, %E, %f and %F, formats,  this  speci‐
+              fies  the number of digits you want printed to the right of the decimal point.  For the %g, and %G formats, it
+              specifies the maximum number of significant digits.  For the %d, %i, %o, %u, %x, and %X formats, it  specifies
+              the  minimum number of digits to print.  For %s, it specifies the maximum number of characters from the string
+              that should be printed.
+
+       The dynamic width and prec capabilities of the ANSI C printf() routines are supported.  A * in place  of  either  the
+       width or prec specifications causes their values to be taken from the argument list to printf or sprintf().  To use a
+       positional specifier with a dynamic width or precision, supply the count$ after the *  in  the  format  string.   For
+       example, "%3$*2$.*1$s".
+
+   Special File Names
+       When  doing I/O redirection from either print or printf into a file, or via getline from a file, gawk recognizes cer‐
+       tain special filenames internally.  These filenames allow access to open file descriptors inherited from gawk's  par‐
+       ent  process  (usually  the  shell).   These file names may also be used on the command line to name data files.  The
+       filenames are:
+
+       /dev/stdin  The standard input.
+
+       /dev/stdout The standard output.
+
+       /dev/stderr The standard error output.
+
+       /dev/fd/n   The file associated with the open file descriptor n.
+
+       These are particularly useful for error messages.  For example:
+
+              print "You blew it!" > "/dev/stderr"
+
+       whereas you would otherwise have to use
+
+              print "You blew it!" | "cat 1>&2"
+
+       The following special filenames may be used with the |& co-process operator for creating TCP/IP network connections:
+
+       /inet/tcp/lport/rhost/rport
+       /inet4/tcp/lport/rhost/rport
+       /inet6/tcp/lport/rhost/rport
+              Files for a TCP/IP connection on local port lport to remote host rhost on remote port rport.  Use a port of  0
+              to  have  the system pick a port.  Use /inet4 to force an IPv4 connection, and /inet6 to force an IPv6 connec‐
+              tion.  Plain /inet uses the system default (most likely IPv4).
+
+       /inet/udp/lport/rhost/rport
+       /inet4/udp/lport/rhost/rport
+       /inet6/udp/lport/rhost/rport
+              Similar, but use UDP/IP instead of TCP/IP.
+
+   Numeric Functions
+       AWK has the following built-in arithmetic functions:
+
+       atan2(y, x)   Return the arctangent of y/x in radians.
+
+       cos(expr)     Return the cosine of expr, which is in radians.
+
+       exp(expr)     The exponential function.
+
+       int(expr)     Truncate to integer.
+
+       log(expr)     The natural logarithm function.
+
+       rand()        Return a random number N, between 0 and 1, such that 0 ≤ N < 1.
+
+       sin(expr)     Return the sine of expr, which is in radians.
+
+       sqrt(expr)    The square root function.
+
+       srand([expr]) Use expr as the new seed for the random number generator.  If no expr is provided, use the time of day.
+                     The return value is the previous seed for the random number generator.
+
+   String Functions
+       Gawk has the following built-in string functions:
+
+       asort(s [, d [, how] ]) Return  the  number  of  elements in the source array s.  Sort the contents of s using gawk's
+                               normal rules for comparing values, and replace the  indices  of  the  sorted  values  s  with
+                               sequential  integers  starting with 1. If the optional destination array d is specified, then
+                               first duplicate s into d, and then sort  d,  leaving  the  indices  of  the  source  array  s
+                               unchanged.  The  optional  string  how controls the direction and the comparison mode.  Valid
+                               values for how are any of the strings valid for PROCINFO["sorted_in"].  It can  also  be  the
+                               name of a user-defined comparison function as described in PROCINFO["sorted_in"].
+
+       asorti(s [, d [, how] ])
+                               Return  the  number  of  elements in the source array s.  The behavior is the same as that of
+                               asort(), except that the array indices are used for sorting,  not  the  array  values.   When
+                               done,  the  array  is  indexed numerically, and the values are those of the original indices.
+                               The original values are lost; thus provide a second array if you wish to preserve the  origi‐
+                               nal.  The purpose of the optional string how is the same as described in asort() above.
+
+       gensub(r, s, h [, t])   Search  the target string t for matches of the regular expression r.  If h is a string begin‐
+                               ning with g or G, then replace all matches of r with s.  Otherwise, h is a number  indicating
+                               which  match  of r to replace.  If t is not supplied, use $0 instead.  Within the replacement
+                               text s, the sequence \n, where n is a digit from 1 to 9, may be used  to  indicate  just  the
+                               text  that  matched  the  n'th  parenthesized  subexpression.  The sequence \0 represents the
+                               entire matched text, as does the character &.  Unlike sub() and gsub(), the  modified  string
+                               is returned as the result of the function, and the original target string is not changed.
+
+       gsub(r, s [, t])        For  each  substring matching the regular expression r in the string t, substitute the string
+                               s, and return the number of substitutions.  If t is not  supplied,  use  $0.   An  &  in  the
+                               replacement  text  is replaced with the text that was actually matched.  Use \& to get a lit‐
+                               eral &.  (This must be typed as "\\&"; see GAWK: Effective AWK Programming for a fuller  dis‐
+                               cussion  of  the  rules for &'s and backslashes in the replacement text of sub(), gsub(), and
+                               gensub().)
+
+       index(s, t)             Return the index of the string t in the string s, or 0 if t is not  present.   (This  implies
+                               that character indices start at one.)
+
+       length([s])             Return  the length of the string s, or the length of $0 if s is not supplied.  As a non-stan‐
+                               dard extension, with an array argument, length() returns the number of elements in the array.
+
+       match(s, r [, a])       Return the position in s where the regular expression r occurs, or 0 if r is not present, and
+                               set  the values of RSTART and RLENGTH.  Note that the argument order is the same as for the ~
+                               operator: str ~ re.  If array a is provided, a is cleared and then elements 1 through  n  are
+                               filled  with the portions of s that match the corresponding parenthesized subexpression in r.
+                               The 0'th element of a contains the portion of s matched by the entire regular  expression  r.
+                               Subscripts  a[n,  "start"],  and  a[n, "length"] provide the starting index in the string and
+                               length respectively, of each matching substring.
+
+       patsplit(s, a [, r [, seps] ])
+                               Split the string s into the array a and the separators array seps on the  regular  expression
+                               r,  and  return  the  number of fields.  Element values are the portions of s that matched r.
+                               The value of seps[i] is the separator that appeared in front of a[i+1].   If  r  is  omitted,
+                               FPAT  is  used  instead.  The arrays a and seps are cleared first.  Splitting behaves identi‐
+                               cally to field splitting with FPAT, described above.
+
+       split(s, a [, r [, seps] ])
+                               Split the string s into the array a and the separators array seps on the  regular  expression
+                               r,  and  return the number of fields.  If r is omitted, FS is used instead.  The arrays a and
+                               seps are cleared first.  seps[i] is the field separator matched by r between a[i] and a[i+1].
+                               If  r  is  a  single  space,  then  leading whitespace in s goes into the extra array element
+                               seps[0] and trailing whitespace goes into the extra array element seps[n],  where  n  is  the
+                               return  value  of  split(s,  a,  r, seps).  Splitting behaves identically to field splitting,
+                               described above.
+
+       sprintf(fmt, expr-list) Prints expr-list according to fmt, and returns the resulting string.
+
+       strtonum(str)           Examine str, and return its numeric value.  If  str  begins  with  a  leading  0,  strtonum()
+                               assumes  that  str  is  an  octal  number.  If str begins with a leading 0x or 0X, strtonum()
+                               assumes that str is a hexadecimal number.  Otherwise, decimal is assumed.
+
+       sub(r, s [, t])         Just like gsub(), but replace only the first matching substring.
+
+       substr(s, i [, n])      Return the at most n-character substring of s starting at i.  If n is omitted, use  the  rest
+                               of s.
+
+       tolower(str)            Return a copy of the string str, with all the uppercase characters in str translated to their
+                               corresponding lowercase counterparts.  Non-alphabetic characters are left unchanged.
+
+       toupper(str)            Return a copy of the string str, with all the lowercase characters in str translated to their
+                               corresponding uppercase counterparts.  Non-alphabetic characters are left unchanged.
+
+       Gawk  is  multibyte  aware.  This means that index(), length(), substr() and match() all work in terms of characters,
+       not bytes.
+
+   Time Functions
+       Since one of the primary uses of AWK programs is processing log files that contain time stamp information, gawk  pro‐
+       vides the following functions for obtaining time stamps and formatting them.
+
+       mktime(datespec)
+                 Turn  datespec  into  a  time  stamp of the same form as returned by systime(), and return the result.  The
+                 datespec is a string of the form YYYY MM DD HH MM SS[ DST].  The contents of the string are  six  or  seven
+                 numbers  representing  respectively the full year including century, the month from 1 to 12, the day of the
+                 month from 1 to 31, the hour of the day from 0 to 23, the minute from 0 to 59, the second from 0 to 60, and
+                 an optional daylight saving flag.  The values of these numbers need not be within the ranges specified; for
+                 example, an hour of -1 means 1 hour before midnight.  The origin-zero Gregorian calendar is  assumed,  with
+                 year 0 preceding year 1 and year -1 preceding year 0.  The time is assumed to be in the local timezone.  If
+                 the daylight saving flag is positive, the time is assumed to be daylight saving time; if zero, the time  is
+                 assumed to be standard time; and if negative (the default), mktime() attempts to determine whether daylight
+                 saving time is in effect for the specified time.  If datespec does not contain enough elements  or  if  the
+                 resulting time is out of range, mktime() returns -1.
+
+       strftime([format [, timestamp[, utc-flag]]])
+                 Format  timestamp according to the specification in format.  If utc-flag is present and is non-zero or non-
+                 null, the result is in UTC, otherwise the result is in local time.  The timestamp should  be  of  the  same
+                 form  as  returned  by  systime().  If timestamp is missing, the current time of day is used.  If format is
+                 missing, a default format equivalent to the output of date(1) is used.  The default format is available  in
+                 PROCINFO["strftime"].   See  the specification for the strftime() function in ANSI C for the format conver‐
+                 sions that are guaranteed to be available.
+
+       systime() Return the current time of day as the number of seconds since the Epoch (1970-01-01 00:00:00 UTC  on  POSIX
+                 systems).
+
+   Bit Manipulations Functions
+       Gawk supplies the following bit manipulation functions.  They work by converting double-precision floating point val‐
+       ues to uintmax_t integers, doing the operation, and then converting the result back to floating point.  The functions
+       are:
+
+       and(v1, v2)         Return the bitwise AND of the values provided by v1 and v2.
+
+       compl(val)          Return the bitwise complement of val.
+
+       lshift(val, count)  Return the value of val, shifted left by count bits.
+
+       or(v1, v2)          Return the bitwise OR of the values provided by v1 and v2.
+
+       rshift(val, count)  Return the value of val, shifted right by count bits.
+
+       xor(v1, v2)         Return the bitwise XOR of the values provided by v1 and v2.
+
+   Type Function
+       The following function is for use with multidimensional arrays.
+
+       isarray(x)
+              Return true if x is an array, false otherwise.
+
+   Internationalization Functions
+       The  following  functions  may  be  used  from within your AWK program for translating strings at run-time.  For full
+       details, see GAWK: Effective AWK Programming.
+
+       bindtextdomain(directory [, domain])
+              Specify the directory where gawk looks for the .mo files, in case they will not or cannot  be  placed  in  the
+              ``standard'' locations (e.g., during testing).  It returns the directory where domain is ``bound.''
+              The  default  domain  is the value of TEXTDOMAIN.  If directory is the null string (""), then bindtextdomain()
+              returns the current binding for the given domain.
+
+       dcgettext(string [, domain [, category]])
+              Return the translation of string in text domain domain for locale category category.  The  default  value  for
+              domain is the current value of TEXTDOMAIN.  The default value for category is "LC_MESSAGES".
+              If  you supply a value for category, it must be a string equal to one of the known locale categories described
+              in GAWK: Effective AWK Programming.  You must also supply a text domain.  Use TEXTDOMAIN if you  want  to  use
+              the current domain.
+
+       dcngettext(string1 , string2 , number [, domain [, category]])
+              Return  the  plural  form  used for number of the translation of string1 and string2 in text domain domain for
+              locale category category.  The default value for domain is the current value of TEXTDOMAIN.  The default value
+              for category is "LC_MESSAGES".
+              If  you supply a value for category, it must be a string equal to one of the known locale categories described
+              in GAWK: Effective AWK Programming.  You must also supply a text domain.  Use TEXTDOMAIN if you  want  to  use
+              the current domain.
+
+USER-DEFINED FUNCTIONS
+       Functions in AWK are defined as follows:
+
+              function name(parameter list) { statements }
+
+       Functions are executed when they are called from within expressions in either patterns or actions.  Actual parameters
+       supplied in the function call are used to instantiate the formal parameters declared in  the  function.   Arrays  are
+       passed by reference, other variables are passed by value.
+
+       Since  functions  were  not  originally part of the AWK language, the provision for local variables is rather clumsy:
+       They are declared as extra parameters in the parameter list.  The convention is to separate local variables from real
+       parameters by extra spaces in the parameter list.  For example:
+
+              function  f(p, q,     a, b)   # a and b are local
+              {
+                   ...
+              }
+
+              /abc/     { ... ; f(1, 2) ; ... }
+
+       The  left parenthesis in a function call is required to immediately follow the function name, without any intervening
+       whitespace.  This avoids a syntactic ambiguity with the concatenation operator.  This restriction does not  apply  to
+       the built-in functions listed above.
+
+       Functions  may  call each other and may be recursive.  Function parameters used as local variables are initialized to
+       the null string and the number zero upon function invocation.
+
+       Use return expr to return a value from a function.  The return value is undefined if no value is provided, or if  the
+       function returns by “falling off” the end.
+
+       As a gawk extension, functions may be called indirectly. To do this, assign the name of the function to be called, as
+       a string, to a variable.  Then use the variable as if it were the name of a function, prefixed with an @  sign,  like
+       so:
+              function  myfunc()
+              {
+                   print "myfunc called"
+                   ...
+              }
+
+              {    ...
+                   the_func = "myfunc"
+                   @the_func()    # call through the_func to myfunc
+                   ...
+              }
+
+       If  --lint  has  been  provided, gawk warns about calls to undefined functions at parse time, instead of at run time.
+       Calling an undefined function at run time is a fatal error.
+
+       The word func may be used in place of function.
+
+DYNAMICALLY LOADING NEW FUNCTIONS
+       You can dynamically add new built-in functions to the running gawk interpreter.  The  full  details  are  beyond  the
+       scope of this manual page; see GAWK: Effective AWK Programming for the details.
+
+       extension(object, function)
+               Dynamically  link the shared object file named by object, and invoke function in that object, to perform ini‐
+               tialization.  These should both be provided as strings.  Return the value returned by function.
+
+       Using this feature at the C level is not pretty, but it is unlikely to go away. Additional mechanisms may be added at
+       some point.
+
+SIGNALS
+       pgawk accepts two signals.  SIGUSR1 causes it to dump a profile and function call stack to the profile file, which is
+       either awkprof.out, or whatever file was named with the --profile option.  It then continues to run.   SIGHUP  causes
+       pgawk to dump the profile and function call stack and then exit.
+
+INTERNATIONALIZATION
+       String  constants are sequences of characters enclosed in double quotes.  In non-English speaking environments, it is
+       possible to mark strings in the AWK program as requiring translation to the local natural language. Such strings  are
+       marked in the AWK program with a leading underscore (“_”).  For example,
+
+              gawk 'BEGIN { print "hello, world" }'
+
+       always prints hello, world.  But,
+
+              gawk 'BEGIN { print _"hello, world" }'
+
+       might print bonjour, monde in France.
+
+       There are several steps involved in producing and running a localizable AWK program.
+
+       1.  Add  a BEGIN action to assign a value to the TEXTDOMAIN variable to set the text domain to a name associated with
+           your program:
+
+           BEGIN { TEXTDOMAIN = "myprog" }
+
+       This allows gawk to find the .mo file associated with your program.  Without this step, gawk uses the  messages  text
+       domain, which likely does not contain translations for your program.
+
+       2.  Mark all strings that should be translated with leading underscores.
+
+       3.  If necessary, use the dcgettext() and/or bindtextdomain() functions in your program, as appropriate.
+
+       4.  Run gawk --gen-pot -f myprog.awk > myprog.pot to generate a .po file for your program.
+
+       5.  Provide appropriate translations, and build and install the corresponding .mo files.
+
+       The internationalization features are described in full detail in GAWK: Effective AWK Programming.
+
+POSIX COMPATIBILITY
+       A primary goal for gawk is compatibility with the POSIX standard, as well as with the latest version of UNIX awk.  To
+       this end, gawk incorporates the following user visible features which are not described in the AWK book, but are part
+       of the Bell Laboratories version of awk, and are in the POSIX standard.
+
+       The  book  indicates  that  command  line variable assignment happens when awk would otherwise open the argument as a
+       file, which is after the BEGIN block is executed.  However, in  earlier  implementations,  when  such  an  assignment
+       appeared  before  any  file  names, the assignment would happen before the BEGIN block was run.  Applications came to
+       depend on this “feature.”  When awk was changed to match its documentation, the -v  option  for  assigning  variables
+       before  program  execution  was added to accommodate applications that depended upon the old behavior.  (This feature
+       was agreed upon by both the Bell Laboratories and the GNU developers.)
+
+       When processing arguments, gawk uses the special option “--” to signal the end of arguments.  In compatibility  mode,
+       it warns about but otherwise ignores undefined options.  In normal operation, such arguments are passed on to the AWK
+       program for it to process.
+
+       The AWK book does not define the return value of srand().  The POSIX standard has it return the seed it was using, to
+       allow keeping track of random number sequences.  Therefore srand() in gawk also returns its current seed.
+
+       Other  new  features  are:  The  use  of multiple -f options (from MKS awk); the ENVIRON array; the \a, and \v escape
+       sequences (done originally in gawk and fed back into the Bell Laboratories  version);  the  tolower()  and  toupper()
+       built-in  functions  (from  the  Bell Laboratories version); and the ANSI C conversion specifications in printf (done
+       first in the Bell Laboratories version).
+
+HISTORICAL FEATURES
+       There is one feature of historical AWK implementations that gawk supports: It is possible to call the length() built-
+       in function not only with no argument, but even without parentheses!  Thus,
+
+              a = length     # Holy Algol 60, Batman!
+
+       is the same as either of
+
+              a = length()
+              a = length($0)
+
+       Using  this  feature  is poor practice, and gawk issues a warning about its use if --lint is specified on the command
+       line.
+
+GNU EXTENSIONS
+       Gawk has a number of extensions to POSIX awk.  They are described in this section.  All the extensions described here
+       can be disabled by invoking gawk with the --traditional or --posix options.
+
+       The following features of gawk are not available in POSIX awk.
+
+       · No  path  search is performed for files named via the -f option.  Therefore the AWKPATH environment variable is not
+         special.
+
+       · There is no facility for doing file inclusion (gawk's @include mechanism).
+
+       · The \x escape sequence.  (Disabled with --posix.)
+
+       · The fflush() function.  (Disabled with --posix.)
+
+       · The ability to continue lines after ?  and :.  (Disabled with --posix.)
+
+       · Octal and hexadecimal constants in AWK programs.
+
+       · The ARGIND, BINMODE, ERRNO, LINT, RT and TEXTDOMAIN variables are not special.
+
+       · The IGNORECASE variable and its side-effects are not available.
+
+       · The FIELDWIDTHS variable and fixed-width field splitting.
+
+       · The FPAT variable and field splitting based on field values.
+
+       · The PROCINFO array is not available.
+
+       · The use of RS as a regular expression.
+
+       · The special file names available for I/O redirection are not recognized.
+
+       · The |& operator for creating co-processes.
+
+       · The BEGINFILE and ENDFILE special patterns are not available.
+
+       · The ability to split out individual characters using the null string as the value of FS, and as the third  argument
+         to split().
+
+       · An optional fourth argument to split() to receive the separator texts.
+
+       · The optional second argument to the close() function.
+
+       · The optional third argument to the match() function.
+
+       · The ability to use positional specifiers with printf and sprintf().
+
+       · The ability to pass an array to length().
+
+       · The use of delete array to delete the entire contents of an array.
+
+       · The use of nextfile to abandon processing of the current input file.
+
+       · The  and(),  asort(), asorti(), bindtextdomain(), compl(), dcgettext(), dcngettext(), gensub(), lshift(), mktime(),
+         or(), patsplit(), rshift(), strftime(), strtonum(), systime() and xor() functions.
+
+       · Localizable strings.
+
+       · Adding new built-in functions dynamically with the extension() function.
+
+       The AWK book does not define the return value of the  close()  function.   Gawk's  close()  returns  the  value  from
+       fclose(3),  or  pclose(3),  when  closing an output file or pipe, respectively.  It returns the process's exit status
+       when closing an input pipe.  The return value is -1 if the named file, pipe or co-process was not opened with a redi‐
+       rection.
+
+       When gawk is invoked with the --traditional option, if the fs argument to the -F option is “t”, then FS is set to the
+       tab character.  Note that typing gawk -F\t ...  simply causes the shell to quote the “t,” and does not pass  “\t”  to
+       the  -F  option.   Since this is a rather ugly special case, it is not the default behavior.  This behavior also does
+       not occur if --posix has been specified.  To really get a tab character as the field separator, it  is  best  to  use
+       single quotes: gawk -F'\t' ....
+
+ENVIRONMENT VARIABLES
+       The  AWKPATH  environment  variable  can be used to provide a list of directories that gawk searches when looking for
+       files named via the -f and --file options.
+
+       For socket communication,  two  special  environment  variables  can  be  used  to  control  the  number  of  retries
+       (GAWK_SOCK_RETRIES), and the interval between retries (GAWK_MSEC_SLEEP).  The interval is in milliseconds. On systems
+       that do not support usleep(3), the value is rounded up to an integral number of seconds.
+
+       If POSIXLY_CORRECT exists in the environment, then gawk behaves exactly as if --posix had been specified on the  com‐
+       mand line.  If --lint has been specified, gawk issues a warning message to this effect.
+
+EXIT STATUS
+       If the exit statement is used with a value, then gawk exits with the numeric value given to it.
+
+       Otherwise,  if  there  were  no  problems during execution, gawk exits with the value of the C constant EXIT_SUCCESS.
+       This is usually zero.
+
+       If an error occurs, gawk exits with the value of the C constant EXIT_FAILURE.  This is usually one.
+
+       If gawk exits because of a fatal error, the exit status is 2.  On non-POSIX systems, this  value  may  be  mapped  to
+       EXIT_FAILURE.
+
+VERSION INFORMATION
+       This man page documents gawk, version 4.0.
+
+AUTHORS
+       The original version of UNIX awk was designed and implemented by Alfred Aho, Peter Weinberger, and Brian Kernighan of
+       Bell Laboratories.  Brian Kernighan continues to maintain and enhance it.
+
+       Paul Rubin and Jay Fenlason, of the Free Software Foundation, wrote gawk, to be compatible with the original  version
+       of  awk distributed in Seventh Edition UNIX.  John Woods contributed a number of bug fixes.  David Trueman, with con‐
+       tributions from Arnold Robbins, made gawk compatible with the new version of UNIX awk.  Arnold Robbins is the current
+       maintainer.
+
+       The  initial  DOS  port was done by Conrad Kwok and Scott Garfinkle.  Scott Deifik maintains the port to MS-DOS using
+       DJGPP.  Eli Zaretskii maintains the port to MS-Windows using MinGW.  Pat Rankin did  the  port  to  VMS,  and  Michal
+       Jaegermann  did  the  port to the Atari ST.  The port to OS/2 was done by Kai Uwe Rommel, with contributions and help
+       from Darrel Hankerson.  Andreas Buening now maintains the OS/2 port.  The late Fred Fish  supplied  support  for  the
+       Amiga,  and  Martin  Brown  provided  the  BeOS  port.  Stephen Davies provided the original Tandem port, and Matthew
+       Woehlke provided changes for Tandem's POSIX-compliant systems.  Dave Pitts provided the port to z/OS.
+
+       See the README file in the gawk distribution for up-to-date information about maintainers and which  ports  are  cur‐
+       rently supported.
+
+BUG REPORTS
+       If you find a bug in gawk, please send electronic mail to bug-gawk@gnu.org.  Please include your operating system and
+       its revision, the version of gawk (from gawk --version), which C compiler you used to compile it, and a test  program
+       and data that are as small as possible for reproducing the problem.
+
+       Before sending a bug report, please do the following things.  First, verify that you have the latest version of gawk.
+       Many bugs (usually subtle ones) are fixed at each release, and if yours is out of date, the problem may already  have
+       been  solved.   Second,  please see if setting the environment variable LC_ALL to LC_ALL=C causes things to behave as
+       you expect. If so, it's a locale issue, and may or may not really be a bug.  Finally, please read this man  page  and
+       the reference manual carefully to be sure that what you think is a bug really is, instead of just a quirk in the lan‐
+       guage.
+
+       Whatever you do, do NOT post a bug report in comp.lang.awk.  While the gawk developers occasionally read  this  news‐
+       group,  posting  bug  reports  there  is  an  unreliable way to report bugs.  Instead, please use the electronic mail
+       addresses given above.
+
+       If you're using a GNU/Linux or BSD-based system, you may wish to submit a bug report to the vendor of your  distribu‐
+       tion.  That's fine, but please send a copy to the official email address as well, since there's no guarantee that the
+       bug report will be forwarded to the gawk maintainer.
+
+BUGS
+       The -F option is not necessary given the command line variable assignment feature; it remains only for backwards com‐
+       patibility.
+
+       Syntactically  invalid single character programs tend to overflow the parse stack, generating a rather unhelpful mes‐
+       sage.  Such programs are surprisingly difficult to diagnose in the completely general case, and the effort to  do  so
+       really is not worth it.
+
+SEE ALSO
+       egrep(1), getpid(2), getppid(2), getpgrp(2), getuid(2), geteuid(2), getgid(2), getegid(2), getgroups(2), usleep(3)
+
+       The  AWK  Programming  Language,  Alfred V. Aho, Brian W. Kernighan, Peter J. Weinberger, Addison-Wesley, 1988.  ISBN
+       0-201-07981-X.
+
+       GAWK: Effective AWK Programming, Edition 4.0, shipped with the gawk source.  The current version of this document  is
+       available online at http://www.gnu.org/software/gawk/manual.
+
+EXAMPLES
+       Print and sort the login names of all users:
+
+            BEGIN     { FS = ":" }
+                 { print $1 | "sort" }
+
+       Count lines in a file:
+
+                 { nlines++ }
+            END  { print nlines }
+
+       Precede each line by its number in the file:
+
+            { print FNR, $0 }
+
+       Concatenate and line number (a variation on a theme):
+
+            { print NR, $0 }
+
+       Run an external command for particular lines of data:
+
+            tail -f access_log |
+            awk '/myhome.html/ { system("nmap " $1 ">> logdir/myhome.html") }'
+
+ACKNOWLEDGEMENTS
+       Brian Kernighan of Bell Laboratories provided valuable assistance during testing and debugging.  We thank him.
+
+COPYING PERMISSIONS
+       Copyright  ©  1989,  1991,  1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2001, 2002, 2003, 2004, 2005, 2007, 2009,
+       2010, 2011 Free Software Foundation, Inc.
+
+       Permission is granted to make and distribute verbatim copies of this manual page provided the  copyright  notice  and
+       this permission notice are preserved on all copies.
+
+       Permission  is granted to copy and distribute modified versions of this manual page under the conditions for verbatim
+       copying, provided that the entire resulting derived work is distributed under the terms of a permission notice  iden‐
+       tical to this one.
+
+       Permission  is granted to copy and distribute translations of this manual page into another language, under the above
+       conditions for modified versions, except that this permission notice may be stated in a translation approved  by  the
+       Foundation.
+
+
+
+Free Software Foundation                                 Nov 10 2011                                                 GAWK(1)
+CAT(1)                                                  User Commands                                                 CAT(1)
+
+
+
+NAME
+       cat - concatenate files and print on the standard output
+
+SYNOPSIS
+       cat [OPTION]... [FILE]...
+
+DESCRIPTION
+       Concatenate FILE(s), or standard input, to standard output.
+
+       -A, --show-all
+              equivalent to -vET
+
+       -b, --number-nonblank
+              number nonempty output lines, overrides -n
+
+       -e     equivalent to -vE
+
+       -E, --show-ends
+              display $ at end of each line
+
+       -n, --number
+              number all output lines
+
+       -s, --squeeze-blank
+              suppress repeated empty output lines
+
+       -t     equivalent to -vT
+
+       -T, --show-tabs
+              display TAB characters as ^I
+
+       -u     (ignored)
+
+       -v, --show-nonprinting
+              use ^ and M- notation, except for LFD and TAB
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       With no FILE, or when FILE is -, read standard input.
+
+EXAMPLES
+       cat f - g
+              Output f's contents, then standard input, then g's contents.
+
+       cat    Copy standard input to standard output.
+
+AUTHOR
+       Written by Torbjorn Granlund and Richard M. Stallman.
+
+REPORTING BUGS
+       Report cat bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report cat translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       tac(1)
+
+       The  full  documentation  for  cat  is  maintained  as  a  Texinfo manual.  If the info and cat programs are properly
+       installed at your site, the command
+
+              info coreutils 'cat invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                   CAT(1)
+DATE(1)                                                 User Commands                                                DATE(1)
+
+
+
+NAME
+       date - print or set the system date and time
+
+SYNOPSIS
+       date [OPTION]... [+FORMAT]
+       date [-u|--utc|--universal] [MMDDhhmm[[CC]YY][.ss]]
+
+DESCRIPTION
+       Display the current time in the given FORMAT, or set the system date.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -d, --date=STRING
+              display time described by STRING, not 'now'
+
+       -f, --file=DATEFILE
+              like --date once for each line of DATEFILE
+
+       -I[TIMESPEC], --iso-8601[=TIMESPEC]
+              output  date/time  in ISO 8601 format.  TIMESPEC='date' for date only (the default), 'hours', 'minutes', 'sec‐
+              onds', or 'ns' for date and time to the indicated precision.
+
+       -r, --reference=FILE
+              display the last modification time of FILE
+
+       -R, --rfc-2822
+              output date and time in RFC 2822 format.  Example: Mon, 07 Aug 2006 12:34:56 -0600
+
+       --rfc-3339=TIMESPEC
+              output date and time in RFC 3339 format.  TIMESPEC='date', 'seconds', or 'ns' for date and time to  the  indi‐
+              cated precision.  Date and time components are separated by a single space: 2006-08-07 12:34:56-06:00
+
+       -s, --set=STRING
+              set time described by STRING
+
+       -u, --utc, --universal
+              print or set Coordinated Universal Time
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       FORMAT controls the output.  Interpreted sequences are:
+
+       %%     a literal %
+
+       %a     locale's abbreviated weekday name (e.g., Sun)
+
+       %A     locale's full weekday name (e.g., Sunday)
+
+       %b     locale's abbreviated month name (e.g., Jan)
+
+       %B     locale's full month name (e.g., January)
+
+       %c     locale's date and time (e.g., Thu Mar  3 23:05:25 2005)
+
+       %C     century; like %Y, except omit last two digits (e.g., 20)
+
+       %d     day of month (e.g., 01)
+
+       %D     date; same as %m/%d/%y
+
+       %e     day of month, space padded; same as %_d
+
+       %F     full date; same as %Y-%m-%d
+
+       %g     last two digits of year of ISO week number (see %G)
+
+       %G     year of ISO week number (see %V); normally useful only with %V
+
+       %h     same as %b
+
+       %H     hour (00..23)
+
+       %I     hour (01..12)
+
+       %j     day of year (001..366)
+
+       %k     hour, space padded ( 0..23); same as %_H
+
+       %l     hour, space padded ( 1..12); same as %_I
+
+       %m     month (01..12)
+
+       %M     minute (00..59)
+
+       %n     a newline
+
+       %N     nanoseconds (000000000..999999999)
+
+       %p     locale's equivalent of either AM or PM; blank if not known
+
+       %P     like %p, but lower case
+
+       %r     locale's 12-hour clock time (e.g., 11:11:04 PM)
+
+       %R     24-hour hour and minute; same as %H:%M
+
+       %s     seconds since 1970-01-01 00:00:00 UTC
+
+       %S     second (00..60)
+
+       %t     a tab
+
+       %T     time; same as %H:%M:%S
+
+       %u     day of week (1..7); 1 is Monday
+
+       %U     week number of year, with Sunday as first day of week (00..53)
+
+       %V     ISO week number, with Monday as first day of week (01..53)
+
+       %w     day of week (0..6); 0 is Sunday
+
+       %W     week number of year, with Monday as first day of week (00..53)
+
+       %x     locale's date representation (e.g., 12/31/99)
+
+       %X     locale's time representation (e.g., 23:13:48)
+
+       %y     last two digits of year (00..99)
+
+       %Y     year
+
+       %z     +hhmm numeric time zone (e.g., -0400)
+
+       %:z    +hh:mm numeric time zone (e.g., -04:00)
+
+       %::z   +hh:mm:ss numeric time zone (e.g., -04:00:00)
+
+       %:::z  numeric time zone with : to necessary precision (e.g., -04, +05:30)
+
+       %Z     alphabetic time zone abbreviation (e.g., EDT)
+
+       By default, date pads numeric fields with zeroes.  The following optional flags may follow '%':
+
+       -      (hyphen) do not pad the field
+
+       _      (underscore) pad with spaces
+
+       0      (zero) pad with zeros
+
+       ^      use upper case if possible
+
+       #      use opposite case if possible
+
+       After  any  flags comes an optional field width, as a decimal number; then an optional modifier, which is either E to
+       use the locale's alternate representations if available, or O to use the locale's alternate numeric symbols if avail‐
+       able.
+
+EXAMPLES
+       Convert seconds since the epoch (1970-01-01 UTC) to a date
+
+              $ date --date='@2147483647'
+
+       Show the time on the west coast of the US (use tzselect(1) to find TZ)
+
+              $ TZ='America/Los_Angeles' date
+
+       Show the local time for 9AM next Friday on the west coast of the US
+
+              $ date --date='TZ="America/Los_Angeles" 09:00 next Fri'
+
+DATE STRING
+       The  --date=STRING  is  a  mostly free format human readable date string such as "Sun, 29 Feb 2004 16:21:42 -0800" or
+       "2004-02-29 16:21:42" or even "next Thursday".  A date string may contain items indicating  calendar  date,  time  of
+       day,  time  zone, day of week, relative time, relative date, and numbers.  An empty string indicates the beginning of
+       the day.  The date string format is more complex than is easily documented here but is fully described  in  the  info
+       documentation.
+
+AUTHOR
+       Written by David MacKenzie.
+
+REPORTING BUGS
+       Report date bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report date translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       The  full  documentation  for  date  is  maintained  as a Texinfo manual.  If the info and date programs are properly
+       installed at your site, the command
+
+              info coreutils 'date invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                  DATE(1)
+DATE(1)                                                 User Commands                                                DATE(1)
+
+
+
+NAME
+       date - print or set the system date and time
+
+SYNOPSIS
+       date [OPTION]... [+FORMAT]
+       date [-u|--utc|--universal] [MMDDhhmm[[CC]YY][.ss]]
+
+DESCRIPTION
+       Display the current time in the given FORMAT, or set the system date.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -d, --date=STRING
+              display time described by STRING, not 'now'
+
+       -f, --file=DATEFILE
+              like --date once for each line of DATEFILE
+
+       -I[TIMESPEC], --iso-8601[=TIMESPEC]
+              output  date/time  in ISO 8601 format.  TIMESPEC='date' for date only (the default), 'hours', 'minutes', 'sec‐
+              onds', or 'ns' for date and time to the indicated precision.
+
+       -r, --reference=FILE
+              display the last modification time of FILE
+
+       -R, --rfc-2822
+              output date and time in RFC 2822 format.  Example: Mon, 07 Aug 2006 12:34:56 -0600
+
+       --rfc-3339=TIMESPEC
+              output date and time in RFC 3339 format.  TIMESPEC='date', 'seconds', or 'ns' for date and time to  the  indi‐
+              cated precision.  Date and time components are separated by a single space: 2006-08-07 12:34:56-06:00
+
+       -s, --set=STRING
+              set time described by STRING
+
+       -u, --utc, --universal
+              print or set Coordinated Universal Time
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       FORMAT controls the output.  Interpreted sequences are:
+
+       %%     a literal %
+
+       %a     locale's abbreviated weekday name (e.g., Sun)
+
+       %A     locale's full weekday name (e.g., Sunday)
+
+       %b     locale's abbreviated month name (e.g., Jan)
+
+       %B     locale's full month name (e.g., January)
+
+       %c     locale's date and time (e.g., Thu Mar  3 23:05:25 2005)
+
+       %C     century; like %Y, except omit last two digits (e.g., 20)
+
+       %d     day of month (e.g., 01)
+
+       %D     date; same as %m/%d/%y
+
+       %e     day of month, space padded; same as %_d
+
+       %F     full date; same as %Y-%m-%d
+
+       %g     last two digits of year of ISO week number (see %G)
+
+       %G     year of ISO week number (see %V); normally useful only with %V
+
+       %h     same as %b
+
+       %H     hour (00..23)
+
+       %I     hour (01..12)
+
+       %j     day of year (001..366)
+
+       %k     hour, space padded ( 0..23); same as %_H
+
+       %l     hour, space padded ( 1..12); same as %_I
+
+       %m     month (01..12)
+
+       %M     minute (00..59)
+
+       %n     a newline
+
+       %N     nanoseconds (000000000..999999999)
+
+       %p     locale's equivalent of either AM or PM; blank if not known
+
+       %P     like %p, but lower case
+
+       %r     locale's 12-hour clock time (e.g., 11:11:04 PM)
+
+       %R     24-hour hour and minute; same as %H:%M
+
+       %s     seconds since 1970-01-01 00:00:00 UTC
+
+       %S     second (00..60)
+
+       %t     a tab
+
+       %T     time; same as %H:%M:%S
+
+       %u     day of week (1..7); 1 is Monday
+
+       %U     week number of year, with Sunday as first day of week (00..53)
+
+       %V     ISO week number, with Monday as first day of week (01..53)
+
+       %w     day of week (0..6); 0 is Sunday
+
+       %W     week number of year, with Monday as first day of week (00..53)
+
+       %x     locale's date representation (e.g., 12/31/99)
+
+       %X     locale's time representation (e.g., 23:13:48)
+
+       %y     last two digits of year (00..99)
+
+       %Y     year
+
+       %z     +hhmm numeric time zone (e.g., -0400)
+
+       %:z    +hh:mm numeric time zone (e.g., -04:00)
+
+       %::z   +hh:mm:ss numeric time zone (e.g., -04:00:00)
+
+       %:::z  numeric time zone with : to necessary precision (e.g., -04, +05:30)
+
+       %Z     alphabetic time zone abbreviation (e.g., EDT)
+
+       By default, date pads numeric fields with zeroes.  The following optional flags may follow '%':
+
+       -      (hyphen) do not pad the field
+
+       _      (underscore) pad with spaces
+
+       0      (zero) pad with zeros
+
+       ^      use upper case if possible
+
+       #      use opposite case if possible
+
+       After  any  flags comes an optional field width, as a decimal number; then an optional modifier, which is either E to
+       use the locale's alternate representations if available, or O to use the locale's alternate numeric symbols if avail‐
+       able.
+
+EXAMPLES
+       Convert seconds since the epoch (1970-01-01 UTC) to a date
+
+              $ date --date='@2147483647'
+
+       Show the time on the west coast of the US (use tzselect(1) to find TZ)
+
+              $ TZ='America/Los_Angeles' date
+
+       Show the local time for 9AM next Friday on the west coast of the US
+
+              $ date --date='TZ="America/Los_Angeles" 09:00 next Fri'
+
+DATE STRING
+       The  --date=STRING  is  a  mostly free format human readable date string such as "Sun, 29 Feb 2004 16:21:42 -0800" or
+       "2004-02-29 16:21:42" or even "next Thursday".  A date string may contain items indicating  calendar  date,  time  of
+       day,  time  zone, day of week, relative time, relative date, and numbers.  An empty string indicates the beginning of
+       the day.  The date string format is more complex than is easily documented here but is fully described  in  the  info
+       documentation.
+
+AUTHOR
+       Written by David MacKenzie.
+
+REPORTING BUGS
+       Report date bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report date translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       The  full  documentation  for  date  is  maintained  as a Texinfo manual.  If the info and date programs are properly
+       installed at your site, the command
+
+              info coreutils 'date invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                  DATE(1)
+ENV(1)                                                  User Commands                                                 ENV(1)
+
+
+
+NAME
+       env - run a program in a modified environment
+
+SYNOPSIS
+       env [OPTION]... [-] [NAME=VALUE]... [COMMAND [ARG]...]
+
+DESCRIPTION
+       Set each NAME to VALUE in the environment and run COMMAND.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -i, --ignore-environment
+              start with an empty environment
+
+       -0, --null
+              end each output line with 0 byte rather than newline
+
+       -u, --unset=NAME
+              remove variable from the environment
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       A mere - implies -i.  If no COMMAND, print the resulting environment.
+
+AUTHOR
+       Written by Richard Mlynarik and David MacKenzie.
+
+REPORTING BUGS
+       Report env bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report env translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       The  full  documentation  for  env  is  maintained  as  a  Texinfo manual.  If the info and env programs are properly
+       installed at your site, the command
+
+              info coreutils 'env invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                   ENV(1)
+GREP(1)                                            General Commands Manual                                           GREP(1)
+
+
+
+NAME
+       grep, egrep, fgrep, rgrep - print lines matching a pattern
+
+SYNOPSIS
+       grep [OPTIONS] PATTERN [FILE...]
+       grep [OPTIONS] [-e PATTERN | -f FILE] [FILE...]
+
+DESCRIPTION
+       grep  searches  the  named  input  FILEs (or standard input if no files are named, or if a single hyphen-minus (-) is
+       given as file name) for lines containing a match to the given PATTERN.  By default, grep prints the matching lines.
+
+       In addition, three variant programs egrep, fgrep and rgrep are available.  egrep is the same as  grep -E.   fgrep  is
+       the same as grep -F.  rgrep is the same as grep -r.  Direct invocation as either egrep or fgrep is deprecated, but is
+       provided to allow historical applications that rely on them to run unmodified.
+
+OPTIONS
+   Generic Program Information
+       --help Print a usage message briefly summarizing these command-line options and the bug-reporting address, then exit.
+
+       -V, --version
+              Print the version number of grep to the standard output stream.  This version number should be included in all
+              bug reports (see below).
+
+   Matcher Selection
+       -E, --extended-regexp
+              Interpret PATTERN as an extended regular expression (ERE, see below).  (-E is specified by POSIX.)
+
+       -F, --fixed-strings
+              Interpret  PATTERN  as  a list of fixed strings, separated by newlines, any of which is to be matched.  (-F is
+              specified by POSIX.)
+
+       -G, --basic-regexp
+              Interpret PATTERN as a basic regular expression (BRE, see below).  This is the default.
+
+       -P, --perl-regexp
+              Interpret PATTERN as a Perl regular expression (PCRE, see below).  This is highly experimental and grep -P may
+              warn of unimplemented features.
+
+   Matching Control
+       -e PATTERN, --regexp=PATTERN
+              Use  PATTERN  as  the  pattern.  This can be used to specify multiple search patterns, or to protect a pattern
+              beginning with a hyphen (-).  (-e is specified by POSIX.)
+
+       -f FILE, --file=FILE
+              Obtain patterns from FILE, one per line.  The  empty  file  contains  zero  patterns,  and  therefore  matches
+              nothing.  (-f is specified by POSIX.)
+
+       -i, --ignore-case
+              Ignore case distinctions in both the PATTERN and the input files.  (-i is specified by POSIX.)
+
+       -v, --invert-match
+              Invert the sense of matching, to select non-matching lines.  (-v is specified by POSIX.)
+
+       -w, --word-regexp
+              Select  only  those  lines  containing matches that form whole words.  The test is that the matching substring
+              must either be at the beginning of the line, or preceded by a non-word constituent character.   Similarly,  it
+              must  be  either  at  the  end  of the line or followed by a non-word constituent character.  Word-constituent
+              characters are letters, digits, and the underscore.
+
+       -x, --line-regexp
+              Select only those matches that exactly match the whole line.  (-x is specified by POSIX.)
+
+       -y     Obsolete synonym for -i.
+
+   General Output Control
+       -c, --count
+              Suppress normal output; instead print  a  count  of  matching  lines  for  each  input  file.   With  the  -v,
+              --invert-match option (see below), count non-matching lines.  (-c is specified by POSIX.)
+
+       --color[=WHEN], --colour[=WHEN]
+              Surround  the  matched  (non-empty)  strings,  matching  lines,  context lines, file names, line numbers, byte
+              offsets, and separators (for fields and groups of context lines) with escape  sequences  to  display  them  in
+              color  on  the  terminal.   The  colors  are  defined by the environment variable GREP_COLORS.  The deprecated
+              environment variable GREP_COLOR is still supported, but its setting does not have priority.   WHEN  is  never,
+              always, or auto.
+
+       -L, --files-without-match
+              Suppress  normal  output;  instead  print the name of each input file from which no output would normally have
+              been printed.  The scanning will stop on the first match.
+
+       -l, --files-with-matches
+              Suppress normal output; instead print the name of each input file from which output would normally  have  been
+              printed.  The scanning will stop on the first match.  (-l is specified by POSIX.)
+
+       -m NUM, --max-count=NUM
+              Stop  reading  a  file  after NUM matching lines.  If the input is standard input from a regular file, and NUM
+              matching lines are output, grep ensures that the standard input is positioned to just after the last  matching
+              line  before exiting, regardless of the presence of trailing context lines.  This enables a calling process to
+              resume a search.  When grep stops after NUM matching lines, it outputs any trailing context lines.   When  the
+              -c  or  --count  option  is  also  used,  grep  does  not  output  a  count  greater than NUM.  When the -v or
+              --invert-match option is also used, grep stops after outputting NUM non-matching lines.
+
+       -o, --only-matching
+              Print only the matched (non-empty) parts of a matching line, with each such part on a separate output line.
+
+       -q, --quiet, --silent
+              Quiet; do not write anything to standard output.  Exit immediately with zero status if  any  match  is  found,
+              even if an error was detected.  Also see the -s or --no-messages option.  (-q is specified by POSIX.)
+
+       -s, --no-messages
+              Suppress error messages about nonexistent or unreadable files.  Portability note: unlike GNU grep, 7th Edition
+              Unix grep did not conform to POSIX, because it lacked -q and its -s option behaved like GNU grep's -q  option.
+              USG-style  grep  also  lacked -q but its -s option behaved like GNU grep.  Portable shell scripts should avoid
+              both -q and -s and should redirect standard and error output  to  /dev/null  instead.   (-s  is  specified  by
+              POSIX.)
+
+   Output Line Prefix Control
+       -b, --byte-offset
+              Print  the  0-based  byte offset within the input file before each line of output.  If -o (--only-matching) is
+              specified, print the offset of the matching part itself.
+
+       -H, --with-filename
+              Print the file name for each match.  This is the default when there is more than one file to search.
+
+       -h, --no-filename
+              Suppress the prefixing of file names on output.  This is the default when there is  only  one  file  (or  only
+              standard input) to search.
+
+       --label=LABEL
+              Display  input actually coming from standard input as input coming from file LABEL.  This is especially useful
+              when implementing tools like zgrep, e.g., gzip -cd foo.gz | grep --label=foo -H something.  See  also  the  -H
+              option.
+
+       -n, --line-number
+              Prefix each line of output with the 1-based line number within its input file.  (-n is specified by POSIX.)
+
+       -T, --initial-tab
+              Make  sure  that  the first character of actual line content lies on a tab stop, so that the alignment of tabs
+              looks normal.  This is useful with options that prefix their output to the actual content: -H,-n, and -b.   In
+              order  to  improve  the probability that lines from a single file will all start at the same column, this also
+              causes the line number and byte offset (if present) to be printed in a minimum size field width.
+
+       -u, --unix-byte-offsets
+              Report Unix-style byte offsets.  This switch causes grep to report byte offsets as if the file  were  a  Unix-
+              style  text  file, i.e., with CR characters stripped off.  This will produce results identical to running grep
+              on a Unix machine.  This option has no effect unless -b option is also used; it has  no  effect  on  platforms
+              other than MS-DOS and MS-Windows.
+
+       -Z, --null
+              Output  a zero byte (the ASCII NUL character) instead of the character that normally follows a file name.  For
+              example, grep -lZ outputs a zero byte after each file name instead of the usual newline.   This  option  makes
+              the  output unambiguous, even in the presence of file names containing unusual characters like newlines.  This
+              option can be used with commands like find -print0, perl -0, sort -z, and xargs -0 to process  arbitrary  file
+              names, even those that contain newline characters.
+
+   Context Line Control
+       -A NUM, --after-context=NUM
+              Print  NUM  lines  of  trailing context after matching lines.  Places a line containing a group separator (--)
+              between contiguous groups of matches.  With the -o or --only-matching option, this has no effect and a warning
+              is given.
+
+       -B NUM, --before-context=NUM
+              Print  NUM  lines  of  leading context before matching lines.  Places a line containing a group separator (--)
+              between contiguous groups of matches.  With the -o or --only-matching option, this has no effect and a warning
+              is given.
+
+       -C NUM, -NUM, --context=NUM
+              Print  NUM lines of output context.  Places a line containing a group separator (--) between contiguous groups
+              of matches.  With the -o or --only-matching option, this has no effect and a warning is given.
+
+   File and Directory Selection
+       -a, --text
+              Process a binary file as if it were text; this is equivalent to the --binary-files=text option.
+
+       --binary-files=TYPE
+              If the first few bytes of a file indicate that the file contains binary data, assume that the file is of  type
+              TYPE.   By  default,  TYPE is binary, and grep normally outputs either a one-line message saying that a binary
+              file matches, or no message if there is no match.  If TYPE is without-match, grep assumes that a  binary  file
+              does  not  match; this is equivalent to the -I option.  If TYPE is text, grep processes a binary file as if it
+              were text; this is equivalent to the  -a  option.   Warning:  grep  --binary-files=text  might  output  binary
+              garbage,  which  can have nasty side effects if the output is a terminal and if the terminal driver interprets
+              some of it as commands.
+
+       -D ACTION, --devices=ACTION
+              If an input file is a device, FIFO or socket, use ACTION to process it.  By default,  ACTION  is  read,  which
+              means  that  devices  are  read  just as if they were ordinary files.  If ACTION is skip, devices are silently
+              skipped.
+
+       -d ACTION, --directories=ACTION
+              If an input file is a directory, use ACTION to process it.  By default, ACTION is read, i.e., read directories
+              just  as  if  they  were ordinary files.  If ACTION is skip, silently skip directories.  If ACTION is recurse,
+              read all files under each directory, recursively, following symbolic links only if they  are  on  the  command
+              line.  This is equivalent to the -r option.
+
+       --exclude=GLOB
+              Skip  files  whose base name matches GLOB (using wildcard matching).  A file-name glob can use *, ?, and [...]
+              as wildcards, and \ to quote a wildcard or backslash character literally.
+
+       --exclude-from=FILE
+              Skip files whose base name matches any of the file-name globs read  from  FILE  (using  wildcard  matching  as
+              described under --exclude).
+
+       --exclude-dir=DIR
+              Exclude directories matching the pattern DIR from recursive searches.
+
+       -I     Process   a   binary   file   as   if   it   did  not  contain  matching  data;  this  is  equivalent  to  the
+              --binary-files=without-match option.
+
+       --include=GLOB
+              Search only files whose base name matches GLOB (using wildcard matching as described under --exclude).
+
+       -r, --recursive
+              Read all files under each directory, recursively, following symbolic links only if they  are  on  the  command
+              line.  This is equivalent to the -d recurse option.
+
+       -R, --dereference-recursive
+              Read all files under each directory, recursively.  Follow all symbolic links, unlike -r.
+
+   Other Options
+       --line-buffered
+              Use line buffering on output.  This can cause a performance penalty.
+
+       --mmap If  possible,  use the mmap(2) system call to read input, instead of the default read(2) system call.  In some
+              situations, --mmap yields better performance.  However, --mmap can cause undefined  behavior  (including  core
+              dumps) if an input file shrinks while grep is operating, or if an I/O error occurs.
+
+       -U, --binary
+              Treat  the  file(s) as binary.  By default, under MS-DOS and MS-Windows, grep guesses the file type by looking
+              at the contents of the first 32KB read from the file.  If grep decides the file is a text file, it strips  the
+              CR  characters  from  the  original  file  contents (to make regular expressions with ^ and $ work correctly).
+              Specifying -U overrules this guesswork, causing all files to be read and  passed  to  the  matching  mechanism
+              verbatim;  if  the  file is a text file with CR/LF pairs at the end of each line, this will cause some regular
+              expressions to fail.  This option has no effect on platforms other than MS-DOS and MS-Windows.
+
+       -z, --null-data
+              Treat the input as a set of lines, each terminated by a zero byte (the  ASCII  NUL  character)  instead  of  a
+              newline.   Like  the  -Z  or  --null  option,  this  option  can be used with commands like sort -z to process
+              arbitrary file names.
+
+REGULAR EXPRESSIONS
+       A regular expression is a pattern that describes a set of strings.  Regular expressions are  constructed  analogously
+       to arithmetic expressions, by using various operators to combine smaller expressions.
+
+       grep  understands  three  different versions of regular expression syntax: “basic” (BRE), “extended” (ERE) and “perl”
+       (PRCE). In GNU grep, there is no difference in available functionality between basic and extended syntaxes.  In other
+       implementations,  basic regular expressions are less powerful.  The following description applies to extended regular
+       expressions; differences for basic regular expressions are summarized  afterwards.   Perl  regular  expressions  give
+       additional  functionality, and are documented in pcresyntax(3) and pcrepattern(3), but only work if pcre is available
+       in the system.
+
+       The fundamental building blocks are the  regular  expressions  that  match  a  single  character.   Most  characters,
+       including  all  letters  and  digits, are regular expressions that match themselves.  Any meta-character with special
+       meaning may be quoted by preceding it with a backslash.
+
+       The period . matches any single character.
+
+   Character Classes and Bracket Expressions
+       A bracket expression is a list of characters enclosed by [ and ].  It matches any single character in that  list;  if
+       the  first  character  of  the  list  is the caret ^ then it matches any character not in the list.  For example, the
+       regular expression [0123456789] matches any single digit.
+
+       Within a bracket expression, a range expression consists of two characters separated by a  hyphen.   It  matches  any
+       single  character  that  sorts  between  the  two  characters,  inclusive,  using the locale's collating sequence and
+       character set.  For example, in the default C locale, [a-d] is equivalent to [abcd].  Many locales sort characters in
+       dictionary  order,  and  in  these  locales  [a-d]  is  typically not equivalent to [abcd]; it might be equivalent to
+       [aBbCcDd], for example.  To obtain the traditional interpretation of bracket expressions, you can use the C locale by
+       setting the LC_ALL environment variable to the value C.
+
+       Finally,  certain named classes of characters are predefined within bracket expressions, as follows.  Their names are
+       self explanatory,  and  they  are  [:alnum:],  [:alpha:],  [:cntrl:],  [:digit:],  [:graph:],  [:lower:],  [:print:],
+       [:punct:],  [:space:],  [:upper:], and [:xdigit:].  For example, [[:alnum:]] means the character class of numbers and
+       letters in the current locale. In the C locale and ASCII character set encoding, this is  the  same  as  [0-9A-Za-z].
+       (Note  that the brackets in these class names are part of the symbolic names, and must be included in addition to the
+       brackets delimiting the bracket  expression.)   Most  meta-characters  lose  their  special  meaning  inside  bracket
+       expressions.  To include a literal ] place it first in the list.  Similarly, to include a literal ^ place it anywhere
+       but first.  Finally, to include a literal - place it last.
+
+   Anchoring
+       The caret ^ and the dollar sign $ are meta-characters that respectively match the empty string at the  beginning  and
+       end of a line.
+
+   The Backslash Character and Special Expressions
+       The  symbols \< and \> respectively match the empty string at the beginning and end of a word.  The symbol \b matches
+       the empty string at the edge of a word, and \B matches the empty string provided it's not at the edge of a word.  The
+       symbol \w is a synonym for [_[:alnum:]] and \W is a synonym for [^_[:alnum:]].
+
+   Repetition
+       A regular expression may be followed by one of several repetition operators:
+       ?      The preceding item is optional and matched at most once.
+       *      The preceding item will be matched zero or more times.
+       +      The preceding item will be matched one or more times.
+       {n}    The preceding item is matched exactly n times.
+       {n,}   The preceding item is matched n or more times.
+       {,m}   The preceding item is matched at most m times.  This is a GNU extension.
+       {n,m}  The preceding item is matched at least n times, but not more than m times.
+
+   Concatenation
+       Two  regular  expressions  may  be  concatenated;  the  resulting  regular  expression  matches  any string formed by
+       concatenating two substrings that respectively match the concatenated expressions.
+
+   Alternation
+       Two regular expressions may be joined by the infix operator |; the resulting regular expression  matches  any  string
+       matching either alternate expression.
+
+   Precedence
+       Repetition  takes precedence over concatenation, which in turn takes precedence over alternation.  A whole expression
+       may be enclosed in parentheses to override these precedence rules and form a subexpression.
+
+   Back References and Subexpressions
+       The back-reference \n, where n is a single digit, matches the substring previously matched by the  nth  parenthesized
+       subexpression of the regular expression.
+
+   Basic vs Extended Regular Expressions
+       In  basic  regular  expressions  the meta-characters ?, +, {, |, (, and ) lose their special meaning; instead use the
+       backslashed versions \?, \+, \{, \|, \(, and \).
+
+       Traditional egrep did not support the { meta-character,  and  some  egrep  implementations  support  \{  instead,  so
+       portable scripts should avoid { in grep -E patterns and should use [{] to match a literal {.
+
+       GNU  grep -E  attempts  to support traditional usage by assuming that { is not special if it would be the start of an
+       invalid interval specification.  For example, the command grep -E '{1'  searches  for  the  two-character  string  {1
+       instead  of  reporting  a  syntax  error  in the regular expression.  POSIX allows this behavior as an extension, but
+       portable scripts should avoid it.
+
+ENVIRONMENT VARIABLES
+       The behavior of grep is affected by the following environment variables.
+
+       The locale for category LC_foo is specified by examining the three environment variables  LC_ALL,  LC_foo,  LANG,  in
+       that  order.   The first of these variables that is set specifies the locale.  For example, if LC_ALL is not set, but
+       LC_MESSAGES is set to pt_BR, then the Brazilian Portuguese locale is used for the LC_MESSAGES category.  The C locale
+       is  used  if  none of these environment variables are set, if the locale catalog is not installed, or if grep was not
+       compiled with national language support (NLS).
+
+       GREP_OPTIONS
+              This variable specifies default options to be placed in front  of  any  explicit  options.   For  example,  if
+              GREP_OPTIONS  is  '--binary-files=without-match  --directories=skip',  grep  behaves  as  if  the  two options
+              --binary-files=without-match and --directories=skip had been specified before any  explicit  options.   Option
+              specifications  are  separated  by  whitespace.   A backslash escapes the next character, so it can be used to
+              specify an option containing whitespace or a backslash.
+
+       GREP_COLOR
+              This variable specifies the color used to highlight matched (non-empty) text.  It is deprecated  in  favor  of
+              GREP_COLORS,  but  still supported.  The mt, ms, and mc capabilities of GREP_COLORS have priority over it.  It
+              can only specify the color used to highlight the matching non-empty text in any matching line (a selected line
+              when  the  -v  command-line option is omitted, or a context line when -v is specified).  The default is 01;31,
+              which means a bold red foreground text on the terminal's default background.
+
+       GREP_COLORS
+              Specifies the colors and other attributes used to highlight various parts of  the  output.   Its  value  is  a
+              colon-separated  list  of capabilities that defaults to ms=01;31:mc=01;31:sl=:cx=:fn=35:ln=32:bn=32:se=36 with
+              the rv and ne boolean capabilities omitted (i.e., false).  Supported capabilities are as follows.
+
+              sl=    SGR substring for whole selected lines (i.e.,  matching  lines  when  the  -v  command-line  option  is
+                     omitted,  or non-matching lines when -v is specified).  If however the boolean rv capability and the -v
+                     command-line option are both specified, it applies to context matching lines instead.  The  default  is
+                     empty (i.e., the terminal's default color pair).
+
+              cx=    SGR  substring  for  whole  context  lines (i.e., non-matching lines when the -v command-line option is
+                     omitted, or matching lines when -v is specified).  If however the boolean  rv  capability  and  the  -v
+                     command-line option are both specified, it applies to selected non-matching lines instead.  The default
+                     is empty (i.e., the terminal's default color pair).
+
+              rv     Boolean value that reverses (swaps) the meanings of the sl= and cx= capabilities when the  -v  command-
+                     line option is specified.  The default is false (i.e., the capability is omitted).
+
+              mt=01;31
+                     SGR  substring  for  matching  non-empty  text  in any matching line (i.e., a selected line when the -v
+                     command-line option is omitted, or a context line when -v is specified).  Setting this is equivalent to
+                     setting both ms= and mc= at once to the same value.  The default is a bold red text foreground over the
+                     current line background.
+
+              ms=01;31
+                     SGR substring for matching non-empty text in a selected line.  (This is only used when the -v  command-
+                     line  option  is  omitted.)   The  effect of the sl= (or cx= if rv) capability remains active when this
+                     kicks in.  The default is a bold red text foreground over the current line background.
+
+              mc=01;31
+                     SGR substring for matching non-empty text in a context line.  (This is only used when the  -v  command-
+                     line  option  is  specified.)  The effect of the cx= (or sl= if rv) capability remains active when this
+                     kicks in.  The default is a bold red text foreground over the current line background.
+
+              fn=35  SGR substring for file names prefixing any content line.  The default is a magenta text foreground over
+                     the terminal's default background.
+
+              ln=32  SGR substring for line numbers prefixing any content line.  The default is a green text foreground over
+                     the terminal's default background.
+
+              bn=32  SGR substring for byte offsets prefixing any content line.  The default is a green text foreground over
+                     the terminal's default background.
+
+              se=36  SGR  substring  for separators that are inserted between selected line fields (:), between context line
+                     fields, (-), and between groups of adjacent lines when nonzero context is specified (--).  The  default
+                     is a cyan text foreground over the terminal's default background.
+
+              ne     Boolean  value that prevents clearing to the end of line using Erase in Line (EL) to Right (\33[K) each
+                     time a colorized item ends.  This is needed on terminals on which EL is not supported.  It is otherwise
+                     useful  on  terminals  for which the back_color_erase (bce) boolean terminfo capability does not apply,
+                     when the chosen highlight colors do not affect the background, or when EL is too  slow  or  causes  too
+                     much flicker.  The default is false (i.e., the capability is omitted).
+
+              Note  that boolean capabilities have no =...  part.  They are omitted (i.e., false) by default and become true
+              when specified.
+
+              See the Select Graphic Rendition (SGR) section in the documentation of the text  terminal  that  is  used  for
+              permitted  values  and  their meaning as character attributes.  These substring values are integers in decimal
+              representation and can be concatenated with semicolons.  grep takes care  of  assembling  the  result  into  a
+              complete  SGR  sequence  (\33[...m).   Common values to concatenate include 1 for bold, 4 for underline, 5 for
+              blink, 7 for inverse, 39 for default foreground color, 30 to 37 for foreground colors, 90 to 97  for  16-color
+              mode  foreground colors, 38;5;0 to 38;5;255 for 88-color and 256-color modes foreground colors, 49 for default
+              background color, 40 to 47 for background colors, 100 to 107 for 16-color mode background colors,  and  48;5;0
+              to 48;5;255 for 88-color and 256-color modes background colors.
+
+       LC_ALL, LC_COLLATE, LANG
+              These  variables  specify the locale for the LC_COLLATE category, which determines the collating sequence used
+              to interpret range expressions like [a-z].
+
+       LC_ALL, LC_CTYPE, LANG
+              These variables specify the locale for the LC_CTYPE category, which determines the type of  characters,  e.g.,
+              which characters are whitespace.
+
+       LC_ALL, LC_MESSAGES, LANG
+              These  variables specify the locale for the LC_MESSAGES category, which determines the language that grep uses
+              for messages.  The default C locale uses American English messages.
+
+       POSIXLY_CORRECT
+              If set, grep behaves as POSIX requires; otherwise, grep behaves more like other GNU programs.  POSIX  requires
+              that  options  that  follow file names must be treated as file names; by default, such options are permuted to
+              the front of the operand list and are treated as options.  Also, POSIX requires that unrecognized  options  be
+              diagnosed  as  “illegal”,  but  since  they  are not really against the law the default is to diagnose them as
+              “invalid”.  POSIXLY_CORRECT also disables _N_GNU_nonoption_argv_flags_, described below.
+
+       _N_GNU_nonoption_argv_flags_
+              (Here N is grep's numeric process ID.)  If the ith character of this environment variable's value is 1, do not
+              consider the ith operand of grep to be an option, even if it appears to be one.  A shell can put this variable
+              in the environment for each command it runs, specifying which operands are the results of file  name  wildcard
+              expansion  and  therefore  should  not  be treated as options.  This behavior is available only with the GNU C
+              library, and only when POSIXLY_CORRECT is not set.
+
+EXIT STATUS
+       The exit status is 0 if selected lines are found, and 1 if not found.  If an error occurred the  exit  status  is  2.
+       (Note: POSIX error handling code should check for '2' or greater.)
+
+COPYRIGHT
+       Copyright 1998-2000, 2002, 2005-2014 Free Software Foundation, Inc.
+
+       This  is free software; see the source for copying conditions.  There is NO warranty; not even for MERCHANTABILITY or
+       FITNESS FOR A PARTICULAR PURPOSE.
+
+BUGS
+   Reporting Bugs
+       Email     bug     reports     to     <bug-grep@gnu.org>,     a     mailing     list     whose     web     page     is
+       <http://lists.gnu.org/mailman/listinfo/bug-grep>.      grep's     Savannah     bug     tracker    is    located    at
+       <http://savannah.gnu.org/bugs/?group=grep>.
+
+   Known Bugs
+       Large repetition counts in the {n,m} construct may cause grep to use lots of  memory.   In  addition,  certain  other
+       obscure regular expressions require exponential time and space, and may cause grep to run out of memory.
+
+       Back-references are very slow, and may require exponential time.
+
+SEE ALSO
+   Regular Manual Pages
+       awk(1),  cmp(1),  diff(1), find(1), gzip(1), perl(1), sed(1), sort(1), xargs(1), zgrep(1), mmap(2), read(2), pcre(3),
+       pcresyntax(3), pcrepattern(3), terminfo(5), glob(7), regex(7).
+
+   POSIX Programmer's Manual Page
+       grep(1p).
+
+   TeXinfo Documentation
+       The  full   documentation   for   grep   is   maintained   as   a   TeXinfo   manual,   which   you   can   read   at
+       http://www.gnu.org/software/grep/manual/.   If  the  info  and grep programs are properly installed at your site, the
+       command
+
+              info grep
+
+       should give you access to the complete manual.
+
+NOTES
+       This man page is maintained only fitfully; the full documentation is often more up-to-date.
+
+       GNU's not Unix, but Unix is a beast; its plural form is Unixen.
+
+
+
+User Commands                                           GNU grep 2.16                                                GREP(1)
+HEAD(1)                                                 User Commands                                                HEAD(1)
+
+
+
+NAME
+       head - output the first part of files
+
+SYNOPSIS
+       head [OPTION]... [FILE]...
+
+DESCRIPTION
+       Print the first 10 lines of each FILE to standard output.  With more than one FILE, precede each with a header giving
+       the file name.  With no FILE, or when FILE is -, read standard input.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -c, --bytes=[-]K
+              print the first K bytes of each file; with the leading '-', print all but the last K bytes of each file
+
+       -n, --lines=[-]K
+              print the first K lines instead of the first 10; with the leading '-', print all but the last K lines of  each
+              file
+
+       -q, --quiet, --silent
+              never print headers giving file names
+
+       -v, --verbose
+              always print headers giving file names
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       K  may  have  a  multiplier  suffix:  b  512,  kB  1000,  K  1024,  MB  1000*1000,  M 1024*1024, GB 1000*1000*1000, G
+       1024*1024*1024, and so on for T, P, E, Z, Y.
+
+AUTHOR
+       Written by David MacKenzie and Jim Meyering.
+
+REPORTING BUGS
+       Report head bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report head translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright  ©  2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3   or   later
+       <http://gnu.org/licenses/gpl.html>.
+       This  is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted by
+       law.
+
+SEE ALSO
+       The full documentation for head is maintained as a Texinfo manual.  If  the  info  and  head  programs  are  properly
+       installed at your site, the command
+
+              info coreutils 'head invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                  HEAD(1)
+SED(1)                                                  User Commands                                                 SED(1)
+
+
+
+NAME
+       sed - stream editor for filtering and transforming text
+
+SYNOPSIS
+       sed [OPTION]... {script-only-if-no-other-script} [input-file]...
+
+DESCRIPTION
+       Sed  is a stream editor.  A stream editor is used to perform basic text transformations on an input stream (a file or
+       input from a pipeline).  While in some ways similar to an editor which permits scripted edits (such as ed), sed works
+       by  making  only  one  pass over the input(s), and is consequently more efficient.  But it is sed's ability to filter
+       text in a pipeline which particularly distinguishes it from other types of editors.
+
+       -n, --quiet, --silent
+
+              suppress automatic printing of pattern space
+
+       -e script, --expression=script
+
+              add the script to the commands to be executed
+
+       -f script-file, --file=script-file
+
+              add the contents of script-file to the commands to be executed
+
+       --follow-symlinks
+
+              follow symlinks when processing in place
+
+       -i[SUFFIX], --in-place[=SUFFIX]
+
+              edit files in place (makes backup if SUFFIX supplied)
+
+       -l N, --line-length=N
+
+              specify the desired line-wrap length for the `l' command
+
+       --posix
+
+              disable all GNU extensions.
+
+       -r, --regexp-extended
+
+              use extended regular expressions in the script.
+
+       -s, --separate
+
+              consider files as separate rather than as a single continuous long stream.
+
+       -u, --unbuffered
+
+              load minimal amounts of data from the input files and flush the output buffers more often
+
+       -z, --null-data
+
+              separate lines by NUL characters
+
+       --help
+              display this help and exit
+
+       --version
+              output version information and exit
+
+       If no -e, --expression, -f, or --file option is given, then the first non-option argument is taken as the sed  script
+       to  interpret.   All remaining arguments are names of input files; if no input files are specified, then the standard
+       input is read.
+
+       GNU sed home page: <http://www.gnu.org/software/sed/>.  General help using  GNU  software:  <http://www.gnu.org/geth‐
+       elp/>.   E-mail bug reports to: <bug-sed@gnu.org>.  Be sure to include the word ``sed'' somewhere in the ``Subject:''
+       field.
+
+COMMAND SYNOPSIS
+       This is just a brief synopsis of sed commands to serve as a reminder to those who already know sed; other  documenta‐
+       tion (such as the texinfo document) must be consulted for fuller descriptions.
+
+   Zero-address ``commands''
+       : label
+              Label for b and t commands.
+
+       #comment
+              The comment extends until the next newline (or the end of a -e script fragment).
+
+       }      The closing bracket of a { } block.
+
+   Zero- or One- address commands
+       =      Print the current line number.
+
+       a \
+
+       text   Append text, which has each embedded newline preceded by a backslash.
+
+       i \
+
+       text   Insert text, which has each embedded newline preceded by a backslash.
+
+       q [exit-code]
+              Immediately  quit  the sed script without processing any more input, except that if auto-print is not disabled
+              the current pattern space will be printed.  The exit code argument is a GNU extension.
+
+       Q [exit-code]
+              Immediately quit the sed script without processing any more input.  This is a GNU extension.
+
+       r filename
+              Append text read from filename.
+
+       R filename
+              Append a line read from filename.  Each invocation of the command reads a line from the file.  This is  a  GNU
+              extension.
+
+   Commands which accept address ranges
+       {      Begin a block of commands (end with a }).
+
+       b label
+              Branch to label; if label is omitted, branch to end of script.
+
+       c \
+
+       text   Replace the selected lines with text, which has each embedded newline preceded by a backslash.
+
+       d      Delete pattern space.  Start next cycle.
+
+       D      If  pattern  space  contains  no newline, start a normal new cycle as if the d command was issued.  Otherwise,
+              delete text in the pattern space up to the first newline, and restart cycle with the resultant pattern  space,
+              without reading a new line of input.
+
+       h H    Copy/append pattern space to hold space.
+
+       g G    Copy/append hold space to pattern space.
+
+       l      List out the current line in a ``visually unambiguous'' form.
+
+       l width
+              List  out the current line in a ``visually unambiguous'' form, breaking it at width characters.  This is a GNU
+              extension.
+
+       n N    Read/append the next line of input into the pattern space.
+
+       p      Print the current pattern space.
+
+       P      Print up to the first embedded newline of the current pattern space.
+
+       s/regexp/replacement/
+              Attempt to match regexp against the pattern space.  If successful, replace that portion matched with  replace‐
+              ment.  The replacement may contain the special character & to refer to that portion of the pattern space which
+              matched, and the special escapes \1 through \9 to refer to the corresponding matching sub-expressions  in  the
+              regexp.
+
+       t label
+              If a s/// has done a successful substitution since the last input line was read and since the last t or T com‐
+              mand, then branch to label; if label is omitted, branch to end of script.
+
+       T label
+              If no s/// has done a successful substitution since the last input line was read and since the  last  t  or  T
+              command, then branch to label; if label is omitted, branch to end of script.  This is a GNU extension.
+
+       w filename
+              Write the current pattern space to filename.
+
+       W filename
+              Write the first line of the current pattern space to filename.  This is a GNU extension.
+
+       x      Exchange the contents of the hold and pattern spaces.
+
+       y/source/dest/
+              Transliterate  the  characters  in  the pattern space which appear in source to the corresponding character in
+              dest.
+
+Addresses
+       Sed commands can be given with no addresses, in which case the command will be executed for all input lines; with one
+       address,  in  which  case  the  command  will  only be executed for input lines which match that address; or with two
+       addresses, in which case the command will be executed for all input lines which match the inclusive  range  of  lines
+       starting from the first address and continuing to the second address.  Three things to note about address ranges: the
+       syntax is addr1,addr2 (i.e., the addresses are separated by a comma); the line which addr1  matched  will  always  be
+       accepted,  even  if  addr2  selects an earlier line; and if addr2 is a regexp, it will not be tested against the line
+       that addr1 matched.
+
+       After the address (or address-range), and before the command, a !  may be inserted, which specifies that the  command
+       shall only be executed if the address (or address-range) does not match.
+
+       The following address types are supported:
+
+       number Match  only  the  specified  line  number (which increments cumulatively across files, unless the -s option is
+              specified on the command line).
+
+       first~step
+              Match every step'th line starting with line first.  For example, ``sed -n 1~2p'' will print all  the  odd-num‐
+              bered  lines  in  the input stream, and the address 2~5 will match every fifth line, starting with the second.
+              first can be zero; in this case, sed operates as if it were equal to step.  (This is an extension.)
+
+       $      Match the last line.
+
+       /regexp/
+              Match lines matching the regular expression regexp.
+
+       \cregexpc
+              Match lines matching the regular expression regexp.  The c may be any character.
+
+       GNU sed also supports some special 2-address forms:
+
+       0,addr2
+              Start out in "matched first address" state, until addr2 is found.  This is similar to 1,addr2, except that  if
+              addr2  matches  the  very  first  line  of input the 0,addr2 form will be at the end of its range, whereas the
+              1,addr2 form will still be at the beginning of its range.  This works only when addr2 is a regular expression.
+
+       addr1,+N
+              Will match addr1 and the N lines following addr1.
+
+       addr1,~N
+              Will match addr1 and the lines following addr1 until the next line whose input line number is a multiple of N.
+
+REGULAR EXPRESSIONS
+       POSIX.2 BREs should be supported, but they aren't completely because of performance problems.  The \n sequence  in  a
+       regular expression matches the newline character, and similarly for \a, \t, and other sequences.
+
+BUGS
+       E-mail  bug  reports  to  bug-sed@gnu.org.   Also, please include the output of ``sed --version'' in the body of your
+       report if at all possible.
+
+AUTHOR
+       Written by Jay Fenlason, Tom Lord, Ken Pizzini, and Paolo Bonzini.   GNU  sed  home  page:  <http://www.gnu.org/soft‐
+       ware/sed/>.   General  help  using  GNU  software:  <http://www.gnu.org/gethelp/>.   E-mail  bug  reports  to:  <bug-
+       sed@gnu.org>.  Be sure to include the word ``sed'' somewhere in the ``Subject:'' field.
+
+COPYRIGHT
+       Copyright  ©  2012   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3   or   later
+       <http://gnu.org/licenses/gpl.html>.
+       This  is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted by
+       law.
+
+SEE ALSO
+       awk(1), ed(1), grep(1), tr(1), perlre(1), sed.info, any of various books on sed, the sed FAQ (http://sed.sf.net/grab‐
+       bag/tutorials/sedfaq.txt), http://sed.sf.net/grabbag/.
+
+       The full documentation for sed is maintained as a Texinfo manual.  If the info and sed programs are properly
+       installed at your site, the command
+
+              info sed
+
+       should give you access to the complete manual.
+
+
+
+sed 4.2.2                                               December 2012                                                 SED(1)
+SORT(1)                                                 User Commands                                                SORT(1)
+
+
+
+NAME
+       sort - sort lines of text files
+
+SYNOPSIS
+       sort [OPTION]... [FILE]...
+       sort [OPTION]... --files0-from=F
+
+DESCRIPTION
+       Write sorted concatenation of all FILE(s) to standard output.
+
+       Mandatory arguments to long options are mandatory for short options too.  Ordering options:
+
+       -b, --ignore-leading-blanks
+              ignore leading blanks
+
+       -d, --dictionary-order
+              consider only blanks and alphanumeric characters
+
+       -f, --ignore-case
+              fold lower case to upper case characters
+
+       -g, --general-numeric-sort
+              compare according to general numerical value
+
+       -i, --ignore-nonprinting
+              consider only printable characters
+
+       -M, --month-sort
+              compare (unknown) < 'JAN' < ... < 'DEC'
+
+       -h, --human-numeric-sort
+              compare human readable numbers (e.g., 2K 1G)
+
+       -n, --numeric-sort
+              compare according to string numerical value
+
+       -R, --random-sort
+              sort by random hash of keys
+
+       --random-source=FILE
+              get random bytes from FILE
+
+       -r, --reverse
+              reverse the result of comparisons
+
+       --sort=WORD
+              sort according to WORD: general-numeric -g, human-numeric -h, month -M, numeric -n, random -R, version -V
+
+       -V, --version-sort
+              natural sort of (version) numbers within text
+
+       Other options:
+
+       --batch-size=NMERGE
+              merge at most NMERGE inputs at once; for more use temp files
+
+       -c, --check, --check=diagnose-first
+              check for sorted input; do not sort
+
+       -C, --check=quiet, --check=silent
+              like -c, but do not report first bad line
+
+       --compress-program=PROG
+              compress temporaries with PROG; decompress them with PROG -d
+
+       --debug
+              annotate the part of the line used to sort, and warn about questionable usage to stderr
+
+       --files0-from=F
+              read input from the files specified by NUL-terminated names in file F; If F is - then read names from standard
+              input
+
+       -k, --key=KEYDEF
+              sort via a key; KEYDEF gives location and type
+
+       -m, --merge
+              merge already sorted files; do not sort
+
+       -o, --output=FILE
+              write result to FILE instead of standard output
+
+       -s, --stable
+              stabilize sort by disabling last-resort comparison
+
+       -S, --buffer-size=SIZE
+              use SIZE for main memory buffer
+
+       -t, --field-separator=SEP
+              use SEP instead of non-blank to blank transition
+
+       -T, --temporary-directory=DIR
+              use DIR for temporaries, not $TMPDIR or /tmp; multiple options specify multiple directories
+
+       --parallel=N
+              change the number of sorts run concurrently to N
+
+       -u, --unique
+              with -c, check for strict ordering; without -c, output only the first of an equal run
+
+       -z, --zero-terminated
+              end lines with 0 byte, not newline
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       KEYDEF is F[.C][OPTS][,F[.C][OPTS]] for start and stop position, where F is a field number and C a character position
+       in  the  field;  both  are  origin  1,  and the stop position defaults to the line's end.  If neither -t nor -b is in
+       effect, characters in a field are counted from the beginning of the preceding whitespace.  OPTS is one or  more  sin‐
+       gle-letter  ordering options [bdfgiMhnRrV], which override global ordering options for that key.  If no key is given,
+       use the entire line as the key.
+
+       SIZE may be followed by the following multiplicative suffixes: % 1% of memory, b 1, K 1024 (default), and so  on  for
+       M, G, T, P, E, Z, Y.
+
+       With no FILE, or when FILE is -, read standard input.
+
+       *** WARNING *** The locale specified by the environment affects sort order.  Set LC_ALL=C to get the traditional sort
+       order that uses native byte values.
+
+AUTHOR
+       Written by Mike Haertel and Paul Eggert.
+
+REPORTING BUGS
+       Report sort bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report sort translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright  ©  2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3   or   later
+       <http://gnu.org/licenses/gpl.html>.
+       This  is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted by
+       law.
+
+SEE ALSO
+       uniq(1)
+
+       The full documentation for sort is maintained as a Texinfo manual.  If  the  info  and  sort  programs  are  properly
+       installed at your site, the command
+
+              info coreutils 'sort invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                  SORT(1)
+# Learn Basic Shell Command
+- env, set
+- cat
+- grep, sed, awk
+- sort, head
+GAWK(1)                                               Utility Commands                                               GAWK(1)
+
+
+
+NAME
+       gawk - pattern scanning and processing language
+
+SYNOPSIS
+       gawk [ POSIX or GNU style options ] -f program-file [ -- ] file ...
+       gawk [ POSIX or GNU style options ] [ -- ] program-text file ...
+
+       pgawk [ POSIX or GNU style options ] -f program-file [ -- ] file ...
+       pgawk [ POSIX or GNU style options ] [ -- ] program-text file ...
+
+       dgawk [ POSIX or GNU style options ] -f program-file [ -- ] file ...
+
+DESCRIPTION
+       Gawk  is the GNU Project's implementation of the AWK programming language.  It conforms to the definition of the lan‐
+       guage in the POSIX 1003.1 Standard.  This version in turn is based on the description in  The  AWK  Programming  Lan‐
+       guage, by Aho, Kernighan, and Weinberger.  Gawk provides the additional features found in the current version of UNIX
+       awk and a number of GNU-specific extensions.
+
+       The command line consists of options to gawk itself, the AWK program text (if not  supplied  via  the  -f  or  --file
+       options), and values to be made available in the ARGC and ARGV pre-defined AWK variables.
+
+       Pgawk  is the profiling version of gawk.  It is identical in every way to gawk, except that programs run more slowly,
+       and it automatically produces an execution profile in the file awkprof.out when  done.   See  the  --profile  option,
+       below.
+
+       Dgawk  is an awk debugger. Instead of running the program directly, it loads the AWK source code and then prompts for
+       debugging commands.  Unlike gawk and pgawk, dgawk only processes AWK program source provided with the -f option.  The
+       debugger is documented in GAWK: Effective AWK Programming.
+
+OPTION FORMAT
+       Gawk  options  may  be  either  traditional POSIX-style one letter options, or GNU-style long options.  POSIX options
+       start with a single “-”, while long options start with “--”.  Long options are provided for  both  GNU-specific  fea‐
+       tures and for POSIX-mandated features.
+
+       Gawk-  specific options are typically used in long-option form.  Arguments to long options are either joined with the
+       option by an = sign, with no intervening spaces, or they may be provided in the next  command  line  argument.   Long
+       options may be abbreviated, as long as the abbreviation remains unique.
+
+       Additionally,  each long option has a corresponding short option, so that the option's functionality may be used from
+       within #!  executable scripts.
+
+OPTIONS
+       Gawk accepts the following options.  Standard options are listed first, followed  by  options  for  gawk  extensions,
+       listed alphabetically by short option.
+
+       -f program-file
+       --file program-file
+              Read the AWK program source from the file program-file, instead of from the first command line argument.  Mul‐
+              tiple -f (or --file) options may be used.
+
+       -F fs
+       --field-separator fs
+              Use fs for the input field separator (the value of the FS predefined variable).
+
+       -v var=val
+       --assign var=val
+              Assign the value val to the variable var, before execution of the program begins.  Such  variable  values  are
+              available to the BEGIN block of an AWK program.
+
+       -b
+       --characters-as-bytes
+              Treat all input data as single-byte characters. In other words, don't pay any attention to the locale informa‐
+              tion when attempting to process strings as multibyte characters.  The --posix option overrides this one.
+
+       -c
+       --traditional
+              Run in compatibility mode.  In compatibility mode, gawk behaves identically to UNIX awk; none of the  GNU-spe‐
+              cific extensions are recognized.  See GNU EXTENSIONS, below, for more information.
+
+       -C
+       --copyright
+              Print the short version of the GNU copyright information message on the standard output and exit successfully.
+
+       -d[file]
+       --dump-variables[=file]
+              Print  a  sorted list of global variables, their types and final values to file.  If no file is provided, gawk
+              uses a file named awkvars.out in the current directory.
+              Having a list of all the global variables is a good way to look for typographical  errors  in  your  programs.
+              You  would  also  use this option if you have a large program with a lot of functions, and you want to be sure
+              that your functions don't inadvertently use global variables that you meant to be local.  (This is a  particu‐
+              larly easy mistake to make with simple variable names like i, j, and so on.)
+
+       -e program-text
+       --source program-text
+              Use  program-text  as  AWK  program source code.  This option allows the easy intermixing of library functions
+              (used via the -f and --file options) with source code entered on the command line.  It is  intended  primarily
+              for medium to large AWK programs used in shell scripts.
+
+       -E file
+       --exec file
+              Similar  to -f, however, this is option is the last one processed.  This should be used with #!  scripts, par‐
+              ticularly for CGI applications, to avoid passing in options or source code (!) on the command line from a URL.
+              This option disables command-line variable assignments.
+
+       -g
+       --gen-pot
+              Scan  and  parse  the  AWK program, and generate a GNU .pot (Portable Object Template) format file on standard
+              output with entries for all localizable strings in the program.  The program itself is not executed.  See  the
+              GNU gettext distribution for more information on .pot files.
+
+       -h
+       --help Print  a  relatively short summary of the available options on the standard output.  (Per the GNU Coding Stan‐
+              dards, these options cause an immediate, successful exit.)
+
+       -L [value]
+       --lint[=value]
+              Provide warnings about constructs that are dubious or non-portable to  other  AWK  implementations.   With  an
+              optional  argument  of  fatal,  lint warnings become fatal errors.  This may be drastic, but its use will cer‐
+              tainly encourage the development of cleaner AWK programs.  With an optional argument of invalid, only warnings
+              about things that are actually invalid are issued. (This is not fully implemented yet.)
+
+       -n
+       --non-decimal-data
+              Recognize octal and hexadecimal values in input data.  Use this option with great caution!
+
+       -N
+       --use-lc-numeric
+              This  forces  gawk  to  use  the locale's decimal point character when parsing input data.  Although the POSIX
+              standard requires this behavior, and gawk does so when --posix is in effect, the default is to  follow  tradi‐
+              tional  behavior  and  use  a period as the decimal point, even in locales where the period is not the decimal
+              point character.  This option overrides the default behavior, without the full  draconian  strictness  of  the
+              --posix option.
+
+       -O
+       --optimize
+              Enable  optimizations  upon  the internal representation of the program.  Currently, this includes just simple
+              constant-folding. The gawk maintainer hopes to add additional optimizations over time.
+
+       -p[prof_file]
+       --profile[=prof_file]
+              Send profiling data to prof_file.  The default is awkprof.out.  When run with gawk,  the  profile  is  just  a
+              “pretty  printed”  version of the program.  When run with pgawk, the profile contains execution counts of each
+              statement in the program in the left margin and function call counts for each user-defined function.
+
+       -P
+       --posix
+              This turns on compatibility mode, with the following additional restrictions:
+
+              · \x escape sequences are not recognized.
+
+              · Only space and tab act as field separators when FS is set to a single space, newline does not.
+
+              · You cannot continue lines after ?  and :.
+
+              · The synonym func for the keyword function is not recognized.
+
+              · The operators ** and **= cannot be used in place of ^ and ^=.
+
+              · The fflush() function is not available.
+
+       -r
+       --re-interval
+              Enable the use of interval expressions in  regular  expression  matching  (see  Regular  Expressions,  below).
+              Interval  expressions were not traditionally available in the AWK language.  The POSIX standard added them, to
+              make awk and egrep consistent with each other.  They are enabled by default, but this option remains  for  use
+              with --traditional.
+
+       -R
+       --command file
+              Dgawk only.  Read stored debugger commands from file.
+
+       -S
+       --sandbox
+              Runs gawk in sandbox mode, disabling the system() function, input redirection with getline, output redirection
+              with print and printf, and loading dynamic extensions.  Command execution (through  pipelines)  is  also  dis‐
+              abled.  This effectively blocks a script from accessing local resources (except for the files specified on the
+              command line).
+
+       -t
+       --lint-old
+              Provide warnings about constructs that are not portable to the original version of Unix awk.
+
+       -V
+       --version
+              Print version information for this particular copy of gawk on the standard output.  This is useful mainly  for
+              knowing  if  the  current copy of gawk on your system is up to date with respect to whatever the Free Software
+              Foundation is distributing.  This is also useful when reporting bugs.  (Per the GNU  Coding  Standards,  these
+              options cause an immediate, successful exit.)
+
+       --     Signal the end of options. This is useful to allow further arguments to the AWK program itself to start with a
+              “-”.  This provides consistency with the argument parsing convention used by most other POSIX programs.
+
+       In compatibility mode, any other options are flagged as invalid, but are otherwise ignored.  In normal operation,  as
+       long  as  program text has been supplied, unknown options are passed on to the AWK program in the ARGV array for pro‐
+       cessing.  This is particularly useful for running AWK programs via the “#!” executable interpreter mechanism.
+
+AWK PROGRAM EXECUTION
+       An AWK program consists of a sequence of pattern-action statements and optional function definitions.
+
+              @include "filename" pattern   { action statements }
+              function name(parameter list) { statements }
+
+       Gawk first reads the program source from the program-file(s) if specified, from arguments to --source,  or  from  the
+       first non-option argument on the command line.  The -f and --source options may be used multiple times on the command
+       line.  Gawk reads the program text as if all the program-files and command line source texts  had  been  concatenated
+       together.   This  is  useful  for building libraries of AWK functions, without having to include them in each new AWK
+       program that uses them.  It also provides the ability to mix library functions with command line programs.
+
+       In addition, lines beginning with @include may be used to include  other  source  files  into  your  program,  making
+       library use even easier.
+
+       The  environment  variable AWKPATH specifies a search path to use when finding source files named with the -f option.
+       If this variable does not exist, the default path is  ".:/usr/local/share/awk".   (The  actual  directory  may  vary,
+       depending upon how gawk was built and installed.)  If a file name given to the -f option contains a “/” character, no
+       path search is performed.
+
+       Gawk executes AWK programs in the following order.  First, all variable assignments specified via the -v  option  are
+       performed.   Next,  gawk  compiles  the  program  into  an  internal form.  Then, gawk executes the code in the BEGIN
+       block(s) (if any), and then proceeds to read each file named in the ARGV array (up to ARGV[ARGC]).  If there  are  no
+       files named on the command line, gawk reads the standard input.
+
+       If a filename on the command line has the form var=val it is treated as a variable assignment.  The variable var will
+       be assigned the value val.  (This happens after any BEGIN block(s) have been run.)  Command line variable  assignment
+       is  most useful for dynamically assigning values to the variables AWK uses to control how input is broken into fields
+       and records.  It is also useful for controlling state if multiple passes are needed over a single data file.
+
+       If the value of a particular element of ARGV is empty (""), gawk skips over it.
+
+       For each input file, if a BEGINFILE rule exists, gawk executes the associated code before processing the contents  of
+       the file. Similarly, gawk executes the code associated with ENDFILE after processing the file.
+
+       For  each record in the input, gawk tests to see if it matches any pattern in the AWK program.  For each pattern that
+       the record matches, the associated action is executed.  The patterns are tested in the order they occur in  the  pro‐
+       gram.
+
+       Finally, after all the input is exhausted, gawk executes the code in the END block(s) (if any).
+
+   Command Line Directories
+       According  to  POSIX,  files named on the awk command line must be text files.  The behavior is ``undefined'' if they
+       are not.  Most versions of awk treat a directory on the command line as a fatal error.
+
+       Starting with version 4.0 of gawk, a directory on the command line produces a warning, but is otherwise skipped.   If
+       either  of  the  --posix  or --traditional options is given, then gawk reverts to treating directories on the command
+       line as a fatal error.
+
+VARIABLES, RECORDS AND FIELDS
+       AWK variables are dynamic; they come into existence when they are first used.  Their values are either floating-point
+       numbers or strings, or both, depending upon how they are used.  AWK also has one dimensional arrays; arrays with mul‐
+       tiple dimensions may be simulated.  Several pre-defined variables are set as a program runs; these are  described  as
+       needed and summarized below.
+
+   Records
+       Normally, records are separated by newline characters.  You can control how records are separated by assigning values
+       to the built-in variable RS.  If RS is any single character, that character separates records.  Otherwise,  RS  is  a
+       regular  expression.   Text in the input that matches this regular expression separates the record.  However, in com‐
+       patibility mode, only the first character of its string value is used for separating records.  If RS is  set  to  the
+       null  string,  then  records  are separated by blank lines.  When RS is set to the null string, the newline character
+       always acts as a field separator, in addition to whatever value FS may have.
+
+   Fields
+       As each input record is read, gawk splits the record into fields, using the value of the FS  variable  as  the  field
+       separator.  If FS is a single character, fields are separated by that character.  If FS is the null string, then each
+       individual character becomes a separate field.  Otherwise, FS is expected to be a full regular  expression.   In  the
+       special case that FS is a single space, fields are separated by runs of spaces and/or tabs and/or newlines.  (But see
+       the section POSIX COMPATIBILITY, below).  NOTE: The value of IGNORECASE (see below) also affects how fields are split
+       when FS is a regular expression, and how records are separated when RS is a regular expression.
+
+       If  the FIELDWIDTHS variable is set to a space separated list of numbers, each field is expected to have fixed width,
+       and gawk splits up the record using the specified widths.  The value of FS is ignored.  Assigning a new value  to  FS
+       or FPAT overrides the use of FIELDWIDTHS.
+
+       Similarly,  if  the FPAT variable is set to a string representing a regular expression, each field is made up of text
+       that matches that regular expression. In this case, the regular expression describes the fields  themselves,  instead
+       of the text that separates the fields.  Assigning a new value to FS or FIELDWIDTHS overrides the use of FPAT.
+
+       Each field in the input record may be referenced by its position, $1, $2, and so on.  $0 is the whole record.  Fields
+       need not be referenced by constants:
+
+              n = 5
+              print $n
+
+       prints the fifth field in the input record.
+
+       The variable NF is set to the total number of fields in the input record.
+
+       References to non-existent fields (i.e. fields after $NF) produce the null-string.  However, assigning to a non-exis‐
+       tent  field  (e.g.,  $(NF+2)  =  5) increases the value of NF, creates any intervening fields with the null string as
+       their value, and causes the value of $0 to be recomputed, with the fields being separated by the value of OFS.   Ref‐
+       erences  to  negative  numbered fields cause a fatal error.  Decrementing NF causes the values of fields past the new
+       value to be lost, and the value of $0 to be recomputed, with the fields being separated by the value of OFS.
+
+       Assigning a value to an existing field causes the whole record to be  rebuilt  when  $0  is  referenced.   Similarly,
+       assigning a value to $0 causes the record to be resplit, creating new values for the fields.
+
+   Built-in Variables
+       Gawk's built-in variables are:
+
+       ARGC        The number of command line arguments (does not include options to gawk, or the program source).
+
+       ARGIND      The index in ARGV of the current file being processed.
+
+       ARGV        Array of command line arguments.  The array is indexed from 0 to ARGC - 1.  Dynamically changing the con‐
+                   tents of ARGV can control the files used for data.
+
+       BINMODE     On non-POSIX systems, specifies use of “binary” mode for all file I/O.  Numeric values of  1,  2,  or  3,
+                   specify that input files, output files, or all files, respectively, should use binary I/O.  String values
+                   of "r", or "w" specify that input files, or output files, respectively, should use  binary  I/O.   String
+                   values  of  "rw" or "wr" specify that all files should use binary I/O.  Any other string value is treated
+                   as "rw", but generates a warning message.
+
+       CONVFMT     The conversion format for numbers, "%.6g", by default.
+
+       ENVIRON     An array containing the values of the current environment.  The array is indexed by the environment vari‐
+                   ables,  each  element  being  the  value  of that variable (e.g., ENVIRON["HOME"] might be /home/arnold).
+                   Changing this array does not affect the environment seen by programs which gawk spawns via redirection or
+                   the system() function.
+
+       ERRNO       If  a  system error occurs either doing a redirection for getline, during a read for getline, or during a
+                   close(), then ERRNO will contain a string describing the error.  The value is subject to  translation  in
+                   non-English locales.
+
+       FIELDWIDTHS A whitespace separated list of field widths.  When set, gawk parses the input into fields of fixed width,
+                   instead of using the value of the FS variable as the field separator.  See Fields, above.
+
+       FILENAME    The name of the current input file.  If no files are specified on the command line, the value of FILENAME
+                   is “-”.  However, FILENAME is undefined inside the BEGIN block (unless set by getline).
+
+       FNR         The input record number in the current input file.
+
+       FPAT        A  regular expression describing the contents of the fields in a record.  When set, gawk parses the input
+                   into fields, where the fields match the regular expression, instead of using the value of the FS variable
+                   as the field separator.  See Fields, above.
+
+       FS          The input field separator, a space by default.  See Fields, above.
+
+       IGNORECASE  Controls  the case-sensitivity of all regular expression and string operations.  If IGNORECASE has a non-
+                   zero value, then string comparisons and pattern matching in rules, field  splitting  with  FS  and  FPAT,
+                   record  separating with RS, regular expression matching with ~ and !~, and the gensub(), gsub(), index(),
+                   match(), patsplit(), split(), and sub() built-in functions all ignore case when doing regular  expression
+                   operations.   NOTE:  Array subscripting is not affected.  However, the asort() and asorti() functions are
+                   affected.
+                   Thus, if IGNORECASE is not equal to zero, /aB/ matches all of the strings "ab", "aB", "Ab", and "AB".  As
+                   with  all  AWK  variables,  the initial value of IGNORECASE is zero, so all regular expression and string
+                   operations are normally case-sensitive.
+
+       LINT        Provides dynamic control of the --lint option from within an AWK program.  When true,  gawk  prints  lint
+                   warnings.  When  false,  it does not.  When assigned the string value "fatal", lint warnings become fatal
+                   errors, exactly like --lint=fatal.  Any other true value just prints warnings.
+
+       NF          The number of fields in the current input record.
+
+       NR          The total number of input records seen so far.
+
+       OFMT        The output format for numbers, "%.6g", by default.
+
+       OFS         The output field separator, a space by default.
+
+       ORS         The output record separator, by default a newline.
+
+       PROCINFO    The elements of this array provide access to information about the running AWK program.  On some systems,
+                   there  may be elements in the array, "group1" through "groupn" for some n, which is the number of supple‐
+                   mentary groups that the process has.  Use the in operator to test for these elements.  The following ele‐
+                   ments are guaranteed to be available:
+
+                   PROCINFO["egid"]    the value of the getegid(2) system call.
+
+                   PROCINFO["strftime"]
+                                       The default time format string for strftime().
+
+                   PROCINFO["euid"]    the value of the geteuid(2) system call.
+
+                   PROCINFO["FS"]      "FS"  if field splitting with FS is in effect, "FPAT" if field splitting with FPAT is
+                                       in effect, or "FIELDWIDTHS" if field splitting with FIELDWIDTHS is in effect.
+
+                   PROCINFO["gid"]     the value of the getgid(2) system call.
+
+                   PROCINFO["pgrpid"]  the process group ID of the current process.
+
+                   PROCINFO["pid"]     the process ID of the current process.
+
+                   PROCINFO["ppid"]    the parent process ID of the current process.
+
+                   PROCINFO["uid"]     the value of the getuid(2) system call.
+
+                   PROCINFO["sorted_in"]
+                                       If this element exists in PROCINFO, then its value controls the order in which  array
+                                       elements   are   traversed  in  for  loops.   Supported  values  are  "@ind_str_asc",
+                                       "@ind_num_asc",  "@val_type_asc",  "@val_str_asc",  "@val_num_asc",  "@ind_str_desc",
+                                       "@ind_num_desc", "@val_type_desc", "@val_str_desc", "@val_num_desc", and "@unsorted".
+                                       The value can also be the name of any comparison function defined as follows:
+
+                          function cmp_func(i1, v1, i2, v2)
+
+                   where i1 and i2 are the indices, and v1 and v2 are the corresponding values of  the  two  elements  being
+                   compared.   It  should  return a number less than, equal to, or greater than 0, depending on how the ele‐
+                   ments of the array are to be ordered.
+
+                   PROCINFO["version"]
+                          the version of gawk.
+
+       RS          The input record separator, by default a newline.
+
+       RT          The record terminator.  Gawk sets RT to the input text that matched the character or  regular  expression
+                   specified by RS.
+
+       RSTART      The index of the first character matched by match(); 0 if no match.  (This implies that character indices
+                   start at one.)
+
+       RLENGTH     The length of the string matched by match(); -1 if no match.
+
+       SUBSEP      The character used to separate multiple subscripts in array elements, by default "\034".
+
+       TEXTDOMAIN  The text domain of the AWK program; used to find the localized translations for the program's strings.
+
+   Arrays
+       Arrays are subscripted with an expression between square brackets ([ and ]).  If the expression is an expression list
+       (expr,  expr ...)  then the array subscript is a string consisting of the concatenation of the (string) value of each
+       expression, separated by the value of the SUBSEP variable.  This facility is used to  simulate  multiply  dimensioned
+       arrays.  For example:
+
+              i = "A"; j = "B"; k = "C"
+              x[i, j, k] = "hello, world\n"
+
+       assigns  the string "hello, world\n" to the element of the array x which is indexed by the string "A\034B\034C".  All
+       arrays in AWK are associative, i.e. indexed by string values.
+
+       The special operator in may be used to test if an array has an index consisting of a particular value:
+
+              if (val in array)
+                   print array[val]
+
+       If the array has multiple subscripts, use (i, j) in array.
+
+       The in construct may also be used in a for loop to iterate over all the elements of an array.
+
+       An element may be deleted from an array using the delete statement.  The delete statement may also be used to  delete
+       the entire contents of an array, just by specifying the array name without a subscript.
+
+       gawk  supports  true multidimensional arrays. It does not require that such arrays be ``rectangular'' as in C or C++.
+       For example:
+              a[1] = 5
+              a[2][1] = 6
+              a[2][2] = 7
+
+   Variable Typing And Conversion
+       Variables and fields may be (floating point) numbers, or strings, or both.  How the value of  a  variable  is  inter‐
+       preted  depends  upon  its  context.   If  used in a numeric expression, it will be treated as a number; if used as a
+       string it will be treated as a string.
+
+       To force a variable to be treated as a number, add 0 to it; to force it to be treated as  a  string,  concatenate  it
+       with the null string.
+
+       When  a  string must be converted to a number, the conversion is accomplished using strtod(3).  A number is converted
+       to a string by using the value of CONVFMT as a format string for sprintf(3), with the numeric value of  the  variable
+       as the argument.  However, even though all numbers in AWK are floating-point, integral values are always converted as
+       integers.  Thus, given
+
+              CONVFMT = "%2.2f"
+              a = 12
+              b = a ""
+
+       the variable b has a string value of "12" and not "12.00".
+
+       NOTE: When operating in POSIX mode (such as with the --posix command line option), beware that  locale  settings  may
+       interfere with the way decimal numbers are treated: the decimal separator of the numbers you are feeding to gawk must
+       conform to what your locale would expect, be it a comma (,) or a period (.).
+
+       Gawk performs comparisons as follows: If two variables are numeric, they are compared numerically.  If one  value  is
+       numeric  and  the  other  has  a string value that is a “numeric string,” then comparisons are also done numerically.
+       Otherwise, the numeric value is converted to a string and a string comparison is performed.   Two  strings  are  com‐
+       pared, of course, as strings.
+
+       Note  that  string constants, such as "57", are not numeric strings, they are string constants.  The idea of “numeric
+       string” only applies to fields, getline input, FILENAME, ARGV elements, ENVIRON elements and the elements of an array
+       created  by  split() or patsplit() that are numeric strings.  The basic idea is that user input, and only user input,
+       that looks numeric, should be treated that way.
+
+       Uninitialized variables have the numeric value 0 and the string value "" (the null, or empty, string).
+
+   Octal and Hexadecimal Constants
+       You may use C-style octal and hexadecimal constants in your AWK program source code.  For example,  the  octal  value
+       011 is equal to decimal 9, and the hexadecimal value 0x11 is equal to decimal 17.
+
+   String Constants
+       String  constants  in AWK are sequences of characters enclosed between double quotes (like "value").  Within strings,
+       certain escape sequences are recognized, as in C.  These are:
+
+       \\   A literal backslash.
+
+       \a   The “alert” character; usually the ASCII BEL character.
+
+       \b   backspace.
+
+       \f   form-feed.
+
+       \n   newline.
+
+       \r   carriage return.
+
+       \t   horizontal tab.
+
+       \v   vertical tab.
+
+       \xhex digits
+            The character represented by the string of hexadecimal digits following the \x.  As in  ANSI  C,  all  following
+            hexadecimal  digits  are  considered  part of the escape sequence.  (This feature should tell us something about
+            language design by committee.)  E.g., "\x1B" is the ASCII ESC (escape) character.
+
+       \ddd The character represented by the 1-, 2-, or 3-digit sequence of octal digits.  E.g., "\033"  is  the  ASCII  ESC
+            (escape) character.
+
+       \c   The literal character c.
+
+       The  escape  sequences may also be used inside constant regular expressions (e.g., /[ \t\f\n\r\v]/ matches whitespace
+       characters).
+
+       In compatibility mode, the characters represented by octal and hexadecimal escape  sequences  are  treated  literally
+       when used in regular expression constants.  Thus, /a\52b/ is equivalent to /a\*b/.
+
+PATTERNS AND ACTIONS
+       AWK  is a line-oriented language.  The pattern comes first, and then the action.  Action statements are enclosed in {
+       and }.  Either the pattern may be missing, or the action may be missing, but, of course, not both.  If the pattern is
+       missing, the action is executed for every single record of input.  A missing action is equivalent to
+
+              { print }
+
+       which prints the entire record.
+
+       Comments  begin  with  the  # character, and continue until the end of the line.  Blank lines may be used to separate
+       statements.  Normally, a statement ends with a newline, however, this is not the case for lines ending in a comma, {,
+       ?,  :,  &&,  or  ||.   Lines ending in do or else also have their statements automatically continued on the following
+       line.  In other cases, a line can be continued by ending it with a “\”, in which case the newline is ignored.
+
+       Multiple statements may be put on one line by separating them with a “;”.  This applies to both the statements within
+       the action part of a pattern-action pair (the usual case), and to the pattern-action statements themselves.
+
+   Patterns
+       AWK patterns may be one of the following:
+
+              BEGIN
+              END
+              BEGINFILE
+              ENDFILE
+              /regular expression/
+              relational expression
+              pattern && pattern
+              pattern || pattern
+              pattern ? pattern : pattern
+              (pattern)
+              ! pattern
+              pattern1, pattern2
+
+       BEGIN  and  END  are  two  special kinds of patterns which are not tested against the input.  The action parts of all
+       BEGIN patterns are merged as if all the statements had been written in a  single  BEGIN  block.   They  are  executed
+       before  any  of  the  input  is  read.   Similarly, all the END blocks are merged, and executed when all the input is
+       exhausted (or when an exit statement is executed).  BEGIN and END patterns cannot be combined with other patterns  in
+       pattern expressions.  BEGIN and END patterns cannot have missing action parts.
+
+       BEGINFILE  and  ENDFILE  are additional special patterns whose bodies are executed before reading the first record of
+       each command line input file and after reading the last record of each file.  Inside the BEGINFILE rule, the value of
+       ERRNO  will  be the empty string if the file could be opened successfully.  Otherwise, there is some problem with the
+       file and the code should use nextfile to skip it. If that is not done, gawk produces its usual fatal error for  files
+       that cannot be opened.
+
+       For  /regular expression/ patterns, the associated statement is executed for each input record that matches the regu‐
+       lar expression.  Regular expressions are the same as those in egrep(1), and are summarized below.
+
+       A relational expression may use any of the operators defined below in the section on actions.  These  generally  test
+       whether certain fields match certain regular expressions.
+
+       The &&, ||, and !  operators are logical AND, logical OR, and logical NOT, respectively, as in C.  They do short-cir‐
+       cuit evaluation, also as in C, and are used for combining more primitive pattern expressions.  As in most  languages,
+       parentheses may be used to change the order of evaluation.
+
+       The  ?:  operator  is like the same operator in C.  If the first pattern is true then the pattern used for testing is
+       the second pattern, otherwise it is the third.  Only one of the second and third patterns is evaluated.
+
+       The pattern1, pattern2 form of an expression is called a range pattern.  It matches all input records starting with a
+       record  that  matches  pattern1, and continuing until a record that matches pattern2, inclusive.  It does not combine
+       with any other sort of pattern expression.
+
+   Regular Expressions
+       Regular expressions are the extended kind found in egrep.  They are composed of characters as follows:
+
+       c          matches the non-metacharacter c.
+
+       \c         matches the literal character c.
+
+       .          matches any character including newline.
+
+       ^          matches the beginning of a string.
+
+       $          matches the end of a string.
+
+       [abc...]   character list, matches any of the characters abc....
+
+       [^abc...]  negated character list, matches any character except abc....
+
+       r1|r2      alternation: matches either r1 or r2.
+
+       r1r2       concatenation: matches r1, and then r2.
+
+       r+         matches one or more r's.
+
+       r*         matches zero or more r's.
+
+       r?         matches zero or one r's.
+
+       (r)        grouping: matches r.
+
+       r{n}
+       r{n,}
+       r{n,m}     One or two numbers inside braces denote an interval expression.  If there is one number in the braces, the
+                  preceding  regular  expression r is repeated n times.  If there are two numbers separated by a comma, r is
+                  repeated n to m times.  If there is one number followed by a comma, then r is repeated at least n times.
+
+       \y         matches the empty string at either the beginning or the end of a word.
+
+       \B         matches the empty string within a word.
+
+       \<         matches the empty string at the beginning of a word.
+
+       \>         matches the empty string at the end of a word.
+
+       \s         matches any whitespace character.
+
+       \S         matches any nonwhitespace character.
+
+       \w         matches any word-constituent character (letter, digit, or underscore).
+
+       \W         matches any character that is not word-constituent.
+
+       \`         matches the empty string at the beginning of a buffer (string).
+
+       \'         matches the empty string at the end of a buffer.
+
+       The escape sequences that are valid in string constants (see below) are also valid in regular expressions.
+
+       Character classes are a feature introduced in the POSIX standard.  A  character  class  is  a  special  notation  for
+       describing  lists  of  characters that have a specific attribute, but where the actual characters themselves can vary
+       from country to country and/or from character set to character set.  For example, the notion of what is an alphabetic
+       character differs in the USA and in France.
+
+       A  character  class is only valid in a regular expression inside the brackets of a character list.  Character classes
+       consist of [:, a keyword denoting the class, and :].  The character classes defined by the POSIX standard are:
+
+       [:alnum:]  Alphanumeric characters.
+
+       [:alpha:]  Alphabetic characters.
+
+       [:blank:]  Space or tab characters.
+
+       [:cntrl:]  Control characters.
+
+       [:digit:]  Numeric characters.
+
+       [:graph:]  Characters that are both printable and visible.  (A space is printable, but not visible,  while  an  a  is
+                  both.)
+
+       [:lower:]  Lowercase alphabetic characters.
+
+       [:print:]  Printable characters (characters that are not control characters.)
+
+       [:punct:]  Punctuation characters (characters that are not letter, digits, control characters, or space characters).
+
+       [:space:]  Space characters (such as space, tab, and formfeed, to name a few).
+
+       [:upper:]  Uppercase alphabetic characters.
+
+       [:xdigit:] Characters that are hexadecimal digits.
+
+       For  example, before the POSIX standard, to match alphanumeric characters, you would have had to write /[A-Za-z0-9]/.
+       If your character set had other alphabetic characters in it, this would not match them, and  if  your  character  set
+       collated differently from ASCII, this might not even match the ASCII alphanumeric characters.  With the POSIX charac‐
+       ter classes, you can write /[[:alnum:]]/, and this matches the alphabetic and numeric characters  in  your  character
+       set, no matter what it is.
+
+       Two  additional  special sequences can appear in character lists.  These apply to non-ASCII character sets, which can
+       have single symbols (called collating elements) that are represented with more than one character, as well as several
+       characters  that  are  equivalent  for  collating,  or sorting, purposes.  (E.g., in French, a plain “e” and a grave-
+       accented “`” are equivalent.)
+
+       Collating Symbols
+              A collating symbol is a multi-character collating element enclosed in [.  and .].  For example,  if  ch  is  a
+              collating element, then [[.ch.]]  is a regular expression that matches this collating element, while [ch] is a
+              regular expression that matches either c or h.
+
+       Equivalence Classes
+              An equivalence class is a locale-specific name for a list of characters that  are  equivalent.   The  name  is
+              enclosed  in [= and =].  For example, the name e might be used to represent all of “e,” “´,” and “`.”  In this
+              case, [[=e=]] is a regular expression that matches any of e, ´, or `.
+
+       These features are very valuable in non-English speaking locales.  The library functions that gawk uses  for  regular
+       expression  matching  currently  only  recognize  POSIX character classes; they do not recognize collating symbols or
+       equivalence classes.
+
+       The \y, \B, \<, \>, \s, \S, \w, \W, \`, and \' operators are specific to gawk; they are extensions based  on  facili‐
+       ties in the GNU regular expression libraries.
+
+       The various command line options control how gawk interprets characters in regular expressions.
+
+       No options
+              In  the default case, gawk provide all the facilities of POSIX regular expressions and the GNU regular expres‐
+              sion operators described above.
+
+       --posix
+              Only POSIX regular expressions are supported, the GNU operators are not special.  (E.g., \w matches a  literal
+              w).
+
+       --traditional
+              Traditional Unix awk regular expressions are matched.  The GNU operators are not special, and interval expres‐
+              sions are not available.  Characters described by octal and hexadecimal escape sequences  are  treated  liter‐
+              ally, even if they represent regular expression metacharacters.
+
+       --re-interval
+              Allow interval expressions in regular expressions, even if --traditional has been provided.
+
+   Actions
+       Action  statements  are enclosed in braces, { and }.  Action statements consist of the usual assignment, conditional,
+       and looping statements found in most languages.  The  operators,  control  statements,  and  input/output  statements
+       available are patterned after those in C.
+
+   Operators
+       The operators in AWK, in order of decreasing precedence, are
+
+       (...)       Grouping
+
+       $           Field reference.
+
+       ++ --       Increment and decrement, both prefix and postfix.
+
+       ^           Exponentiation (** may also be used, and **= for the assignment operator).
+
+       + - !       Unary plus, unary minus, and logical negation.
+
+       * / %       Multiplication, division, and modulus.
+
+       + -         Addition and subtraction.
+
+       space       String concatenation.
+
+       |   |&      Piped I/O for getline, print, and printf.
+
+       < > <= >= != ==
+                   The regular relational operators.
+
+       ~ !~        Regular  expression  match, negated match.  NOTE: Do not use a constant regular expression (/foo/) on the
+                   left-hand side of a ~ or !~.  Only use one on the right-hand side.  The expression /foo/ ~  exp  has  the
+                   same meaning as (($0 ~ /foo/) ~ exp).  This is usually not what was intended.
+
+       in          Array membership.
+
+       &&          Logical AND.
+
+       ||          Logical OR.
+
+       ?:          The  C  conditional expression.  This has the form expr1 ? expr2 : expr3.  If expr1 is true, the value of
+                   the expression is expr2, otherwise it is expr3.  Only one of expr2 and expr3 is evaluated.
+
+       = += -= *= /= %= ^=
+                   Assignment.  Both absolute assignment (var = value) and operator-assignment (the other  forms)  are  sup‐
+                   ported.
+
+   Control Statements
+       The control statements are as follows:
+
+              if (condition) statement [ else statement ]
+              while (condition) statement
+              do statement while (condition)
+              for (expr1; expr2; expr3) statement
+              for (var in array) statement
+              break
+              continue
+              delete array[index]
+              delete array
+              exit [ expression ]
+              { statements }
+              switch (expression) {
+              case value|regex : statement
+              ...
+              [ default: statement ]
+              }
+
+   I/O Statements
+       The input/output statements are as follows:
+
+       close(file [, how])   Close file, pipe or co-process.  The optional how should only be used when closing one end of a
+                             two-way pipe to a co-process.  It must be a string value, either "to" or "from".
+
+       getline               Set $0 from next input record; set NF, NR, FNR.
+
+       getline <file         Set $0 from next record of file; set NF.
+
+       getline var           Set var from next input record; set NR, FNR.
+
+       getline var <file     Set var from next record of file.
+
+       command | getline [var]
+                             Run command piping the output either into $0 or var, as above.
+
+       command |& getline [var]
+                             Run command as a co-process piping the output either into $0 or var,  as  above.   Co-processes
+                             are  a  gawk extension.  (command can also be a socket.  See the subsection Special File Names,
+                             below.)
+
+       next                  Stop processing the current input record.  The next input record is read and processing  starts
+                             over  with  the first pattern in the AWK program.  If the end of the input data is reached, the
+                             END block(s), if any, are executed.
+
+       nextfile              Stop processing the current input file.  The next input record read comes from the  next  input
+                             file.   FILENAME and ARGIND are updated, FNR is reset to 1, and processing starts over with the
+                             first pattern in the AWK program. If the end of the input data is reached, the END block(s), if
+                             any, are executed.
+
+       print                 Print the current record.  The output record is terminated with the value of the ORS variable.
+
+       print expr-list       Print  expressions.  Each expression is separated by the value of the OFS variable.  The output
+                             record is terminated with the value of the ORS variable.
+
+       print expr-list >file Print expressions on file.  Each expression is separated by the value of the OFS variable.  The
+                             output record is terminated with the value of the ORS variable.
+
+       printf fmt, expr-list Format and print.  See The printf Statement, below.
+
+       printf fmt, expr-list >file
+                             Format and print on file.
+
+       system(cmd-line)      Execute  the  command cmd-line, and return the exit status.  (This may not be available on non-
+                             POSIX systems.)
+
+       fflush([file])        Flush any buffers associated with the open output file or pipe file.  If file is missing,  then
+                             flush standard output.  If file is the null string, then flush all open output files and pipes.
+
+       Additional output redirections are allowed for print and printf.
+
+       print ... >> file
+              Appends output to the file.
+
+       print ... | command
+              Writes on a pipe.
+
+       print ... |& command
+              Sends data to a co-process or socket.  (See also the subsection Special File Names, below.)
+
+       The  getline  command  returns  1  on success, 0 on end of file, and -1 on an error.  Upon an error, ERRNO contains a
+       string describing the problem.
+
+       NOTE: Failure in opening a two-way socket will result in a non-fatal error being returned to the calling function. If
+       using a pipe, co-process, or socket to getline, or from print or printf within a loop, you must use close() to create
+       new instances of the command or socket.  AWK does not automatically close pipes, sockets, or co-processes  when  they
+       return EOF.
+
+   The printf Statement
+       The  AWK versions of the printf statement and sprintf() function (see below) accept the following conversion specifi‐
+       cation formats:
+
+       %c      A single character.  If the argument used for %c is numeric, it is treated as a character and printed.   Oth‐
+               erwise, the argument is assumed to be a string, and the only first character of that string is printed.
+
+       %d, %i  A decimal number (the integer part).
+
+       %e, %E  A floating point number of the form [-]d.dddddde[+-]dd.  The %E format uses E instead of e.
+
+       %f, %F  A  floating  point  number  of the form [-]ddd.dddddd.  If the system library supports it, %F is available as
+               well. This is like %f, but uses capital letters for special “not a number” and “infinity” values.  If  %F  is
+               not available, gawk uses %f.
+
+       %g, %G  Use  %e  or %f conversion, whichever is shorter, with nonsignificant zeros suppressed.  The %G format uses %E
+               instead of %e.
+
+       %o      An unsigned octal number (also an integer).
+
+       %u      An unsigned decimal number (again, an integer).
+
+       %s      A character string.
+
+       %x, %X  An unsigned hexadecimal number (an integer).  The %X format uses ABCDEF instead of abcdef.
+
+       %%      A single % character; no argument is converted.
+
+       Optional, additional parameters may lie between the % and the control letter:
+
+       count$ Use the count'th argument at this point in the formatting.  This is  called  a  positional  specifier  and  is
+              intended  primarily  for use in translated versions of format strings, not in the original text of an AWK pro‐
+              gram.  It is a gawk extension.
+
+       -      The expression should be left-justified within its field.
+
+       space  For numeric conversions, prefix positive values with a space, and negative values with a minus sign.
+
+       +      The plus sign, used before the width modifier (see below), says to always supply a sign  for  numeric  conver‐
+              sions, even if the data to be formatted is positive.  The + overrides the space modifier.
+
+       #      Use an “alternate form” for certain control letters.  For %o, supply a leading zero.  For %x, and %X, supply a
+              leading 0x or 0X for a nonzero result.  For %e, %E, %f and %F, the result always  contains  a  decimal  point.
+              For %g, and %G, trailing zeros are not removed from the result.
+
+       0      A leading 0 (zero) acts as a flag, that indicates output should be padded with zeroes instead of spaces.  This
+              applies only to the numeric output formats.  This flag only has an effect when the field width is  wider  than
+              the value to be printed.
+
+       width  The  field  should be padded to this width.  The field is normally padded with spaces.  If the 0 flag has been
+              used, it is padded with zeroes.
+
+       .prec  A number that specifies the precision to use when printing.  For the %e, %E, %f and %F, formats,  this  speci‐
+              fies  the number of digits you want printed to the right of the decimal point.  For the %g, and %G formats, it
+              specifies the maximum number of significant digits.  For the %d, %i, %o, %u, %x, and %X formats, it  specifies
+              the  minimum number of digits to print.  For %s, it specifies the maximum number of characters from the string
+              that should be printed.
+
+       The dynamic width and prec capabilities of the ANSI C printf() routines are supported.  A * in place  of  either  the
+       width or prec specifications causes their values to be taken from the argument list to printf or sprintf().  To use a
+       positional specifier with a dynamic width or precision, supply the count$ after the *  in  the  format  string.   For
+       example, "%3$*2$.*1$s".
+
+   Special File Names
+       When  doing I/O redirection from either print or printf into a file, or via getline from a file, gawk recognizes cer‐
+       tain special filenames internally.  These filenames allow access to open file descriptors inherited from gawk's  par‐
+       ent  process  (usually  the  shell).   These file names may also be used on the command line to name data files.  The
+       filenames are:
+
+       /dev/stdin  The standard input.
+
+       /dev/stdout The standard output.
+
+       /dev/stderr The standard error output.
+
+       /dev/fd/n   The file associated with the open file descriptor n.
+
+       These are particularly useful for error messages.  For example:
+
+              print "You blew it!" > "/dev/stderr"
+
+       whereas you would otherwise have to use
+
+              print "You blew it!" | "cat 1>&2"
+
+       The following special filenames may be used with the |& co-process operator for creating TCP/IP network connections:
+
+       /inet/tcp/lport/rhost/rport
+       /inet4/tcp/lport/rhost/rport
+       /inet6/tcp/lport/rhost/rport
+              Files for a TCP/IP connection on local port lport to remote host rhost on remote port rport.  Use a port of  0
+              to  have  the system pick a port.  Use /inet4 to force an IPv4 connection, and /inet6 to force an IPv6 connec‐
+              tion.  Plain /inet uses the system default (most likely IPv4).
+
+       /inet/udp/lport/rhost/rport
+       /inet4/udp/lport/rhost/rport
+       /inet6/udp/lport/rhost/rport
+              Similar, but use UDP/IP instead of TCP/IP.
+
+   Numeric Functions
+       AWK has the following built-in arithmetic functions:
+
+       atan2(y, x)   Return the arctangent of y/x in radians.
+
+       cos(expr)     Return the cosine of expr, which is in radians.
+
+       exp(expr)     The exponential function.
+
+       int(expr)     Truncate to integer.
+
+       log(expr)     The natural logarithm function.
+
+       rand()        Return a random number N, between 0 and 1, such that 0 ≤ N < 1.
+
+       sin(expr)     Return the sine of expr, which is in radians.
+
+       sqrt(expr)    The square root function.
+
+       srand([expr]) Use expr as the new seed for the random number generator.  If no expr is provided, use the time of day.
+                     The return value is the previous seed for the random number generator.
+
+   String Functions
+       Gawk has the following built-in string functions:
+
+       asort(s [, d [, how] ]) Return  the  number  of  elements in the source array s.  Sort the contents of s using gawk's
+                               normal rules for comparing values, and replace the  indices  of  the  sorted  values  s  with
+                               sequential  integers  starting with 1. If the optional destination array d is specified, then
+                               first duplicate s into d, and then sort  d,  leaving  the  indices  of  the  source  array  s
+                               unchanged.  The  optional  string  how controls the direction and the comparison mode.  Valid
+                               values for how are any of the strings valid for PROCINFO["sorted_in"].  It can  also  be  the
+                               name of a user-defined comparison function as described in PROCINFO["sorted_in"].
+
+       asorti(s [, d [, how] ])
+                               Return  the  number  of  elements in the source array s.  The behavior is the same as that of
+                               asort(), except that the array indices are used for sorting,  not  the  array  values.   When
+                               done,  the  array  is  indexed numerically, and the values are those of the original indices.
+                               The original values are lost; thus provide a second array if you wish to preserve the  origi‐
+                               nal.  The purpose of the optional string how is the same as described in asort() above.
+
+       gensub(r, s, h [, t])   Search  the target string t for matches of the regular expression r.  If h is a string begin‐
+                               ning with g or G, then replace all matches of r with s.  Otherwise, h is a number  indicating
+                               which  match  of r to replace.  If t is not supplied, use $0 instead.  Within the replacement
+                               text s, the sequence \n, where n is a digit from 1 to 9, may be used  to  indicate  just  the
+                               text  that  matched  the  n'th  parenthesized  subexpression.  The sequence \0 represents the
+                               entire matched text, as does the character &.  Unlike sub() and gsub(), the  modified  string
+                               is returned as the result of the function, and the original target string is not changed.
+
+       gsub(r, s [, t])        For  each  substring matching the regular expression r in the string t, substitute the string
+                               s, and return the number of substitutions.  If t is not  supplied,  use  $0.   An  &  in  the
+                               replacement  text  is replaced with the text that was actually matched.  Use \& to get a lit‐
+                               eral &.  (This must be typed as "\\&"; see GAWK: Effective AWK Programming for a fuller  dis‐
+                               cussion  of  the  rules for &'s and backslashes in the replacement text of sub(), gsub(), and
+                               gensub().)
+
+       index(s, t)             Return the index of the string t in the string s, or 0 if t is not  present.   (This  implies
+                               that character indices start at one.)
+
+       length([s])             Return  the length of the string s, or the length of $0 if s is not supplied.  As a non-stan‐
+                               dard extension, with an array argument, length() returns the number of elements in the array.
+
+       match(s, r [, a])       Return the position in s where the regular expression r occurs, or 0 if r is not present, and
+                               set  the values of RSTART and RLENGTH.  Note that the argument order is the same as for the ~
+                               operator: str ~ re.  If array a is provided, a is cleared and then elements 1 through  n  are
+                               filled  with the portions of s that match the corresponding parenthesized subexpression in r.
+                               The 0'th element of a contains the portion of s matched by the entire regular  expression  r.
+                               Subscripts  a[n,  "start"],  and  a[n, "length"] provide the starting index in the string and
+                               length respectively, of each matching substring.
+
+       patsplit(s, a [, r [, seps] ])
+                               Split the string s into the array a and the separators array seps on the  regular  expression
+                               r,  and  return  the  number of fields.  Element values are the portions of s that matched r.
+                               The value of seps[i] is the separator that appeared in front of a[i+1].   If  r  is  omitted,
+                               FPAT  is  used  instead.  The arrays a and seps are cleared first.  Splitting behaves identi‐
+                               cally to field splitting with FPAT, described above.
+
+       split(s, a [, r [, seps] ])
+                               Split the string s into the array a and the separators array seps on the  regular  expression
+                               r,  and  return the number of fields.  If r is omitted, FS is used instead.  The arrays a and
+                               seps are cleared first.  seps[i] is the field separator matched by r between a[i] and a[i+1].
+                               If  r  is  a  single  space,  then  leading whitespace in s goes into the extra array element
+                               seps[0] and trailing whitespace goes into the extra array element seps[n],  where  n  is  the
+                               return  value  of  split(s,  a,  r, seps).  Splitting behaves identically to field splitting,
+                               described above.
+
+       sprintf(fmt, expr-list) Prints expr-list according to fmt, and returns the resulting string.
+
+       strtonum(str)           Examine str, and return its numeric value.  If  str  begins  with  a  leading  0,  strtonum()
+                               assumes  that  str  is  an  octal  number.  If str begins with a leading 0x or 0X, strtonum()
+                               assumes that str is a hexadecimal number.  Otherwise, decimal is assumed.
+
+       sub(r, s [, t])         Just like gsub(), but replace only the first matching substring.
+
+       substr(s, i [, n])      Return the at most n-character substring of s starting at i.  If n is omitted, use  the  rest
+                               of s.
+
+       tolower(str)            Return a copy of the string str, with all the uppercase characters in str translated to their
+                               corresponding lowercase counterparts.  Non-alphabetic characters are left unchanged.
+
+       toupper(str)            Return a copy of the string str, with all the lowercase characters in str translated to their
+                               corresponding uppercase counterparts.  Non-alphabetic characters are left unchanged.
+
+       Gawk  is  multibyte  aware.  This means that index(), length(), substr() and match() all work in terms of characters,
+       not bytes.
+
+   Time Functions
+       Since one of the primary uses of AWK programs is processing log files that contain time stamp information, gawk  pro‐
+       vides the following functions for obtaining time stamps and formatting them.
+
+       mktime(datespec)
+                 Turn  datespec  into  a  time  stamp of the same form as returned by systime(), and return the result.  The
+                 datespec is a string of the form YYYY MM DD HH MM SS[ DST].  The contents of the string are  six  or  seven
+                 numbers  representing  respectively the full year including century, the month from 1 to 12, the day of the
+                 month from 1 to 31, the hour of the day from 0 to 23, the minute from 0 to 59, the second from 0 to 60, and
+                 an optional daylight saving flag.  The values of these numbers need not be within the ranges specified; for
+                 example, an hour of -1 means 1 hour before midnight.  The origin-zero Gregorian calendar is  assumed,  with
+                 year 0 preceding year 1 and year -1 preceding year 0.  The time is assumed to be in the local timezone.  If
+                 the daylight saving flag is positive, the time is assumed to be daylight saving time; if zero, the time  is
+                 assumed to be standard time; and if negative (the default), mktime() attempts to determine whether daylight
+                 saving time is in effect for the specified time.  If datespec does not contain enough elements  or  if  the
+                 resulting time is out of range, mktime() returns -1.
+
+       strftime([format [, timestamp[, utc-flag]]])
+                 Format  timestamp according to the specification in format.  If utc-flag is present and is non-zero or non-
+                 null, the result is in UTC, otherwise the result is in local time.  The timestamp should  be  of  the  same
+                 form  as  returned  by  systime().  If timestamp is missing, the current time of day is used.  If format is
+                 missing, a default format equivalent to the output of date(1) is used.  The default format is available  in
+                 PROCINFO["strftime"].   See  the specification for the strftime() function in ANSI C for the format conver‐
+                 sions that are guaranteed to be available.
+
+       systime() Return the current time of day as the number of seconds since the Epoch (1970-01-01 00:00:00 UTC  on  POSIX
+                 systems).
+
+   Bit Manipulations Functions
+       Gawk supplies the following bit manipulation functions.  They work by converting double-precision floating point val‐
+       ues to uintmax_t integers, doing the operation, and then converting the result back to floating point.  The functions
+       are:
+
+       and(v1, v2)         Return the bitwise AND of the values provided by v1 and v2.
+
+       compl(val)          Return the bitwise complement of val.
+
+       lshift(val, count)  Return the value of val, shifted left by count bits.
+
+       or(v1, v2)          Return the bitwise OR of the values provided by v1 and v2.
+
+       rshift(val, count)  Return the value of val, shifted right by count bits.
+
+       xor(v1, v2)         Return the bitwise XOR of the values provided by v1 and v2.
+
+   Type Function
+       The following function is for use with multidimensional arrays.
+
+       isarray(x)
+              Return true if x is an array, false otherwise.
+
+   Internationalization Functions
+       The  following  functions  may  be  used  from within your AWK program for translating strings at run-time.  For full
+       details, see GAWK: Effective AWK Programming.
+
+       bindtextdomain(directory [, domain])
+              Specify the directory where gawk looks for the .mo files, in case they will not or cannot  be  placed  in  the
+              ``standard'' locations (e.g., during testing).  It returns the directory where domain is ``bound.''
+              The  default  domain  is the value of TEXTDOMAIN.  If directory is the null string (""), then bindtextdomain()
+              returns the current binding for the given domain.
+
+       dcgettext(string [, domain [, category]])
+              Return the translation of string in text domain domain for locale category category.  The  default  value  for
+              domain is the current value of TEXTDOMAIN.  The default value for category is "LC_MESSAGES".
+              If  you supply a value for category, it must be a string equal to one of the known locale categories described
+              in GAWK: Effective AWK Programming.  You must also supply a text domain.  Use TEXTDOMAIN if you  want  to  use
+              the current domain.
+
+       dcngettext(string1 , string2 , number [, domain [, category]])
+              Return  the  plural  form  used for number of the translation of string1 and string2 in text domain domain for
+              locale category category.  The default value for domain is the current value of TEXTDOMAIN.  The default value
+              for category is "LC_MESSAGES".
+              If  you supply a value for category, it must be a string equal to one of the known locale categories described
+              in GAWK: Effective AWK Programming.  You must also supply a text domain.  Use TEXTDOMAIN if you  want  to  use
+              the current domain.
+
+USER-DEFINED FUNCTIONS
+       Functions in AWK are defined as follows:
+
+              function name(parameter list) { statements }
+
+       Functions are executed when they are called from within expressions in either patterns or actions.  Actual parameters
+       supplied in the function call are used to instantiate the formal parameters declared in  the  function.   Arrays  are
+       passed by reference, other variables are passed by value.
+
+       Since  functions  were  not  originally part of the AWK language, the provision for local variables is rather clumsy:
+       They are declared as extra parameters in the parameter list.  The convention is to separate local variables from real
+       parameters by extra spaces in the parameter list.  For example:
+
+              function  f(p, q,     a, b)   # a and b are local
+              {
+                   ...
+              }
+
+              /abc/     { ... ; f(1, 2) ; ... }
+
+       The  left parenthesis in a function call is required to immediately follow the function name, without any intervening
+       whitespace.  This avoids a syntactic ambiguity with the concatenation operator.  This restriction does not  apply  to
+       the built-in functions listed above.
+
+       Functions  may  call each other and may be recursive.  Function parameters used as local variables are initialized to
+       the null string and the number zero upon function invocation.
+
+       Use return expr to return a value from a function.  The return value is undefined if no value is provided, or if  the
+       function returns by “falling off” the end.
+
+       As a gawk extension, functions may be called indirectly. To do this, assign the name of the function to be called, as
+       a string, to a variable.  Then use the variable as if it were the name of a function, prefixed with an @  sign,  like
+       so:
+              function  myfunc()
+              {
+                   print "myfunc called"
+                   ...
+              }
+
+              {    ...
+                   the_func = "myfunc"
+                   @the_func()    # call through the_func to myfunc
+                   ...
+              }
+
+       If  --lint  has  been  provided, gawk warns about calls to undefined functions at parse time, instead of at run time.
+       Calling an undefined function at run time is a fatal error.
+
+       The word func may be used in place of function.
+
+DYNAMICALLY LOADING NEW FUNCTIONS
+       You can dynamically add new built-in functions to the running gawk interpreter.  The  full  details  are  beyond  the
+       scope of this manual page; see GAWK: Effective AWK Programming for the details.
+
+       extension(object, function)
+               Dynamically  link the shared object file named by object, and invoke function in that object, to perform ini‐
+               tialization.  These should both be provided as strings.  Return the value returned by function.
+
+       Using this feature at the C level is not pretty, but it is unlikely to go away. Additional mechanisms may be added at
+       some point.
+
+SIGNALS
+       pgawk accepts two signals.  SIGUSR1 causes it to dump a profile and function call stack to the profile file, which is
+       either awkprof.out, or whatever file was named with the --profile option.  It then continues to run.   SIGHUP  causes
+       pgawk to dump the profile and function call stack and then exit.
+
+INTERNATIONALIZATION
+       String  constants are sequences of characters enclosed in double quotes.  In non-English speaking environments, it is
+       possible to mark strings in the AWK program as requiring translation to the local natural language. Such strings  are
+       marked in the AWK program with a leading underscore (“_”).  For example,
+
+              gawk 'BEGIN { print "hello, world" }'
+
+       always prints hello, world.  But,
+
+              gawk 'BEGIN { print _"hello, world" }'
+
+       might print bonjour, monde in France.
+
+       There are several steps involved in producing and running a localizable AWK program.
+
+       1.  Add  a BEGIN action to assign a value to the TEXTDOMAIN variable to set the text domain to a name associated with
+           your program:
+
+           BEGIN { TEXTDOMAIN = "myprog" }
+
+       This allows gawk to find the .mo file associated with your program.  Without this step, gawk uses the  messages  text
+       domain, which likely does not contain translations for your program.
+
+       2.  Mark all strings that should be translated with leading underscores.
+
+       3.  If necessary, use the dcgettext() and/or bindtextdomain() functions in your program, as appropriate.
+
+       4.  Run gawk --gen-pot -f myprog.awk > myprog.pot to generate a .po file for your program.
+
+       5.  Provide appropriate translations, and build and install the corresponding .mo files.
+
+       The internationalization features are described in full detail in GAWK: Effective AWK Programming.
+
+POSIX COMPATIBILITY
+       A primary goal for gawk is compatibility with the POSIX standard, as well as with the latest version of UNIX awk.  To
+       this end, gawk incorporates the following user visible features which are not described in the AWK book, but are part
+       of the Bell Laboratories version of awk, and are in the POSIX standard.
+
+       The  book  indicates  that  command  line variable assignment happens when awk would otherwise open the argument as a
+       file, which is after the BEGIN block is executed.  However, in  earlier  implementations,  when  such  an  assignment
+       appeared  before  any  file  names, the assignment would happen before the BEGIN block was run.  Applications came to
+       depend on this “feature.”  When awk was changed to match its documentation, the -v  option  for  assigning  variables
+       before  program  execution  was added to accommodate applications that depended upon the old behavior.  (This feature
+       was agreed upon by both the Bell Laboratories and the GNU developers.)
+
+       When processing arguments, gawk uses the special option “--” to signal the end of arguments.  In compatibility  mode,
+       it warns about but otherwise ignores undefined options.  In normal operation, such arguments are passed on to the AWK
+       program for it to process.
+
+       The AWK book does not define the return value of srand().  The POSIX standard has it return the seed it was using, to
+       allow keeping track of random number sequences.  Therefore srand() in gawk also returns its current seed.
+
+       Other  new  features  are:  The  use  of multiple -f options (from MKS awk); the ENVIRON array; the \a, and \v escape
+       sequences (done originally in gawk and fed back into the Bell Laboratories  version);  the  tolower()  and  toupper()
+       built-in  functions  (from  the  Bell Laboratories version); and the ANSI C conversion specifications in printf (done
+       first in the Bell Laboratories version).
+
+HISTORICAL FEATURES
+       There is one feature of historical AWK implementations that gawk supports: It is possible to call the length() built-
+       in function not only with no argument, but even without parentheses!  Thus,
+
+              a = length     # Holy Algol 60, Batman!
+
+       is the same as either of
+
+              a = length()
+              a = length($0)
+
+       Using  this  feature  is poor practice, and gawk issues a warning about its use if --lint is specified on the command
+       line.
+
+GNU EXTENSIONS
+       Gawk has a number of extensions to POSIX awk.  They are described in this section.  All the extensions described here
+       can be disabled by invoking gawk with the --traditional or --posix options.
+
+       The following features of gawk are not available in POSIX awk.
+
+       · No  path  search is performed for files named via the -f option.  Therefore the AWKPATH environment variable is not
+         special.
+
+       · There is no facility for doing file inclusion (gawk's @include mechanism).
+
+       · The \x escape sequence.  (Disabled with --posix.)
+
+       · The fflush() function.  (Disabled with --posix.)
+
+       · The ability to continue lines after ?  and :.  (Disabled with --posix.)
+
+       · Octal and hexadecimal constants in AWK programs.
+
+       · The ARGIND, BINMODE, ERRNO, LINT, RT and TEXTDOMAIN variables are not special.
+
+       · The IGNORECASE variable and its side-effects are not available.
+
+       · The FIELDWIDTHS variable and fixed-width field splitting.
+
+       · The FPAT variable and field splitting based on field values.
+
+       · The PROCINFO array is not available.
+
+       · The use of RS as a regular expression.
+
+       · The special file names available for I/O redirection are not recognized.
+
+       · The |& operator for creating co-processes.
+
+       · The BEGINFILE and ENDFILE special patterns are not available.
+
+       · The ability to split out individual characters using the null string as the value of FS, and as the third  argument
+         to split().
+
+       · An optional fourth argument to split() to receive the separator texts.
+
+       · The optional second argument to the close() function.
+
+       · The optional third argument to the match() function.
+
+       · The ability to use positional specifiers with printf and sprintf().
+
+       · The ability to pass an array to length().
+
+       · The use of delete array to delete the entire contents of an array.
+
+       · The use of nextfile to abandon processing of the current input file.
+
+       · The  and(),  asort(), asorti(), bindtextdomain(), compl(), dcgettext(), dcngettext(), gensub(), lshift(), mktime(),
+         or(), patsplit(), rshift(), strftime(), strtonum(), systime() and xor() functions.
+
+       · Localizable strings.
+
+       · Adding new built-in functions dynamically with the extension() function.
+
+       The AWK book does not define the return value of the  close()  function.   Gawk's  close()  returns  the  value  from
+       fclose(3),  or  pclose(3),  when  closing an output file or pipe, respectively.  It returns the process's exit status
+       when closing an input pipe.  The return value is -1 if the named file, pipe or co-process was not opened with a redi‐
+       rection.
+
+       When gawk is invoked with the --traditional option, if the fs argument to the -F option is “t”, then FS is set to the
+       tab character.  Note that typing gawk -F\t ...  simply causes the shell to quote the “t,” and does not pass  “\t”  to
+       the  -F  option.   Since this is a rather ugly special case, it is not the default behavior.  This behavior also does
+       not occur if --posix has been specified.  To really get a tab character as the field separator, it  is  best  to  use
+       single quotes: gawk -F'\t' ....
+
+ENVIRONMENT VARIABLES
+       The  AWKPATH  environment  variable  can be used to provide a list of directories that gawk searches when looking for
+       files named via the -f and --file options.
+
+       For socket communication,  two  special  environment  variables  can  be  used  to  control  the  number  of  retries
+       (GAWK_SOCK_RETRIES), and the interval between retries (GAWK_MSEC_SLEEP).  The interval is in milliseconds. On systems
+       that do not support usleep(3), the value is rounded up to an integral number of seconds.
+
+       If POSIXLY_CORRECT exists in the environment, then gawk behaves exactly as if --posix had been specified on the  com‐
+       mand line.  If --lint has been specified, gawk issues a warning message to this effect.
+
+EXIT STATUS
+       If the exit statement is used with a value, then gawk exits with the numeric value given to it.
+
+       Otherwise,  if  there  were  no  problems during execution, gawk exits with the value of the C constant EXIT_SUCCESS.
+       This is usually zero.
+
+       If an error occurs, gawk exits with the value of the C constant EXIT_FAILURE.  This is usually one.
+
+       If gawk exits because of a fatal error, the exit status is 2.  On non-POSIX systems, this  value  may  be  mapped  to
+       EXIT_FAILURE.
+
+VERSION INFORMATION
+       This man page documents gawk, version 4.0.
+
+AUTHORS
+       The original version of UNIX awk was designed and implemented by Alfred Aho, Peter Weinberger, and Brian Kernighan of
+       Bell Laboratories.  Brian Kernighan continues to maintain and enhance it.
+
+       Paul Rubin and Jay Fenlason, of the Free Software Foundation, wrote gawk, to be compatible with the original  version
+       of  awk distributed in Seventh Edition UNIX.  John Woods contributed a number of bug fixes.  David Trueman, with con‐
+       tributions from Arnold Robbins, made gawk compatible with the new version of UNIX awk.  Arnold Robbins is the current
+       maintainer.
+
+       The  initial  DOS  port was done by Conrad Kwok and Scott Garfinkle.  Scott Deifik maintains the port to MS-DOS using
+       DJGPP.  Eli Zaretskii maintains the port to MS-Windows using MinGW.  Pat Rankin did  the  port  to  VMS,  and  Michal
+       Jaegermann  did  the  port to the Atari ST.  The port to OS/2 was done by Kai Uwe Rommel, with contributions and help
+       from Darrel Hankerson.  Andreas Buening now maintains the OS/2 port.  The late Fred Fish  supplied  support  for  the
+       Amiga,  and  Martin  Brown  provided  the  BeOS  port.  Stephen Davies provided the original Tandem port, and Matthew
+       Woehlke provided changes for Tandem's POSIX-compliant systems.  Dave Pitts provided the port to z/OS.
+
+       See the README file in the gawk distribution for up-to-date information about maintainers and which  ports  are  cur‐
+       rently supported.
+
+BUG REPORTS
+       If you find a bug in gawk, please send electronic mail to bug-gawk@gnu.org.  Please include your operating system and
+       its revision, the version of gawk (from gawk --version), which C compiler you used to compile it, and a test  program
+       and data that are as small as possible for reproducing the problem.
+
+       Before sending a bug report, please do the following things.  First, verify that you have the latest version of gawk.
+       Many bugs (usually subtle ones) are fixed at each release, and if yours is out of date, the problem may already  have
+       been  solved.   Second,  please see if setting the environment variable LC_ALL to LC_ALL=C causes things to behave as
+       you expect. If so, it's a locale issue, and may or may not really be a bug.  Finally, please read this man  page  and
+       the reference manual carefully to be sure that what you think is a bug really is, instead of just a quirk in the lan‐
+       guage.
+
+       Whatever you do, do NOT post a bug report in comp.lang.awk.  While the gawk developers occasionally read  this  news‐
+       group,  posting  bug  reports  there  is  an  unreliable way to report bugs.  Instead, please use the electronic mail
+       addresses given above.
+
+       If you're using a GNU/Linux or BSD-based system, you may wish to submit a bug report to the vendor of your  distribu‐
+       tion.  That's fine, but please send a copy to the official email address as well, since there's no guarantee that the
+       bug report will be forwarded to the gawk maintainer.
+
+BUGS
+       The -F option is not necessary given the command line variable assignment feature; it remains only for backwards com‐
+       patibility.
+
+       Syntactically  invalid single character programs tend to overflow the parse stack, generating a rather unhelpful mes‐
+       sage.  Such programs are surprisingly difficult to diagnose in the completely general case, and the effort to  do  so
+       really is not worth it.
+
+SEE ALSO
+       egrep(1), getpid(2), getppid(2), getpgrp(2), getuid(2), geteuid(2), getgid(2), getegid(2), getgroups(2), usleep(3)
+
+       The  AWK  Programming  Language,  Alfred V. Aho, Brian W. Kernighan, Peter J. Weinberger, Addison-Wesley, 1988.  ISBN
+       0-201-07981-X.
+
+       GAWK: Effective AWK Programming, Edition 4.0, shipped with the gawk source.  The current version of this document  is
+       available online at http://www.gnu.org/software/gawk/manual.
+
+EXAMPLES
+       Print and sort the login names of all users:
+
+            BEGIN     { FS = ":" }
+                 { print $1 | "sort" }
+
+       Count lines in a file:
+
+                 { nlines++ }
+            END  { print nlines }
+
+       Precede each line by its number in the file:
+
+            { print FNR, $0 }
+
+       Concatenate and line number (a variation on a theme):
+
+            { print NR, $0 }
+
+       Run an external command for particular lines of data:
+
+            tail -f access_log |
+            awk '/myhome.html/ { system("nmap " $1 ">> logdir/myhome.html") }'
+
+ACKNOWLEDGEMENTS
+       Brian Kernighan of Bell Laboratories provided valuable assistance during testing and debugging.  We thank him.
+
+COPYING PERMISSIONS
+       Copyright  ©  1989,  1991,  1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2001, 2002, 2003, 2004, 2005, 2007, 2009,
+       2010, 2011 Free Software Foundation, Inc.
+
+       Permission is granted to make and distribute verbatim copies of this manual page provided the  copyright  notice  and
+       this permission notice are preserved on all copies.
+
+       Permission  is granted to copy and distribute modified versions of this manual page under the conditions for verbatim
+       copying, provided that the entire resulting derived work is distributed under the terms of a permission notice  iden‐
+       tical to this one.
+
+       Permission  is granted to copy and distribute translations of this manual page into another language, under the above
+       conditions for modified versions, except that this permission notice may be stated in a translation approved  by  the
+       Foundation.
+
+
+
+Free Software Foundation                                 Nov 10 2011                                                 GAWK(1)
+CAT(1)                                                  User Commands                                                 CAT(1)
+
+
+
+NAME
+       cat - concatenate files and print on the standard output
+
+SYNOPSIS
+       cat [OPTION]... [FILE]...
+
+DESCRIPTION
+       Concatenate FILE(s), or standard input, to standard output.
+
+       -A, --show-all
+              equivalent to -vET
+
+       -b, --number-nonblank
+              number nonempty output lines, overrides -n
+
+       -e     equivalent to -vE
+
+       -E, --show-ends
+              display $ at end of each line
+
+       -n, --number
+              number all output lines
+
+       -s, --squeeze-blank
+              suppress repeated empty output lines
+
+       -t     equivalent to -vT
+
+       -T, --show-tabs
+              display TAB characters as ^I
+
+       -u     (ignored)
+
+       -v, --show-nonprinting
+              use ^ and M- notation, except for LFD and TAB
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       With no FILE, or when FILE is -, read standard input.
+
+EXAMPLES
+       cat f - g
+              Output f's contents, then standard input, then g's contents.
+
+       cat    Copy standard input to standard output.
+
+AUTHOR
+       Written by Torbjorn Granlund and Richard M. Stallman.
+
+REPORTING BUGS
+       Report cat bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report cat translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       tac(1)
+
+       The  full  documentation  for  cat  is  maintained  as  a  Texinfo manual.  If the info and cat programs are properly
+       installed at your site, the command
+
+              info coreutils 'cat invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                   CAT(1)
+COLRM(1)                                         BSD General Commands Manual                                        COLRM(1)
+
+NAME
+     colrm — remove columns from a file
+
+SYNOPSIS
+     colrm [start [stop]]
+
+DESCRIPTION
+     The colrm utility removes selected columns from the lines of a file.  A column is defined as a single character in a
+     line.  Input is read from the standard input.  Output is written to the standard output.
+
+     If only the start column is specified, columns numbered less than the start column will be written.  If both start and
+     stop columns are specified, columns numbered less than the start column or greater than the stop column will be writ‐
+     ten.  Column numbering starts with one, not zero.
+
+     Tab characters increment the column count to the next multiple of eight.  Backspace characters decrement the column
+     count by one.
+
+ENVIRONMENT
+     The LANG, LC_ALL and LC_CTYPE environment variables affect the execution of colrm as described in environ(7).
+
+EXIT STATUS
+     The colrm utility exits 0 on success, and >0 if an error occurs.
+
+SEE ALSO
+     awk(1), column(1), cut(1), paste(1)
+
+HISTORY
+     The colrm command appeared in 3.0BSD.
+
+BSD                                                    August 4, 2004                                                    BSD
+DATE(1)                                                 User Commands                                                DATE(1)
+
+
+
+NAME
+       date - print or set the system date and time
+
+SYNOPSIS
+       date [OPTION]... [+FORMAT]
+       date [-u|--utc|--universal] [MMDDhhmm[[CC]YY][.ss]]
+
+DESCRIPTION
+       Display the current time in the given FORMAT, or set the system date.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -d, --date=STRING
+              display time described by STRING, not 'now'
+
+       -f, --file=DATEFILE
+              like --date once for each line of DATEFILE
+
+       -I[TIMESPEC], --iso-8601[=TIMESPEC]
+              output  date/time  in ISO 8601 format.  TIMESPEC='date' for date only (the default), 'hours', 'minutes', 'sec‐
+              onds', or 'ns' for date and time to the indicated precision.
+
+       -r, --reference=FILE
+              display the last modification time of FILE
+
+       -R, --rfc-2822
+              output date and time in RFC 2822 format.  Example: Mon, 07 Aug 2006 12:34:56 -0600
+
+       --rfc-3339=TIMESPEC
+              output date and time in RFC 3339 format.  TIMESPEC='date', 'seconds', or 'ns' for date and time to  the  indi‐
+              cated precision.  Date and time components are separated by a single space: 2006-08-07 12:34:56-06:00
+
+       -s, --set=STRING
+              set time described by STRING
+
+       -u, --utc, --universal
+              print or set Coordinated Universal Time
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       FORMAT controls the output.  Interpreted sequences are:
+
+       %%     a literal %
+
+       %a     locale's abbreviated weekday name (e.g., Sun)
+
+       %A     locale's full weekday name (e.g., Sunday)
+
+       %b     locale's abbreviated month name (e.g., Jan)
+
+       %B     locale's full month name (e.g., January)
+
+       %c     locale's date and time (e.g., Thu Mar  3 23:05:25 2005)
+
+       %C     century; like %Y, except omit last two digits (e.g., 20)
+
+       %d     day of month (e.g., 01)
+
+       %D     date; same as %m/%d/%y
+
+       %e     day of month, space padded; same as %_d
+
+       %F     full date; same as %Y-%m-%d
+
+       %g     last two digits of year of ISO week number (see %G)
+
+       %G     year of ISO week number (see %V); normally useful only with %V
+
+       %h     same as %b
+
+       %H     hour (00..23)
+
+       %I     hour (01..12)
+
+       %j     day of year (001..366)
+
+       %k     hour, space padded ( 0..23); same as %_H
+
+       %l     hour, space padded ( 1..12); same as %_I
+
+       %m     month (01..12)
+
+       %M     minute (00..59)
+
+       %n     a newline
+
+       %N     nanoseconds (000000000..999999999)
+
+       %p     locale's equivalent of either AM or PM; blank if not known
+
+       %P     like %p, but lower case
+
+       %r     locale's 12-hour clock time (e.g., 11:11:04 PM)
+
+       %R     24-hour hour and minute; same as %H:%M
+
+       %s     seconds since 1970-01-01 00:00:00 UTC
+
+       %S     second (00..60)
+
+       %t     a tab
+
+       %T     time; same as %H:%M:%S
+
+       %u     day of week (1..7); 1 is Monday
+
+       %U     week number of year, with Sunday as first day of week (00..53)
+
+       %V     ISO week number, with Monday as first day of week (01..53)
+
+       %w     day of week (0..6); 0 is Sunday
+
+       %W     week number of year, with Monday as first day of week (00..53)
+
+       %x     locale's date representation (e.g., 12/31/99)
+
+       %X     locale's time representation (e.g., 23:13:48)
+
+       %y     last two digits of year (00..99)
+
+       %Y     year
+
+       %z     +hhmm numeric time zone (e.g., -0400)
+
+       %:z    +hh:mm numeric time zone (e.g., -04:00)
+
+       %::z   +hh:mm:ss numeric time zone (e.g., -04:00:00)
+
+       %:::z  numeric time zone with : to necessary precision (e.g., -04, +05:30)
+
+       %Z     alphabetic time zone abbreviation (e.g., EDT)
+
+       By default, date pads numeric fields with zeroes.  The following optional flags may follow '%':
+
+       -      (hyphen) do not pad the field
+
+       _      (underscore) pad with spaces
+
+       0      (zero) pad with zeros
+
+       ^      use upper case if possible
+
+       #      use opposite case if possible
+
+       After  any  flags comes an optional field width, as a decimal number; then an optional modifier, which is either E to
+       use the locale's alternate representations if available, or O to use the locale's alternate numeric symbols if avail‐
+       able.
+
+EXAMPLES
+       Convert seconds since the epoch (1970-01-01 UTC) to a date
+
+              $ date --date='@2147483647'
+
+       Show the time on the west coast of the US (use tzselect(1) to find TZ)
+
+              $ TZ='America/Los_Angeles' date
+
+       Show the local time for 9AM next Friday on the west coast of the US
+
+              $ date --date='TZ="America/Los_Angeles" 09:00 next Fri'
+
+DATE STRING
+       The  --date=STRING  is  a  mostly free format human readable date string such as "Sun, 29 Feb 2004 16:21:42 -0800" or
+       "2004-02-29 16:21:42" or even "next Thursday".  A date string may contain items indicating  calendar  date,  time  of
+       day,  time  zone, day of week, relative time, relative date, and numbers.  An empty string indicates the beginning of
+       the day.  The date string format is more complex than is easily documented here but is fully described  in  the  info
+       documentation.
+
+AUTHOR
+       Written by David MacKenzie.
+
+REPORTING BUGS
+       Report date bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report date translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       The  full  documentation  for  date  is  maintained  as a Texinfo manual.  If the info and date programs are properly
+       installed at your site, the command
+
+              info coreutils 'date invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                  DATE(1)
+DATE(1)                                                 User Commands                                                DATE(1)
+
+
+
+NAME
+       date - print or set the system date and time
+
+SYNOPSIS
+       date [OPTION]... [+FORMAT]
+       date [-u|--utc|--universal] [MMDDhhmm[[CC]YY][.ss]]
+
+DESCRIPTION
+       Display the current time in the given FORMAT, or set the system date.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -d, --date=STRING
+              display time described by STRING, not 'now'
+
+       -f, --file=DATEFILE
+              like --date once for each line of DATEFILE
+
+       -I[TIMESPEC], --iso-8601[=TIMESPEC]
+              output  date/time  in ISO 8601 format.  TIMESPEC='date' for date only (the default), 'hours', 'minutes', 'sec‐
+              onds', or 'ns' for date and time to the indicated precision.
+
+       -r, --reference=FILE
+              display the last modification time of FILE
+
+       -R, --rfc-2822
+              output date and time in RFC 2822 format.  Example: Mon, 07 Aug 2006 12:34:56 -0600
+
+       --rfc-3339=TIMESPEC
+              output date and time in RFC 3339 format.  TIMESPEC='date', 'seconds', or 'ns' for date and time to  the  indi‐
+              cated precision.  Date and time components are separated by a single space: 2006-08-07 12:34:56-06:00
+
+       -s, --set=STRING
+              set time described by STRING
+
+       -u, --utc, --universal
+              print or set Coordinated Universal Time
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       FORMAT controls the output.  Interpreted sequences are:
+
+       %%     a literal %
+
+       %a     locale's abbreviated weekday name (e.g., Sun)
+
+       %A     locale's full weekday name (e.g., Sunday)
+
+       %b     locale's abbreviated month name (e.g., Jan)
+
+       %B     locale's full month name (e.g., January)
+
+       %c     locale's date and time (e.g., Thu Mar  3 23:05:25 2005)
+
+       %C     century; like %Y, except omit last two digits (e.g., 20)
+
+       %d     day of month (e.g., 01)
+
+       %D     date; same as %m/%d/%y
+
+       %e     day of month, space padded; same as %_d
+
+       %F     full date; same as %Y-%m-%d
+
+       %g     last two digits of year of ISO week number (see %G)
+
+       %G     year of ISO week number (see %V); normally useful only with %V
+
+       %h     same as %b
+
+       %H     hour (00..23)
+
+       %I     hour (01..12)
+
+       %j     day of year (001..366)
+
+       %k     hour, space padded ( 0..23); same as %_H
+
+       %l     hour, space padded ( 1..12); same as %_I
+
+       %m     month (01..12)
+
+       %M     minute (00..59)
+
+       %n     a newline
+
+       %N     nanoseconds (000000000..999999999)
+
+       %p     locale's equivalent of either AM or PM; blank if not known
+
+       %P     like %p, but lower case
+
+       %r     locale's 12-hour clock time (e.g., 11:11:04 PM)
+
+       %R     24-hour hour and minute; same as %H:%M
+
+       %s     seconds since 1970-01-01 00:00:00 UTC
+
+       %S     second (00..60)
+
+       %t     a tab
+
+       %T     time; same as %H:%M:%S
+
+       %u     day of week (1..7); 1 is Monday
+
+       %U     week number of year, with Sunday as first day of week (00..53)
+
+       %V     ISO week number, with Monday as first day of week (01..53)
+
+       %w     day of week (0..6); 0 is Sunday
+
+       %W     week number of year, with Monday as first day of week (00..53)
+
+       %x     locale's date representation (e.g., 12/31/99)
+
+       %X     locale's time representation (e.g., 23:13:48)
+
+       %y     last two digits of year (00..99)
+
+       %Y     year
+
+       %z     +hhmm numeric time zone (e.g., -0400)
+
+       %:z    +hh:mm numeric time zone (e.g., -04:00)
+
+       %::z   +hh:mm:ss numeric time zone (e.g., -04:00:00)
+
+       %:::z  numeric time zone with : to necessary precision (e.g., -04, +05:30)
+
+       %Z     alphabetic time zone abbreviation (e.g., EDT)
+
+       By default, date pads numeric fields with zeroes.  The following optional flags may follow '%':
+
+       -      (hyphen) do not pad the field
+
+       _      (underscore) pad with spaces
+
+       0      (zero) pad with zeros
+
+       ^      use upper case if possible
+
+       #      use opposite case if possible
+
+       After  any  flags comes an optional field width, as a decimal number; then an optional modifier, which is either E to
+       use the locale's alternate representations if available, or O to use the locale's alternate numeric symbols if avail‐
+       able.
+
+EXAMPLES
+       Convert seconds since the epoch (1970-01-01 UTC) to a date
+
+              $ date --date='@2147483647'
+
+       Show the time on the west coast of the US (use tzselect(1) to find TZ)
+
+              $ TZ='America/Los_Angeles' date
+
+       Show the local time for 9AM next Friday on the west coast of the US
+
+              $ date --date='TZ="America/Los_Angeles" 09:00 next Fri'
+
+DATE STRING
+       The  --date=STRING  is  a  mostly free format human readable date string such as "Sun, 29 Feb 2004 16:21:42 -0800" or
+       "2004-02-29 16:21:42" or even "next Thursday".  A date string may contain items indicating  calendar  date,  time  of
+       day,  time  zone, day of week, relative time, relative date, and numbers.  An empty string indicates the beginning of
+       the day.  The date string format is more complex than is easily documented here but is fully described  in  the  info
+       documentation.
+
+AUTHOR
+       Written by David MacKenzie.
+
+REPORTING BUGS
+       Report date bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report date translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       The  full  documentation  for  date  is  maintained  as a Texinfo manual.  If the info and date programs are properly
+       installed at your site, the command
+
+              info coreutils 'date invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                  DATE(1)
+ENV(1)                                                  User Commands                                                 ENV(1)
+
+
+
+NAME
+       env - run a program in a modified environment
+
+SYNOPSIS
+       env [OPTION]... [-] [NAME=VALUE]... [COMMAND [ARG]...]
+
+DESCRIPTION
+       Set each NAME to VALUE in the environment and run COMMAND.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -i, --ignore-environment
+              start with an empty environment
+
+       -0, --null
+              end each output line with 0 byte rather than newline
+
+       -u, --unset=NAME
+              remove variable from the environment
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       A mere - implies -i.  If no COMMAND, print the resulting environment.
+
+AUTHOR
+       Written by Richard Mlynarik and David MacKenzie.
+
+REPORTING BUGS
+       Report env bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report env translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       The  full  documentation  for  env  is  maintained  as  a  Texinfo manual.  If the info and env programs are properly
+       installed at your site, the command
+
+              info coreutils 'env invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                   ENV(1)
+GREP(1)                                            General Commands Manual                                           GREP(1)
+
+
+
+NAME
+       grep, egrep, fgrep, rgrep - print lines matching a pattern
+
+SYNOPSIS
+       grep [OPTIONS] PATTERN [FILE...]
+       grep [OPTIONS] [-e PATTERN | -f FILE] [FILE...]
+
+DESCRIPTION
+       grep  searches  the  named  input  FILEs (or standard input if no files are named, or if a single hyphen-minus (-) is
+       given as file name) for lines containing a match to the given PATTERN.  By default, grep prints the matching lines.
+
+       In addition, three variant programs egrep, fgrep and rgrep are available.  egrep is the same as  grep -E.   fgrep  is
+       the same as grep -F.  rgrep is the same as grep -r.  Direct invocation as either egrep or fgrep is deprecated, but is
+       provided to allow historical applications that rely on them to run unmodified.
+
+OPTIONS
+   Generic Program Information
+       --help Print a usage message briefly summarizing these command-line options and the bug-reporting address, then exit.
+
+       -V, --version
+              Print the version number of grep to the standard output stream.  This version number should be included in all
+              bug reports (see below).
+
+   Matcher Selection
+       -E, --extended-regexp
+              Interpret PATTERN as an extended regular expression (ERE, see below).  (-E is specified by POSIX.)
+
+       -F, --fixed-strings
+              Interpret  PATTERN  as  a list of fixed strings, separated by newlines, any of which is to be matched.  (-F is
+              specified by POSIX.)
+
+       -G, --basic-regexp
+              Interpret PATTERN as a basic regular expression (BRE, see below).  This is the default.
+
+       -P, --perl-regexp
+              Interpret PATTERN as a Perl regular expression (PCRE, see below).  This is highly experimental and grep -P may
+              warn of unimplemented features.
+
+   Matching Control
+       -e PATTERN, --regexp=PATTERN
+              Use  PATTERN  as  the  pattern.  This can be used to specify multiple search patterns, or to protect a pattern
+              beginning with a hyphen (-).  (-e is specified by POSIX.)
+
+       -f FILE, --file=FILE
+              Obtain patterns from FILE, one per line.  The  empty  file  contains  zero  patterns,  and  therefore  matches
+              nothing.  (-f is specified by POSIX.)
+
+       -i, --ignore-case
+              Ignore case distinctions in both the PATTERN and the input files.  (-i is specified by POSIX.)
+
+       -v, --invert-match
+              Invert the sense of matching, to select non-matching lines.  (-v is specified by POSIX.)
+
+       -w, --word-regexp
+              Select  only  those  lines  containing matches that form whole words.  The test is that the matching substring
+              must either be at the beginning of the line, or preceded by a non-word constituent character.   Similarly,  it
+              must  be  either  at  the  end  of the line or followed by a non-word constituent character.  Word-constituent
+              characters are letters, digits, and the underscore.
+
+       -x, --line-regexp
+              Select only those matches that exactly match the whole line.  (-x is specified by POSIX.)
+
+       -y     Obsolete synonym for -i.
+
+   General Output Control
+       -c, --count
+              Suppress normal output; instead print  a  count  of  matching  lines  for  each  input  file.   With  the  -v,
+              --invert-match option (see below), count non-matching lines.  (-c is specified by POSIX.)
+
+       --color[=WHEN], --colour[=WHEN]
+              Surround  the  matched  (non-empty)  strings,  matching  lines,  context lines, file names, line numbers, byte
+              offsets, and separators (for fields and groups of context lines) with escape  sequences  to  display  them  in
+              color  on  the  terminal.   The  colors  are  defined by the environment variable GREP_COLORS.  The deprecated
+              environment variable GREP_COLOR is still supported, but its setting does not have priority.   WHEN  is  never,
+              always, or auto.
+
+       -L, --files-without-match
+              Suppress  normal  output;  instead  print the name of each input file from which no output would normally have
+              been printed.  The scanning will stop on the first match.
+
+       -l, --files-with-matches
+              Suppress normal output; instead print the name of each input file from which output would normally  have  been
+              printed.  The scanning will stop on the first match.  (-l is specified by POSIX.)
+
+       -m NUM, --max-count=NUM
+              Stop  reading  a  file  after NUM matching lines.  If the input is standard input from a regular file, and NUM
+              matching lines are output, grep ensures that the standard input is positioned to just after the last  matching
+              line  before exiting, regardless of the presence of trailing context lines.  This enables a calling process to
+              resume a search.  When grep stops after NUM matching lines, it outputs any trailing context lines.   When  the
+              -c  or  --count  option  is  also  used,  grep  does  not  output  a  count  greater than NUM.  When the -v or
+              --invert-match option is also used, grep stops after outputting NUM non-matching lines.
+
+       -o, --only-matching
+              Print only the matched (non-empty) parts of a matching line, with each such part on a separate output line.
+
+       -q, --quiet, --silent
+              Quiet; do not write anything to standard output.  Exit immediately with zero status if  any  match  is  found,
+              even if an error was detected.  Also see the -s or --no-messages option.  (-q is specified by POSIX.)
+
+       -s, --no-messages
+              Suppress error messages about nonexistent or unreadable files.  Portability note: unlike GNU grep, 7th Edition
+              Unix grep did not conform to POSIX, because it lacked -q and its -s option behaved like GNU grep's -q  option.
+              USG-style  grep  also  lacked -q but its -s option behaved like GNU grep.  Portable shell scripts should avoid
+              both -q and -s and should redirect standard and error output  to  /dev/null  instead.   (-s  is  specified  by
+              POSIX.)
+
+   Output Line Prefix Control
+       -b, --byte-offset
+              Print  the  0-based  byte offset within the input file before each line of output.  If -o (--only-matching) is
+              specified, print the offset of the matching part itself.
+
+       -H, --with-filename
+              Print the file name for each match.  This is the default when there is more than one file to search.
+
+       -h, --no-filename
+              Suppress the prefixing of file names on output.  This is the default when there is  only  one  file  (or  only
+              standard input) to search.
+
+       --label=LABEL
+              Display  input actually coming from standard input as input coming from file LABEL.  This is especially useful
+              when implementing tools like zgrep, e.g., gzip -cd foo.gz | grep --label=foo -H something.  See  also  the  -H
+              option.
+
+       -n, --line-number
+              Prefix each line of output with the 1-based line number within its input file.  (-n is specified by POSIX.)
+
+       -T, --initial-tab
+              Make  sure  that  the first character of actual line content lies on a tab stop, so that the alignment of tabs
+              looks normal.  This is useful with options that prefix their output to the actual content: -H,-n, and -b.   In
+              order  to  improve  the probability that lines from a single file will all start at the same column, this also
+              causes the line number and byte offset (if present) to be printed in a minimum size field width.
+
+       -u, --unix-byte-offsets
+              Report Unix-style byte offsets.  This switch causes grep to report byte offsets as if the file  were  a  Unix-
+              style  text  file, i.e., with CR characters stripped off.  This will produce results identical to running grep
+              on a Unix machine.  This option has no effect unless -b option is also used; it has  no  effect  on  platforms
+              other than MS-DOS and MS-Windows.
+
+       -Z, --null
+              Output  a zero byte (the ASCII NUL character) instead of the character that normally follows a file name.  For
+              example, grep -lZ outputs a zero byte after each file name instead of the usual newline.   This  option  makes
+              the  output unambiguous, even in the presence of file names containing unusual characters like newlines.  This
+              option can be used with commands like find -print0, perl -0, sort -z, and xargs -0 to process  arbitrary  file
+              names, even those that contain newline characters.
+
+   Context Line Control
+       -A NUM, --after-context=NUM
+              Print  NUM  lines  of  trailing context after matching lines.  Places a line containing a group separator (--)
+              between contiguous groups of matches.  With the -o or --only-matching option, this has no effect and a warning
+              is given.
+
+       -B NUM, --before-context=NUM
+              Print  NUM  lines  of  leading context before matching lines.  Places a line containing a group separator (--)
+              between contiguous groups of matches.  With the -o or --only-matching option, this has no effect and a warning
+              is given.
+
+       -C NUM, -NUM, --context=NUM
+              Print  NUM lines of output context.  Places a line containing a group separator (--) between contiguous groups
+              of matches.  With the -o or --only-matching option, this has no effect and a warning is given.
+
+   File and Directory Selection
+       -a, --text
+              Process a binary file as if it were text; this is equivalent to the --binary-files=text option.
+
+       --binary-files=TYPE
+              If the first few bytes of a file indicate that the file contains binary data, assume that the file is of  type
+              TYPE.   By  default,  TYPE is binary, and grep normally outputs either a one-line message saying that a binary
+              file matches, or no message if there is no match.  If TYPE is without-match, grep assumes that a  binary  file
+              does  not  match; this is equivalent to the -I option.  If TYPE is text, grep processes a binary file as if it
+              were text; this is equivalent to the  -a  option.   Warning:  grep  --binary-files=text  might  output  binary
+              garbage,  which  can have nasty side effects if the output is a terminal and if the terminal driver interprets
+              some of it as commands.
+
+       -D ACTION, --devices=ACTION
+              If an input file is a device, FIFO or socket, use ACTION to process it.  By default,  ACTION  is  read,  which
+              means  that  devices  are  read  just as if they were ordinary files.  If ACTION is skip, devices are silently
+              skipped.
+
+       -d ACTION, --directories=ACTION
+              If an input file is a directory, use ACTION to process it.  By default, ACTION is read, i.e., read directories
+              just  as  if  they  were ordinary files.  If ACTION is skip, silently skip directories.  If ACTION is recurse,
+              read all files under each directory, recursively, following symbolic links only if they  are  on  the  command
+              line.  This is equivalent to the -r option.
+
+       --exclude=GLOB
+              Skip  files  whose base name matches GLOB (using wildcard matching).  A file-name glob can use *, ?, and [...]
+              as wildcards, and \ to quote a wildcard or backslash character literally.
+
+       --exclude-from=FILE
+              Skip files whose base name matches any of the file-name globs read  from  FILE  (using  wildcard  matching  as
+              described under --exclude).
+
+       --exclude-dir=DIR
+              Exclude directories matching the pattern DIR from recursive searches.
+
+       -I     Process   a   binary   file   as   if   it   did  not  contain  matching  data;  this  is  equivalent  to  the
+              --binary-files=without-match option.
+
+       --include=GLOB
+              Search only files whose base name matches GLOB (using wildcard matching as described under --exclude).
+
+       -r, --recursive
+              Read all files under each directory, recursively, following symbolic links only if they  are  on  the  command
+              line.  This is equivalent to the -d recurse option.
+
+       -R, --dereference-recursive
+              Read all files under each directory, recursively.  Follow all symbolic links, unlike -r.
+
+   Other Options
+       --line-buffered
+              Use line buffering on output.  This can cause a performance penalty.
+
+       --mmap If  possible,  use the mmap(2) system call to read input, instead of the default read(2) system call.  In some
+              situations, --mmap yields better performance.  However, --mmap can cause undefined  behavior  (including  core
+              dumps) if an input file shrinks while grep is operating, or if an I/O error occurs.
+
+       -U, --binary
+              Treat  the  file(s) as binary.  By default, under MS-DOS and MS-Windows, grep guesses the file type by looking
+              at the contents of the first 32KB read from the file.  If grep decides the file is a text file, it strips  the
+              CR  characters  from  the  original  file  contents (to make regular expressions with ^ and $ work correctly).
+              Specifying -U overrules this guesswork, causing all files to be read and  passed  to  the  matching  mechanism
+              verbatim;  if  the  file is a text file with CR/LF pairs at the end of each line, this will cause some regular
+              expressions to fail.  This option has no effect on platforms other than MS-DOS and MS-Windows.
+
+       -z, --null-data
+              Treat the input as a set of lines, each terminated by a zero byte (the  ASCII  NUL  character)  instead  of  a
+              newline.   Like  the  -Z  or  --null  option,  this  option  can be used with commands like sort -z to process
+              arbitrary file names.
+
+REGULAR EXPRESSIONS
+       A regular expression is a pattern that describes a set of strings.  Regular expressions are  constructed  analogously
+       to arithmetic expressions, by using various operators to combine smaller expressions.
+
+       grep  understands  three  different versions of regular expression syntax: “basic” (BRE), “extended” (ERE) and “perl”
+       (PRCE). In GNU grep, there is no difference in available functionality between basic and extended syntaxes.  In other
+       implementations,  basic regular expressions are less powerful.  The following description applies to extended regular
+       expressions; differences for basic regular expressions are summarized  afterwards.   Perl  regular  expressions  give
+       additional  functionality, and are documented in pcresyntax(3) and pcrepattern(3), but only work if pcre is available
+       in the system.
+
+       The fundamental building blocks are the  regular  expressions  that  match  a  single  character.   Most  characters,
+       including  all  letters  and  digits, are regular expressions that match themselves.  Any meta-character with special
+       meaning may be quoted by preceding it with a backslash.
+
+       The period . matches any single character.
+
+   Character Classes and Bracket Expressions
+       A bracket expression is a list of characters enclosed by [ and ].  It matches any single character in that  list;  if
+       the  first  character  of  the  list  is the caret ^ then it matches any character not in the list.  For example, the
+       regular expression [0123456789] matches any single digit.
+
+       Within a bracket expression, a range expression consists of two characters separated by a  hyphen.   It  matches  any
+       single  character  that  sorts  between  the  two  characters,  inclusive,  using the locale's collating sequence and
+       character set.  For example, in the default C locale, [a-d] is equivalent to [abcd].  Many locales sort characters in
+       dictionary  order,  and  in  these  locales  [a-d]  is  typically not equivalent to [abcd]; it might be equivalent to
+       [aBbCcDd], for example.  To obtain the traditional interpretation of bracket expressions, you can use the C locale by
+       setting the LC_ALL environment variable to the value C.
+
+       Finally,  certain named classes of characters are predefined within bracket expressions, as follows.  Their names are
+       self explanatory,  and  they  are  [:alnum:],  [:alpha:],  [:cntrl:],  [:digit:],  [:graph:],  [:lower:],  [:print:],
+       [:punct:],  [:space:],  [:upper:], and [:xdigit:].  For example, [[:alnum:]] means the character class of numbers and
+       letters in the current locale. In the C locale and ASCII character set encoding, this is  the  same  as  [0-9A-Za-z].
+       (Note  that the brackets in these class names are part of the symbolic names, and must be included in addition to the
+       brackets delimiting the bracket  expression.)   Most  meta-characters  lose  their  special  meaning  inside  bracket
+       expressions.  To include a literal ] place it first in the list.  Similarly, to include a literal ^ place it anywhere
+       but first.  Finally, to include a literal - place it last.
+
+   Anchoring
+       The caret ^ and the dollar sign $ are meta-characters that respectively match the empty string at the  beginning  and
+       end of a line.
+
+   The Backslash Character and Special Expressions
+       The  symbols \< and \> respectively match the empty string at the beginning and end of a word.  The symbol \b matches
+       the empty string at the edge of a word, and \B matches the empty string provided it's not at the edge of a word.  The
+       symbol \w is a synonym for [_[:alnum:]] and \W is a synonym for [^_[:alnum:]].
+
+   Repetition
+       A regular expression may be followed by one of several repetition operators:
+       ?      The preceding item is optional and matched at most once.
+       *      The preceding item will be matched zero or more times.
+       +      The preceding item will be matched one or more times.
+       {n}    The preceding item is matched exactly n times.
+       {n,}   The preceding item is matched n or more times.
+       {,m}   The preceding item is matched at most m times.  This is a GNU extension.
+       {n,m}  The preceding item is matched at least n times, but not more than m times.
+
+   Concatenation
+       Two  regular  expressions  may  be  concatenated;  the  resulting  regular  expression  matches  any string formed by
+       concatenating two substrings that respectively match the concatenated expressions.
+
+   Alternation
+       Two regular expressions may be joined by the infix operator |; the resulting regular expression  matches  any  string
+       matching either alternate expression.
+
+   Precedence
+       Repetition  takes precedence over concatenation, which in turn takes precedence over alternation.  A whole expression
+       may be enclosed in parentheses to override these precedence rules and form a subexpression.
+
+   Back References and Subexpressions
+       The back-reference \n, where n is a single digit, matches the substring previously matched by the  nth  parenthesized
+       subexpression of the regular expression.
+
+   Basic vs Extended Regular Expressions
+       In  basic  regular  expressions  the meta-characters ?, +, {, |, (, and ) lose their special meaning; instead use the
+       backslashed versions \?, \+, \{, \|, \(, and \).
+
+       Traditional egrep did not support the { meta-character,  and  some  egrep  implementations  support  \{  instead,  so
+       portable scripts should avoid { in grep -E patterns and should use [{] to match a literal {.
+
+       GNU  grep -E  attempts  to support traditional usage by assuming that { is not special if it would be the start of an
+       invalid interval specification.  For example, the command grep -E '{1'  searches  for  the  two-character  string  {1
+       instead  of  reporting  a  syntax  error  in the regular expression.  POSIX allows this behavior as an extension, but
+       portable scripts should avoid it.
+
+ENVIRONMENT VARIABLES
+       The behavior of grep is affected by the following environment variables.
+
+       The locale for category LC_foo is specified by examining the three environment variables  LC_ALL,  LC_foo,  LANG,  in
+       that  order.   The first of these variables that is set specifies the locale.  For example, if LC_ALL is not set, but
+       LC_MESSAGES is set to pt_BR, then the Brazilian Portuguese locale is used for the LC_MESSAGES category.  The C locale
+       is  used  if  none of these environment variables are set, if the locale catalog is not installed, or if grep was not
+       compiled with national language support (NLS).
+
+       GREP_OPTIONS
+              This variable specifies default options to be placed in front  of  any  explicit  options.   For  example,  if
+              GREP_OPTIONS  is  '--binary-files=without-match  --directories=skip',  grep  behaves  as  if  the  two options
+              --binary-files=without-match and --directories=skip had been specified before any  explicit  options.   Option
+              specifications  are  separated  by  whitespace.   A backslash escapes the next character, so it can be used to
+              specify an option containing whitespace or a backslash.
+
+       GREP_COLOR
+              This variable specifies the color used to highlight matched (non-empty) text.  It is deprecated  in  favor  of
+              GREP_COLORS,  but  still supported.  The mt, ms, and mc capabilities of GREP_COLORS have priority over it.  It
+              can only specify the color used to highlight the matching non-empty text in any matching line (a selected line
+              when  the  -v  command-line option is omitted, or a context line when -v is specified).  The default is 01;31,
+              which means a bold red foreground text on the terminal's default background.
+
+       GREP_COLORS
+              Specifies the colors and other attributes used to highlight various parts of  the  output.   Its  value  is  a
+              colon-separated  list  of capabilities that defaults to ms=01;31:mc=01;31:sl=:cx=:fn=35:ln=32:bn=32:se=36 with
+              the rv and ne boolean capabilities omitted (i.e., false).  Supported capabilities are as follows.
+
+              sl=    SGR substring for whole selected lines (i.e.,  matching  lines  when  the  -v  command-line  option  is
+                     omitted,  or non-matching lines when -v is specified).  If however the boolean rv capability and the -v
+                     command-line option are both specified, it applies to context matching lines instead.  The  default  is
+                     empty (i.e., the terminal's default color pair).
+
+              cx=    SGR  substring  for  whole  context  lines (i.e., non-matching lines when the -v command-line option is
+                     omitted, or matching lines when -v is specified).  If however the boolean  rv  capability  and  the  -v
+                     command-line option are both specified, it applies to selected non-matching lines instead.  The default
+                     is empty (i.e., the terminal's default color pair).
+
+              rv     Boolean value that reverses (swaps) the meanings of the sl= and cx= capabilities when the  -v  command-
+                     line option is specified.  The default is false (i.e., the capability is omitted).
+
+              mt=01;31
+                     SGR  substring  for  matching  non-empty  text  in any matching line (i.e., a selected line when the -v
+                     command-line option is omitted, or a context line when -v is specified).  Setting this is equivalent to
+                     setting both ms= and mc= at once to the same value.  The default is a bold red text foreground over the
+                     current line background.
+
+              ms=01;31
+                     SGR substring for matching non-empty text in a selected line.  (This is only used when the -v  command-
+                     line  option  is  omitted.)   The  effect of the sl= (or cx= if rv) capability remains active when this
+                     kicks in.  The default is a bold red text foreground over the current line background.
+
+              mc=01;31
+                     SGR substring for matching non-empty text in a context line.  (This is only used when the  -v  command-
+                     line  option  is  specified.)  The effect of the cx= (or sl= if rv) capability remains active when this
+                     kicks in.  The default is a bold red text foreground over the current line background.
+
+              fn=35  SGR substring for file names prefixing any content line.  The default is a magenta text foreground over
+                     the terminal's default background.
+
+              ln=32  SGR substring for line numbers prefixing any content line.  The default is a green text foreground over
+                     the terminal's default background.
+
+              bn=32  SGR substring for byte offsets prefixing any content line.  The default is a green text foreground over
+                     the terminal's default background.
+
+              se=36  SGR  substring  for separators that are inserted between selected line fields (:), between context line
+                     fields, (-), and between groups of adjacent lines when nonzero context is specified (--).  The  default
+                     is a cyan text foreground over the terminal's default background.
+
+              ne     Boolean  value that prevents clearing to the end of line using Erase in Line (EL) to Right (\33[K) each
+                     time a colorized item ends.  This is needed on terminals on which EL is not supported.  It is otherwise
+                     useful  on  terminals  for which the back_color_erase (bce) boolean terminfo capability does not apply,
+                     when the chosen highlight colors do not affect the background, or when EL is too  slow  or  causes  too
+                     much flicker.  The default is false (i.e., the capability is omitted).
+
+              Note  that boolean capabilities have no =...  part.  They are omitted (i.e., false) by default and become true
+              when specified.
+
+              See the Select Graphic Rendition (SGR) section in the documentation of the text  terminal  that  is  used  for
+              permitted  values  and  their meaning as character attributes.  These substring values are integers in decimal
+              representation and can be concatenated with semicolons.  grep takes care  of  assembling  the  result  into  a
+              complete  SGR  sequence  (\33[...m).   Common values to concatenate include 1 for bold, 4 for underline, 5 for
+              blink, 7 for inverse, 39 for default foreground color, 30 to 37 for foreground colors, 90 to 97  for  16-color
+              mode  foreground colors, 38;5;0 to 38;5;255 for 88-color and 256-color modes foreground colors, 49 for default
+              background color, 40 to 47 for background colors, 100 to 107 for 16-color mode background colors,  and  48;5;0
+              to 48;5;255 for 88-color and 256-color modes background colors.
+
+       LC_ALL, LC_COLLATE, LANG
+              These  variables  specify the locale for the LC_COLLATE category, which determines the collating sequence used
+              to interpret range expressions like [a-z].
+
+       LC_ALL, LC_CTYPE, LANG
+              These variables specify the locale for the LC_CTYPE category, which determines the type of  characters,  e.g.,
+              which characters are whitespace.
+
+       LC_ALL, LC_MESSAGES, LANG
+              These  variables specify the locale for the LC_MESSAGES category, which determines the language that grep uses
+              for messages.  The default C locale uses American English messages.
+
+       POSIXLY_CORRECT
+              If set, grep behaves as POSIX requires; otherwise, grep behaves more like other GNU programs.  POSIX  requires
+              that  options  that  follow file names must be treated as file names; by default, such options are permuted to
+              the front of the operand list and are treated as options.  Also, POSIX requires that unrecognized  options  be
+              diagnosed  as  “illegal”,  but  since  they  are not really against the law the default is to diagnose them as
+              “invalid”.  POSIXLY_CORRECT also disables _N_GNU_nonoption_argv_flags_, described below.
+
+       _N_GNU_nonoption_argv_flags_
+              (Here N is grep's numeric process ID.)  If the ith character of this environment variable's value is 1, do not
+              consider the ith operand of grep to be an option, even if it appears to be one.  A shell can put this variable
+              in the environment for each command it runs, specifying which operands are the results of file  name  wildcard
+              expansion  and  therefore  should  not  be treated as options.  This behavior is available only with the GNU C
+              library, and only when POSIXLY_CORRECT is not set.
+
+EXIT STATUS
+       The exit status is 0 if selected lines are found, and 1 if not found.  If an error occurred the  exit  status  is  2.
+       (Note: POSIX error handling code should check for '2' or greater.)
+
+COPYRIGHT
+       Copyright 1998-2000, 2002, 2005-2014 Free Software Foundation, Inc.
+
+       This  is free software; see the source for copying conditions.  There is NO warranty; not even for MERCHANTABILITY or
+       FITNESS FOR A PARTICULAR PURPOSE.
+
+BUGS
+   Reporting Bugs
+       Email     bug     reports     to     <bug-grep@gnu.org>,     a     mailing     list     whose     web     page     is
+       <http://lists.gnu.org/mailman/listinfo/bug-grep>.      grep's     Savannah     bug     tracker    is    located    at
+       <http://savannah.gnu.org/bugs/?group=grep>.
+
+   Known Bugs
+       Large repetition counts in the {n,m} construct may cause grep to use lots of  memory.   In  addition,  certain  other
+       obscure regular expressions require exponential time and space, and may cause grep to run out of memory.
+
+       Back-references are very slow, and may require exponential time.
+
+SEE ALSO
+   Regular Manual Pages
+       awk(1),  cmp(1),  diff(1), find(1), gzip(1), perl(1), sed(1), sort(1), xargs(1), zgrep(1), mmap(2), read(2), pcre(3),
+       pcresyntax(3), pcrepattern(3), terminfo(5), glob(7), regex(7).
+
+   POSIX Programmer's Manual Page
+       grep(1p).
+
+   TeXinfo Documentation
+       The  full   documentation   for   grep   is   maintained   as   a   TeXinfo   manual,   which   you   can   read   at
+       http://www.gnu.org/software/grep/manual/.   If  the  info  and grep programs are properly installed at your site, the
+       command
+
+              info grep
+
+       should give you access to the complete manual.
+
+NOTES
+       This man page is maintained only fitfully; the full documentation is often more up-to-date.
+
+       GNU's not Unix, but Unix is a beast; its plural form is Unixen.
+
+
+
+User Commands                                           GNU grep 2.16                                                GREP(1)
+HEAD(1)                                                 User Commands                                                HEAD(1)
+
+
+
+NAME
+       head - output the first part of files
+
+SYNOPSIS
+       head [OPTION]... [FILE]...
+
+DESCRIPTION
+       Print the first 10 lines of each FILE to standard output.  With more than one FILE, precede each with a header giving
+       the file name.  With no FILE, or when FILE is -, read standard input.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -c, --bytes=[-]K
+              print the first K bytes of each file; with the leading '-', print all but the last K bytes of each file
+
+       -n, --lines=[-]K
+              print the first K lines instead of the first 10; with the leading '-', print all but the last K lines of  each
+              file
+
+       -q, --quiet, --silent
+              never print headers giving file names
+
+       -v, --verbose
+              always print headers giving file names
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       K  may  have  a  multiplier  suffix:  b  512,  kB  1000,  K  1024,  MB  1000*1000,  M 1024*1024, GB 1000*1000*1000, G
+       1024*1024*1024, and so on for T, P, E, Z, Y.
+
+AUTHOR
+       Written by David MacKenzie and Jim Meyering.
+
+REPORTING BUGS
+       Report head bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report head translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright  ©  2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3   or   later
+       <http://gnu.org/licenses/gpl.html>.
+       This  is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted by
+       law.
+
+SEE ALSO
+       The full documentation for head is maintained as a Texinfo manual.  If  the  info  and  head  programs  are  properly
+       installed at your site, the command
+
+              info coreutils 'head invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                  HEAD(1)
+REV(1)                                                  User Commands                                                 REV(1)
+
+NAME
+     rev — reverse lines of a file or files
+
+SYNOPSIS
+     rev [-V] [-h] [file ...]
+
+DESCRIPTION
+     The rev utility copies the specified files to standard output, reversing the order of characters in every line.  If no
+     files are specified, standard input is read.
+
+     -V, --version
+             Output version information and exit.
+
+     -h, --help
+             Output help and exit.
+
+AVAILABILITY
+     The rev command is part of the util-linux package and is available from ftp://ftp.kernel.org/pub/linux/utils/util-
+     linux/.
+
+util-linux                                              April 2011                                                util-linux
+SED(1)                                                  User Commands                                                 SED(1)
+
+
+
+NAME
+       sed - stream editor for filtering and transforming text
+
+SYNOPSIS
+       sed [OPTION]... {script-only-if-no-other-script} [input-file]...
+
+DESCRIPTION
+       Sed  is a stream editor.  A stream editor is used to perform basic text transformations on an input stream (a file or
+       input from a pipeline).  While in some ways similar to an editor which permits scripted edits (such as ed), sed works
+       by  making  only  one  pass over the input(s), and is consequently more efficient.  But it is sed's ability to filter
+       text in a pipeline which particularly distinguishes it from other types of editors.
+
+       -n, --quiet, --silent
+
+              suppress automatic printing of pattern space
+
+       -e script, --expression=script
+
+              add the script to the commands to be executed
+
+       -f script-file, --file=script-file
+
+              add the contents of script-file to the commands to be executed
+
+       --follow-symlinks
+
+              follow symlinks when processing in place
+
+       -i[SUFFIX], --in-place[=SUFFIX]
+
+              edit files in place (makes backup if SUFFIX supplied)
+
+       -l N, --line-length=N
+
+              specify the desired line-wrap length for the `l' command
+
+       --posix
+
+              disable all GNU extensions.
+
+       -r, --regexp-extended
+
+              use extended regular expressions in the script.
+
+       -s, --separate
+
+              consider files as separate rather than as a single continuous long stream.
+
+       -u, --unbuffered
+
+              load minimal amounts of data from the input files and flush the output buffers more often
+
+       -z, --null-data
+
+              separate lines by NUL characters
+
+       --help
+              display this help and exit
+
+       --version
+              output version information and exit
+
+       If no -e, --expression, -f, or --file option is given, then the first non-option argument is taken as the sed  script
+       to  interpret.   All remaining arguments are names of input files; if no input files are specified, then the standard
+       input is read.
+
+       GNU sed home page: <http://www.gnu.org/software/sed/>.  General help using  GNU  software:  <http://www.gnu.org/geth‐
+       elp/>.   E-mail bug reports to: <bug-sed@gnu.org>.  Be sure to include the word ``sed'' somewhere in the ``Subject:''
+       field.
+
+COMMAND SYNOPSIS
+       This is just a brief synopsis of sed commands to serve as a reminder to those who already know sed; other  documenta‐
+       tion (such as the texinfo document) must be consulted for fuller descriptions.
+
+   Zero-address ``commands''
+       : label
+              Label for b and t commands.
+
+       #comment
+              The comment extends until the next newline (or the end of a -e script fragment).
+
+       }      The closing bracket of a { } block.
+
+   Zero- or One- address commands
+       =      Print the current line number.
+
+       a \
+
+       text   Append text, which has each embedded newline preceded by a backslash.
+
+       i \
+
+       text   Insert text, which has each embedded newline preceded by a backslash.
+
+       q [exit-code]
+              Immediately  quit  the sed script without processing any more input, except that if auto-print is not disabled
+              the current pattern space will be printed.  The exit code argument is a GNU extension.
+
+       Q [exit-code]
+              Immediately quit the sed script without processing any more input.  This is a GNU extension.
+
+       r filename
+              Append text read from filename.
+
+       R filename
+              Append a line read from filename.  Each invocation of the command reads a line from the file.  This is  a  GNU
+              extension.
+
+   Commands which accept address ranges
+       {      Begin a block of commands (end with a }).
+
+       b label
+              Branch to label; if label is omitted, branch to end of script.
+
+       c \
+
+       text   Replace the selected lines with text, which has each embedded newline preceded by a backslash.
+
+       d      Delete pattern space.  Start next cycle.
+
+       D      If  pattern  space  contains  no newline, start a normal new cycle as if the d command was issued.  Otherwise,
+              delete text in the pattern space up to the first newline, and restart cycle with the resultant pattern  space,
+              without reading a new line of input.
+
+       h H    Copy/append pattern space to hold space.
+
+       g G    Copy/append hold space to pattern space.
+
+       l      List out the current line in a ``visually unambiguous'' form.
+
+       l width
+              List  out the current line in a ``visually unambiguous'' form, breaking it at width characters.  This is a GNU
+              extension.
+
+       n N    Read/append the next line of input into the pattern space.
+
+       p      Print the current pattern space.
+
+       P      Print up to the first embedded newline of the current pattern space.
+
+       s/regexp/replacement/
+              Attempt to match regexp against the pattern space.  If successful, replace that portion matched with  replace‐
+              ment.  The replacement may contain the special character & to refer to that portion of the pattern space which
+              matched, and the special escapes \1 through \9 to refer to the corresponding matching sub-expressions  in  the
+              regexp.
+
+       t label
+              If a s/// has done a successful substitution since the last input line was read and since the last t or T com‐
+              mand, then branch to label; if label is omitted, branch to end of script.
+
+       T label
+              If no s/// has done a successful substitution since the last input line was read and since the  last  t  or  T
+              command, then branch to label; if label is omitted, branch to end of script.  This is a GNU extension.
+
+       w filename
+              Write the current pattern space to filename.
+
+       W filename
+              Write the first line of the current pattern space to filename.  This is a GNU extension.
+
+       x      Exchange the contents of the hold and pattern spaces.
+
+       y/source/dest/
+              Transliterate  the  characters  in  the pattern space which appear in source to the corresponding character in
+              dest.
+
+Addresses
+       Sed commands can be given with no addresses, in which case the command will be executed for all input lines; with one
+       address,  in  which  case  the  command  will  only be executed for input lines which match that address; or with two
+       addresses, in which case the command will be executed for all input lines which match the inclusive  range  of  lines
+       starting from the first address and continuing to the second address.  Three things to note about address ranges: the
+       syntax is addr1,addr2 (i.e., the addresses are separated by a comma); the line which addr1  matched  will  always  be
+       accepted,  even  if  addr2  selects an earlier line; and if addr2 is a regexp, it will not be tested against the line
+       that addr1 matched.
+
+       After the address (or address-range), and before the command, a !  may be inserted, which specifies that the  command
+       shall only be executed if the address (or address-range) does not match.
+
+       The following address types are supported:
+
+       number Match  only  the  specified  line  number (which increments cumulatively across files, unless the -s option is
+              specified on the command line).
+
+       first~step
+              Match every step'th line starting with line first.  For example, ``sed -n 1~2p'' will print all  the  odd-num‐
+              bered  lines  in  the input stream, and the address 2~5 will match every fifth line, starting with the second.
+              first can be zero; in this case, sed operates as if it were equal to step.  (This is an extension.)
+
+       $      Match the last line.
+
+       /regexp/
+              Match lines matching the regular expression regexp.
+
+       \cregexpc
+              Match lines matching the regular expression regexp.  The c may be any character.
+
+       GNU sed also supports some special 2-address forms:
+
+       0,addr2
+              Start out in "matched first address" state, until addr2 is found.  This is similar to 1,addr2, except that  if
+              addr2  matches  the  very  first  line  of input the 0,addr2 form will be at the end of its range, whereas the
+              1,addr2 form will still be at the beginning of its range.  This works only when addr2 is a regular expression.
+
+       addr1,+N
+              Will match addr1 and the N lines following addr1.
+
+       addr1,~N
+              Will match addr1 and the lines following addr1 until the next line whose input line number is a multiple of N.
+
+REGULAR EXPRESSIONS
+       POSIX.2 BREs should be supported, but they aren't completely because of performance problems.  The \n sequence  in  a
+       regular expression matches the newline character, and similarly for \a, \t, and other sequences.
+
+BUGS
+       E-mail  bug  reports  to  bug-sed@gnu.org.   Also, please include the output of ``sed --version'' in the body of your
+       report if at all possible.
+
+AUTHOR
+       Written by Jay Fenlason, Tom Lord, Ken Pizzini, and Paolo Bonzini.   GNU  sed  home  page:  <http://www.gnu.org/soft‐
+       ware/sed/>.   General  help  using  GNU  software:  <http://www.gnu.org/gethelp/>.   E-mail  bug  reports  to:  <bug-
+       sed@gnu.org>.  Be sure to include the word ``sed'' somewhere in the ``Subject:'' field.
+
+COPYRIGHT
+       Copyright  ©  2012   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3   or   later
+       <http://gnu.org/licenses/gpl.html>.
+       This  is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted by
+       law.
+
+SEE ALSO
+       awk(1), ed(1), grep(1), tr(1), perlre(1), sed.info, any of various books on sed, the sed FAQ (http://sed.sf.net/grab‐
+       bag/tutorials/sedfaq.txt), http://sed.sf.net/grabbag/.
+
+       The full documentation for sed is maintained as a Texinfo manual.  If the info and sed programs are properly
+       installed at your site, the command
+
+              info sed
+
+       should give you access to the complete manual.
+
+
+
+sed 4.2.2                                               December 2012                                                 SED(1)
+SORT(1)                                                 User Commands                                                SORT(1)
+
+
+
+NAME
+       sort - sort lines of text files
+
+SYNOPSIS
+       sort [OPTION]... [FILE]...
+       sort [OPTION]... --files0-from=F
+
+DESCRIPTION
+       Write sorted concatenation of all FILE(s) to standard output.
+
+       Mandatory arguments to long options are mandatory for short options too.  Ordering options:
+
+       -b, --ignore-leading-blanks
+              ignore leading blanks
+
+       -d, --dictionary-order
+              consider only blanks and alphanumeric characters
+
+       -f, --ignore-case
+              fold lower case to upper case characters
+
+       -g, --general-numeric-sort
+              compare according to general numerical value
+
+       -i, --ignore-nonprinting
+              consider only printable characters
+
+       -M, --month-sort
+              compare (unknown) < 'JAN' < ... < 'DEC'
+
+       -h, --human-numeric-sort
+              compare human readable numbers (e.g., 2K 1G)
+
+       -n, --numeric-sort
+              compare according to string numerical value
+
+       -R, --random-sort
+              sort by random hash of keys
+
+       --random-source=FILE
+              get random bytes from FILE
+
+       -r, --reverse
+              reverse the result of comparisons
+
+       --sort=WORD
+              sort according to WORD: general-numeric -g, human-numeric -h, month -M, numeric -n, random -R, version -V
+
+       -V, --version-sort
+              natural sort of (version) numbers within text
+
+       Other options:
+
+       --batch-size=NMERGE
+              merge at most NMERGE inputs at once; for more use temp files
+
+       -c, --check, --check=diagnose-first
+              check for sorted input; do not sort
+
+       -C, --check=quiet, --check=silent
+              like -c, but do not report first bad line
+
+       --compress-program=PROG
+              compress temporaries with PROG; decompress them with PROG -d
+
+       --debug
+              annotate the part of the line used to sort, and warn about questionable usage to stderr
+
+       --files0-from=F
+              read input from the files specified by NUL-terminated names in file F; If F is - then read names from standard
+              input
+
+       -k, --key=KEYDEF
+              sort via a key; KEYDEF gives location and type
+
+       -m, --merge
+              merge already sorted files; do not sort
+
+       -o, --output=FILE
+              write result to FILE instead of standard output
+
+       -s, --stable
+              stabilize sort by disabling last-resort comparison
+
+       -S, --buffer-size=SIZE
+              use SIZE for main memory buffer
+
+       -t, --field-separator=SEP
+              use SEP instead of non-blank to blank transition
+
+       -T, --temporary-directory=DIR
+              use DIR for temporaries, not $TMPDIR or /tmp; multiple options specify multiple directories
+
+       --parallel=N
+              change the number of sorts run concurrently to N
+
+       -u, --unique
+              with -c, check for strict ordering; without -c, output only the first of an equal run
+
+       -z, --zero-terminated
+              end lines with 0 byte, not newline
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       KEYDEF is F[.C][OPTS][,F[.C][OPTS]] for start and stop position, where F is a field number and C a character position
+       in  the  field;  both  are  origin  1,  and the stop position defaults to the line's end.  If neither -t nor -b is in
+       effect, characters in a field are counted from the beginning of the preceding whitespace.  OPTS is one or  more  sin‐
+       gle-letter  ordering options [bdfgiMhnRrV], which override global ordering options for that key.  If no key is given,
+       use the entire line as the key.
+
+       SIZE may be followed by the following multiplicative suffixes: % 1% of memory, b 1, K 1024 (default), and so  on  for
+       M, G, T, P, E, Z, Y.
+
+       With no FILE, or when FILE is -, read standard input.
+
+       *** WARNING *** The locale specified by the environment affects sort order.  Set LC_ALL=C to get the traditional sort
+       order that uses native byte values.
+
+AUTHOR
+       Written by Mike Haertel and Paul Eggert.
+
+REPORTING BUGS
+       Report sort bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report sort translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright  ©  2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3   or   later
+       <http://gnu.org/licenses/gpl.html>.
+       This  is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted by
+       law.
+
+SEE ALSO
+       uniq(1)
+
+       The full documentation for sort is maintained as a Texinfo manual.  If  the  info  and  sort  programs  are  properly
+       installed at your site, the command
+
+              info coreutils 'sort invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                  SORT(1)
+SPLIT(1)                                                User Commands                                               SPLIT(1)
+
+
+
+NAME
+       split - split a file into pieces
+
+SYNOPSIS
+       split [OPTION]... [INPUT [PREFIX]]
+
+DESCRIPTION
+       Output  fixed-size pieces of INPUT to PREFIXaa, PREFIXab, ...; default size is 1000 lines, and default PREFIX is 'x'.
+       With no INPUT, or when INPUT is -, read standard input.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -a, --suffix-length=N
+              generate suffixes of length N (default 2)
+
+       --additional-suffix=SUFFIX
+              append an additional SUFFIX to file names.
+
+       -b, --bytes=SIZE
+              put SIZE bytes per output file
+
+       -C, --line-bytes=SIZE
+              put at most SIZE bytes of lines per output file
+
+       -d, --numeric-suffixes[=FROM]
+              use numeric suffixes instead of alphabetic.  FROM changes the start value (default 0).
+
+       -e, --elide-empty-files
+              do not generate empty output files with '-n'
+
+       --filter=COMMAND
+              write to shell COMMAND; file name is $FILE
+
+       -l, --lines=NUMBER
+              put NUMBER lines per output file
+
+       -n, --number=CHUNKS
+              generate CHUNKS output files.  See below
+
+       -u, --unbuffered
+              immediately copy input to output with '-n r/...'
+
+       --verbose
+              print a diagnostic just before each output file is opened
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       SIZE is an integer and optional unit (example: 10M is 10*1024*1024).  Units are K, M, G, T, P, E,  Z,  Y  (powers  of
+       1024) or KB, MB, ... (powers of 1000).
+
+       CHUNKS may be: N       split into N files based on size of input K/N     output Kth of N to stdout l/N     split into
+       N files without splitting lines l/K/N   output Kth of N to stdout without splitting lines r/N     like  'l'  but  use
+       round robin distribution r/K/N   likewise but only output Kth of N to stdout
+
+AUTHOR
+       Written by Torbjorn Granlund and Richard M. Stallman.
+
+REPORTING BUGS
+       Report split bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report split translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       The  full  documentation  for  split  is maintained as a Texinfo manual.  If the info and split programs are properly
+       installed at your site, the command
+
+              info coreutils 'split invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                 SPLIT(1)
+TAC(1)                                                  User Commands                                                 TAC(1)
+
+
+
+NAME
+       tac - concatenate and print files in reverse
+
+SYNOPSIS
+       tac [OPTION]... [FILE]...
+
+DESCRIPTION
+       Write each FILE to standard output, last line first.  With no FILE, or when FILE is -, read standard input.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -b, --before
+              attach the separator before instead of after
+
+       -r, --regex
+              interpret the separator as a regular expression
+
+       -s, --separator=STRING
+              use STRING as the separator instead of newline
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+AUTHOR
+       Written by Jay Lepreau and David MacKenzie.
+
+REPORTING BUGS
+       Report tac bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report tac translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       rev(1)
+
+       The  full  documentation  for  tac  is  maintained  as  a  Texinfo manual.  If the info and tac programs are properly
+       installed at your site, the command
+
+              info coreutils 'tac invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                   TAC(1)
+TAIL(1)                                                 User Commands                                                TAIL(1)
+
+
+
+NAME
+       tail - output the last part of files
+
+SYNOPSIS
+       tail [OPTION]... [FILE]...
+
+DESCRIPTION
+       Print  the last 10 lines of each FILE to standard output.  With more than one FILE, precede each with a header giving
+       the file name.  With no FILE, or when FILE is -, read standard input.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -c, --bytes=K
+              output the last K bytes; alternatively, use -c +K to output bytes starting with the Kth of each file
+
+       -f, --follow[={name|descriptor}]
+              output appended data as the file grows; -f, --follow, and --follow=descriptor are equivalent
+
+       -F     same as --follow=name --retry
+
+       -n, --lines=K
+              output the last K lines, instead of the last 10; or use -n +K to output lines starting with the Kth
+
+       --max-unchanged-stats=N
+              with --follow=name, reopen a FILE which has not changed size after N (default 5) iterations to see if  it  has
+              been  unlinked  or renamed (this is the usual case of rotated log files).  With inotify, this option is rarely
+              useful.
+
+       --pid=PID
+              with -f, terminate after process ID, PID dies
+
+       -q, --quiet, --silent
+              never output headers giving file names
+
+       --retry
+              keep trying to open a file even when it is or becomes inaccessible; useful when following by name, i.e.,  with
+              --follow=name
+
+       -s, --sleep-interval=N
+              with  -f, sleep for approximately N seconds (default 1.0) between iterations.  With inotify and --pid=P, check
+              process P at least once every N seconds.
+
+       -v, --verbose
+              always output headers giving file names
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       If the first character of K (the number of bytes or lines) is a '+', print beginning with the Kth item from the start
+       of each file, otherwise, print the last K items in the file.  K may have a multiplier suffix: b 512, kB 1000, K 1024,
+       MB 1000*1000, M 1024*1024, GB 1000*1000*1000, G 1024*1024*1024, and so on for T, P, E, Z, Y.
+
+       With --follow (-f), tail defaults to following the file descriptor, which means  that  even  if  a  tail'ed  file  is
+       renamed,  tail  will continue to track its end.  This default behavior is not desirable when you really want to track
+       the actual name of the file, not the file descriptor (e.g., log rotation).  Use --follow=name  in  that  case.   That
+       causes tail to track the named file in a way that accommodates renaming, removal and creation.
+
+AUTHOR
+       Written by Paul Rubin, David MacKenzie, Ian Lance Taylor, and Jim Meyering.
+
+REPORTING BUGS
+       Report tail bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report tail translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       The  full  documentation  for  tail  is  maintained  as a Texinfo manual.  If the info and tail programs are properly
+       installed at your site, the command
+
+              info coreutils 'tail invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                  TAIL(1)
+# Learn Basic Shell Command
+- env, set
+- cat
+- grep, sed, awk
+- sort, head
+GAWK(1)                                               Utility Commands                                               GAWK(1)
+
+
+
+NAME
+       gawk - pattern scanning and processing language
+
+SYNOPSIS
+       gawk [ POSIX or GNU style options ] -f program-file [ -- ] file ...
+       gawk [ POSIX or GNU style options ] [ -- ] program-text file ...
+
+       pgawk [ POSIX or GNU style options ] -f program-file [ -- ] file ...
+       pgawk [ POSIX or GNU style options ] [ -- ] program-text file ...
+
+       dgawk [ POSIX or GNU style options ] -f program-file [ -- ] file ...
+
+DESCRIPTION
+       Gawk  is the GNU Project's implementation of the AWK programming language.  It conforms to the definition of the lan‐
+       guage in the POSIX 1003.1 Standard.  This version in turn is based on the description in  The  AWK  Programming  Lan‐
+       guage, by Aho, Kernighan, and Weinberger.  Gawk provides the additional features found in the current version of UNIX
+       awk and a number of GNU-specific extensions.
+
+       The command line consists of options to gawk itself, the AWK program text (if not  supplied  via  the  -f  or  --file
+       options), and values to be made available in the ARGC and ARGV pre-defined AWK variables.
+
+       Pgawk  is the profiling version of gawk.  It is identical in every way to gawk, except that programs run more slowly,
+       and it automatically produces an execution profile in the file awkprof.out when  done.   See  the  --profile  option,
+       below.
+
+       Dgawk  is an awk debugger. Instead of running the program directly, it loads the AWK source code and then prompts for
+       debugging commands.  Unlike gawk and pgawk, dgawk only processes AWK program source provided with the -f option.  The
+       debugger is documented in GAWK: Effective AWK Programming.
+
+OPTION FORMAT
+       Gawk  options  may  be  either  traditional POSIX-style one letter options, or GNU-style long options.  POSIX options
+       start with a single “-”, while long options start with “--”.  Long options are provided for  both  GNU-specific  fea‐
+       tures and for POSIX-mandated features.
+
+       Gawk-  specific options are typically used in long-option form.  Arguments to long options are either joined with the
+       option by an = sign, with no intervening spaces, or they may be provided in the next  command  line  argument.   Long
+       options may be abbreviated, as long as the abbreviation remains unique.
+
+       Additionally,  each long option has a corresponding short option, so that the option's functionality may be used from
+       within #!  executable scripts.
+
+OPTIONS
+       Gawk accepts the following options.  Standard options are listed first, followed  by  options  for  gawk  extensions,
+       listed alphabetically by short option.
+
+       -f program-file
+       --file program-file
+              Read the AWK program source from the file program-file, instead of from the first command line argument.  Mul‐
+              tiple -f (or --file) options may be used.
+
+       -F fs
+       --field-separator fs
+              Use fs for the input field separator (the value of the FS predefined variable).
+
+       -v var=val
+       --assign var=val
+              Assign the value val to the variable var, before execution of the program begins.  Such  variable  values  are
+              available to the BEGIN block of an AWK program.
+
+       -b
+       --characters-as-bytes
+              Treat all input data as single-byte characters. In other words, don't pay any attention to the locale informa‐
+              tion when attempting to process strings as multibyte characters.  The --posix option overrides this one.
+
+       -c
+       --traditional
+              Run in compatibility mode.  In compatibility mode, gawk behaves identically to UNIX awk; none of the  GNU-spe‐
+              cific extensions are recognized.  See GNU EXTENSIONS, below, for more information.
+
+       -C
+       --copyright
+              Print the short version of the GNU copyright information message on the standard output and exit successfully.
+
+       -d[file]
+       --dump-variables[=file]
+              Print  a  sorted list of global variables, their types and final values to file.  If no file is provided, gawk
+              uses a file named awkvars.out in the current directory.
+              Having a list of all the global variables is a good way to look for typographical  errors  in  your  programs.
+              You  would  also  use this option if you have a large program with a lot of functions, and you want to be sure
+              that your functions don't inadvertently use global variables that you meant to be local.  (This is a  particu‐
+              larly easy mistake to make with simple variable names like i, j, and so on.)
+
+       -e program-text
+       --source program-text
+              Use  program-text  as  AWK  program source code.  This option allows the easy intermixing of library functions
+              (used via the -f and --file options) with source code entered on the command line.  It is  intended  primarily
+              for medium to large AWK programs used in shell scripts.
+
+       -E file
+       --exec file
+              Similar  to -f, however, this is option is the last one processed.  This should be used with #!  scripts, par‐
+              ticularly for CGI applications, to avoid passing in options or source code (!) on the command line from a URL.
+              This option disables command-line variable assignments.
+
+       -g
+       --gen-pot
+              Scan  and  parse  the  AWK program, and generate a GNU .pot (Portable Object Template) format file on standard
+              output with entries for all localizable strings in the program.  The program itself is not executed.  See  the
+              GNU gettext distribution for more information on .pot files.
+
+       -h
+       --help Print  a  relatively short summary of the available options on the standard output.  (Per the GNU Coding Stan‐
+              dards, these options cause an immediate, successful exit.)
+
+       -L [value]
+       --lint[=value]
+              Provide warnings about constructs that are dubious or non-portable to  other  AWK  implementations.   With  an
+              optional  argument  of  fatal,  lint warnings become fatal errors.  This may be drastic, but its use will cer‐
+              tainly encourage the development of cleaner AWK programs.  With an optional argument of invalid, only warnings
+              about things that are actually invalid are issued. (This is not fully implemented yet.)
+
+       -n
+       --non-decimal-data
+              Recognize octal and hexadecimal values in input data.  Use this option with great caution!
+
+       -N
+       --use-lc-numeric
+              This  forces  gawk  to  use  the locale's decimal point character when parsing input data.  Although the POSIX
+              standard requires this behavior, and gawk does so when --posix is in effect, the default is to  follow  tradi‐
+              tional  behavior  and  use  a period as the decimal point, even in locales where the period is not the decimal
+              point character.  This option overrides the default behavior, without the full  draconian  strictness  of  the
+              --posix option.
+
+       -O
+       --optimize
+              Enable  optimizations  upon  the internal representation of the program.  Currently, this includes just simple
+              constant-folding. The gawk maintainer hopes to add additional optimizations over time.
+
+       -p[prof_file]
+       --profile[=prof_file]
+              Send profiling data to prof_file.  The default is awkprof.out.  When run with gawk,  the  profile  is  just  a
+              “pretty  printed”  version of the program.  When run with pgawk, the profile contains execution counts of each
+              statement in the program in the left margin and function call counts for each user-defined function.
+
+       -P
+       --posix
+              This turns on compatibility mode, with the following additional restrictions:
+
+              · \x escape sequences are not recognized.
+
+              · Only space and tab act as field separators when FS is set to a single space, newline does not.
+
+              · You cannot continue lines after ?  and :.
+
+              · The synonym func for the keyword function is not recognized.
+
+              · The operators ** and **= cannot be used in place of ^ and ^=.
+
+              · The fflush() function is not available.
+
+       -r
+       --re-interval
+              Enable the use of interval expressions in  regular  expression  matching  (see  Regular  Expressions,  below).
+              Interval  expressions were not traditionally available in the AWK language.  The POSIX standard added them, to
+              make awk and egrep consistent with each other.  They are enabled by default, but this option remains  for  use
+              with --traditional.
+
+       -R
+       --command file
+              Dgawk only.  Read stored debugger commands from file.
+
+       -S
+       --sandbox
+              Runs gawk in sandbox mode, disabling the system() function, input redirection with getline, output redirection
+              with print and printf, and loading dynamic extensions.  Command execution (through  pipelines)  is  also  dis‐
+              abled.  This effectively blocks a script from accessing local resources (except for the files specified on the
+              command line).
+
+       -t
+       --lint-old
+              Provide warnings about constructs that are not portable to the original version of Unix awk.
+
+       -V
+       --version
+              Print version information for this particular copy of gawk on the standard output.  This is useful mainly  for
+              knowing  if  the  current copy of gawk on your system is up to date with respect to whatever the Free Software
+              Foundation is distributing.  This is also useful when reporting bugs.  (Per the GNU  Coding  Standards,  these
+              options cause an immediate, successful exit.)
+
+       --     Signal the end of options. This is useful to allow further arguments to the AWK program itself to start with a
+              “-”.  This provides consistency with the argument parsing convention used by most other POSIX programs.
+
+       In compatibility mode, any other options are flagged as invalid, but are otherwise ignored.  In normal operation,  as
+       long  as  program text has been supplied, unknown options are passed on to the AWK program in the ARGV array for pro‐
+       cessing.  This is particularly useful for running AWK programs via the “#!” executable interpreter mechanism.
+
+AWK PROGRAM EXECUTION
+       An AWK program consists of a sequence of pattern-action statements and optional function definitions.
+
+              @include "filename" pattern   { action statements }
+              function name(parameter list) { statements }
+
+       Gawk first reads the program source from the program-file(s) if specified, from arguments to --source,  or  from  the
+       first non-option argument on the command line.  The -f and --source options may be used multiple times on the command
+       line.  Gawk reads the program text as if all the program-files and command line source texts  had  been  concatenated
+       together.   This  is  useful  for building libraries of AWK functions, without having to include them in each new AWK
+       program that uses them.  It also provides the ability to mix library functions with command line programs.
+
+       In addition, lines beginning with @include may be used to include  other  source  files  into  your  program,  making
+       library use even easier.
+
+       The  environment  variable AWKPATH specifies a search path to use when finding source files named with the -f option.
+       If this variable does not exist, the default path is  ".:/usr/local/share/awk".   (The  actual  directory  may  vary,
+       depending upon how gawk was built and installed.)  If a file name given to the -f option contains a “/” character, no
+       path search is performed.
+
+       Gawk executes AWK programs in the following order.  First, all variable assignments specified via the -v  option  are
+       performed.   Next,  gawk  compiles  the  program  into  an  internal form.  Then, gawk executes the code in the BEGIN
+       block(s) (if any), and then proceeds to read each file named in the ARGV array (up to ARGV[ARGC]).  If there  are  no
+       files named on the command line, gawk reads the standard input.
+
+       If a filename on the command line has the form var=val it is treated as a variable assignment.  The variable var will
+       be assigned the value val.  (This happens after any BEGIN block(s) have been run.)  Command line variable  assignment
+       is  most useful for dynamically assigning values to the variables AWK uses to control how input is broken into fields
+       and records.  It is also useful for controlling state if multiple passes are needed over a single data file.
+
+       If the value of a particular element of ARGV is empty (""), gawk skips over it.
+
+       For each input file, if a BEGINFILE rule exists, gawk executes the associated code before processing the contents  of
+       the file. Similarly, gawk executes the code associated with ENDFILE after processing the file.
+
+       For  each record in the input, gawk tests to see if it matches any pattern in the AWK program.  For each pattern that
+       the record matches, the associated action is executed.  The patterns are tested in the order they occur in  the  pro‐
+       gram.
+
+       Finally, after all the input is exhausted, gawk executes the code in the END block(s) (if any).
+
+   Command Line Directories
+       According  to  POSIX,  files named on the awk command line must be text files.  The behavior is ``undefined'' if they
+       are not.  Most versions of awk treat a directory on the command line as a fatal error.
+
+       Starting with version 4.0 of gawk, a directory on the command line produces a warning, but is otherwise skipped.   If
+       either  of  the  --posix  or --traditional options is given, then gawk reverts to treating directories on the command
+       line as a fatal error.
+
+VARIABLES, RECORDS AND FIELDS
+       AWK variables are dynamic; they come into existence when they are first used.  Their values are either floating-point
+       numbers or strings, or both, depending upon how they are used.  AWK also has one dimensional arrays; arrays with mul‐
+       tiple dimensions may be simulated.  Several pre-defined variables are set as a program runs; these are  described  as
+       needed and summarized below.
+
+   Records
+       Normally, records are separated by newline characters.  You can control how records are separated by assigning values
+       to the built-in variable RS.  If RS is any single character, that character separates records.  Otherwise,  RS  is  a
+       regular  expression.   Text in the input that matches this regular expression separates the record.  However, in com‐
+       patibility mode, only the first character of its string value is used for separating records.  If RS is  set  to  the
+       null  string,  then  records  are separated by blank lines.  When RS is set to the null string, the newline character
+       always acts as a field separator, in addition to whatever value FS may have.
+
+   Fields
+       As each input record is read, gawk splits the record into fields, using the value of the FS  variable  as  the  field
+       separator.  If FS is a single character, fields are separated by that character.  If FS is the null string, then each
+       individual character becomes a separate field.  Otherwise, FS is expected to be a full regular  expression.   In  the
+       special case that FS is a single space, fields are separated by runs of spaces and/or tabs and/or newlines.  (But see
+       the section POSIX COMPATIBILITY, below).  NOTE: The value of IGNORECASE (see below) also affects how fields are split
+       when FS is a regular expression, and how records are separated when RS is a regular expression.
+
+       If  the FIELDWIDTHS variable is set to a space separated list of numbers, each field is expected to have fixed width,
+       and gawk splits up the record using the specified widths.  The value of FS is ignored.  Assigning a new value  to  FS
+       or FPAT overrides the use of FIELDWIDTHS.
+
+       Similarly,  if  the FPAT variable is set to a string representing a regular expression, each field is made up of text
+       that matches that regular expression. In this case, the regular expression describes the fields  themselves,  instead
+       of the text that separates the fields.  Assigning a new value to FS or FIELDWIDTHS overrides the use of FPAT.
+
+       Each field in the input record may be referenced by its position, $1, $2, and so on.  $0 is the whole record.  Fields
+       need not be referenced by constants:
+
+              n = 5
+              print $n
+
+       prints the fifth field in the input record.
+
+       The variable NF is set to the total number of fields in the input record.
+
+       References to non-existent fields (i.e. fields after $NF) produce the null-string.  However, assigning to a non-exis‐
+       tent  field  (e.g.,  $(NF+2)  =  5) increases the value of NF, creates any intervening fields with the null string as
+       their value, and causes the value of $0 to be recomputed, with the fields being separated by the value of OFS.   Ref‐
+       erences  to  negative  numbered fields cause a fatal error.  Decrementing NF causes the values of fields past the new
+       value to be lost, and the value of $0 to be recomputed, with the fields being separated by the value of OFS.
+
+       Assigning a value to an existing field causes the whole record to be  rebuilt  when  $0  is  referenced.   Similarly,
+       assigning a value to $0 causes the record to be resplit, creating new values for the fields.
+
+   Built-in Variables
+       Gawk's built-in variables are:
+
+       ARGC        The number of command line arguments (does not include options to gawk, or the program source).
+
+       ARGIND      The index in ARGV of the current file being processed.
+
+       ARGV        Array of command line arguments.  The array is indexed from 0 to ARGC - 1.  Dynamically changing the con‐
+                   tents of ARGV can control the files used for data.
+
+       BINMODE     On non-POSIX systems, specifies use of “binary” mode for all file I/O.  Numeric values of  1,  2,  or  3,
+                   specify that input files, output files, or all files, respectively, should use binary I/O.  String values
+                   of "r", or "w" specify that input files, or output files, respectively, should use  binary  I/O.   String
+                   values  of  "rw" or "wr" specify that all files should use binary I/O.  Any other string value is treated
+                   as "rw", but generates a warning message.
+
+       CONVFMT     The conversion format for numbers, "%.6g", by default.
+
+       ENVIRON     An array containing the values of the current environment.  The array is indexed by the environment vari‐
+                   ables,  each  element  being  the  value  of that variable (e.g., ENVIRON["HOME"] might be /home/arnold).
+                   Changing this array does not affect the environment seen by programs which gawk spawns via redirection or
+                   the system() function.
+
+       ERRNO       If  a  system error occurs either doing a redirection for getline, during a read for getline, or during a
+                   close(), then ERRNO will contain a string describing the error.  The value is subject to  translation  in
+                   non-English locales.
+
+       FIELDWIDTHS A whitespace separated list of field widths.  When set, gawk parses the input into fields of fixed width,
+                   instead of using the value of the FS variable as the field separator.  See Fields, above.
+
+       FILENAME    The name of the current input file.  If no files are specified on the command line, the value of FILENAME
+                   is “-”.  However, FILENAME is undefined inside the BEGIN block (unless set by getline).
+
+       FNR         The input record number in the current input file.
+
+       FPAT        A  regular expression describing the contents of the fields in a record.  When set, gawk parses the input
+                   into fields, where the fields match the regular expression, instead of using the value of the FS variable
+                   as the field separator.  See Fields, above.
+
+       FS          The input field separator, a space by default.  See Fields, above.
+
+       IGNORECASE  Controls  the case-sensitivity of all regular expression and string operations.  If IGNORECASE has a non-
+                   zero value, then string comparisons and pattern matching in rules, field  splitting  with  FS  and  FPAT,
+                   record  separating with RS, regular expression matching with ~ and !~, and the gensub(), gsub(), index(),
+                   match(), patsplit(), split(), and sub() built-in functions all ignore case when doing regular  expression
+                   operations.   NOTE:  Array subscripting is not affected.  However, the asort() and asorti() functions are
+                   affected.
+                   Thus, if IGNORECASE is not equal to zero, /aB/ matches all of the strings "ab", "aB", "Ab", and "AB".  As
+                   with  all  AWK  variables,  the initial value of IGNORECASE is zero, so all regular expression and string
+                   operations are normally case-sensitive.
+
+       LINT        Provides dynamic control of the --lint option from within an AWK program.  When true,  gawk  prints  lint
+                   warnings.  When  false,  it does not.  When assigned the string value "fatal", lint warnings become fatal
+                   errors, exactly like --lint=fatal.  Any other true value just prints warnings.
+
+       NF          The number of fields in the current input record.
+
+       NR          The total number of input records seen so far.
+
+       OFMT        The output format for numbers, "%.6g", by default.
+
+       OFS         The output field separator, a space by default.
+
+       ORS         The output record separator, by default a newline.
+
+       PROCINFO    The elements of this array provide access to information about the running AWK program.  On some systems,
+                   there  may be elements in the array, "group1" through "groupn" for some n, which is the number of supple‐
+                   mentary groups that the process has.  Use the in operator to test for these elements.  The following ele‐
+                   ments are guaranteed to be available:
+
+                   PROCINFO["egid"]    the value of the getegid(2) system call.
+
+                   PROCINFO["strftime"]
+                                       The default time format string for strftime().
+
+                   PROCINFO["euid"]    the value of the geteuid(2) system call.
+
+                   PROCINFO["FS"]      "FS"  if field splitting with FS is in effect, "FPAT" if field splitting with FPAT is
+                                       in effect, or "FIELDWIDTHS" if field splitting with FIELDWIDTHS is in effect.
+
+                   PROCINFO["gid"]     the value of the getgid(2) system call.
+
+                   PROCINFO["pgrpid"]  the process group ID of the current process.
+
+                   PROCINFO["pid"]     the process ID of the current process.
+
+                   PROCINFO["ppid"]    the parent process ID of the current process.
+
+                   PROCINFO["uid"]     the value of the getuid(2) system call.
+
+                   PROCINFO["sorted_in"]
+                                       If this element exists in PROCINFO, then its value controls the order in which  array
+                                       elements   are   traversed  in  for  loops.   Supported  values  are  "@ind_str_asc",
+                                       "@ind_num_asc",  "@val_type_asc",  "@val_str_asc",  "@val_num_asc",  "@ind_str_desc",
+                                       "@ind_num_desc", "@val_type_desc", "@val_str_desc", "@val_num_desc", and "@unsorted".
+                                       The value can also be the name of any comparison function defined as follows:
+
+                          function cmp_func(i1, v1, i2, v2)
+
+                   where i1 and i2 are the indices, and v1 and v2 are the corresponding values of  the  two  elements  being
+                   compared.   It  should  return a number less than, equal to, or greater than 0, depending on how the ele‐
+                   ments of the array are to be ordered.
+
+                   PROCINFO["version"]
+                          the version of gawk.
+
+       RS          The input record separator, by default a newline.
+
+       RT          The record terminator.  Gawk sets RT to the input text that matched the character or  regular  expression
+                   specified by RS.
+
+       RSTART      The index of the first character matched by match(); 0 if no match.  (This implies that character indices
+                   start at one.)
+
+       RLENGTH     The length of the string matched by match(); -1 if no match.
+
+       SUBSEP      The character used to separate multiple subscripts in array elements, by default "\034".
+
+       TEXTDOMAIN  The text domain of the AWK program; used to find the localized translations for the program's strings.
+
+   Arrays
+       Arrays are subscripted with an expression between square brackets ([ and ]).  If the expression is an expression list
+       (expr,  expr ...)  then the array subscript is a string consisting of the concatenation of the (string) value of each
+       expression, separated by the value of the SUBSEP variable.  This facility is used to  simulate  multiply  dimensioned
+       arrays.  For example:
+
+              i = "A"; j = "B"; k = "C"
+              x[i, j, k] = "hello, world\n"
+
+       assigns  the string "hello, world\n" to the element of the array x which is indexed by the string "A\034B\034C".  All
+       arrays in AWK are associative, i.e. indexed by string values.
+
+       The special operator in may be used to test if an array has an index consisting of a particular value:
+
+              if (val in array)
+                   print array[val]
+
+       If the array has multiple subscripts, use (i, j) in array.
+
+       The in construct may also be used in a for loop to iterate over all the elements of an array.
+
+       An element may be deleted from an array using the delete statement.  The delete statement may also be used to  delete
+       the entire contents of an array, just by specifying the array name without a subscript.
+
+       gawk  supports  true multidimensional arrays. It does not require that such arrays be ``rectangular'' as in C or C++.
+       For example:
+              a[1] = 5
+              a[2][1] = 6
+              a[2][2] = 7
+
+   Variable Typing And Conversion
+       Variables and fields may be (floating point) numbers, or strings, or both.  How the value of  a  variable  is  inter‐
+       preted  depends  upon  its  context.   If  used in a numeric expression, it will be treated as a number; if used as a
+       string it will be treated as a string.
+
+       To force a variable to be treated as a number, add 0 to it; to force it to be treated as  a  string,  concatenate  it
+       with the null string.
+
+       When  a  string must be converted to a number, the conversion is accomplished using strtod(3).  A number is converted
+       to a string by using the value of CONVFMT as a format string for sprintf(3), with the numeric value of  the  variable
+       as the argument.  However, even though all numbers in AWK are floating-point, integral values are always converted as
+       integers.  Thus, given
+
+              CONVFMT = "%2.2f"
+              a = 12
+              b = a ""
+
+       the variable b has a string value of "12" and not "12.00".
+
+       NOTE: When operating in POSIX mode (such as with the --posix command line option), beware that  locale  settings  may
+       interfere with the way decimal numbers are treated: the decimal separator of the numbers you are feeding to gawk must
+       conform to what your locale would expect, be it a comma (,) or a period (.).
+
+       Gawk performs comparisons as follows: If two variables are numeric, they are compared numerically.  If one  value  is
+       numeric  and  the  other  has  a string value that is a “numeric string,” then comparisons are also done numerically.
+       Otherwise, the numeric value is converted to a string and a string comparison is performed.   Two  strings  are  com‐
+       pared, of course, as strings.
+
+       Note  that  string constants, such as "57", are not numeric strings, they are string constants.  The idea of “numeric
+       string” only applies to fields, getline input, FILENAME, ARGV elements, ENVIRON elements and the elements of an array
+       created  by  split() or patsplit() that are numeric strings.  The basic idea is that user input, and only user input,
+       that looks numeric, should be treated that way.
+
+       Uninitialized variables have the numeric value 0 and the string value "" (the null, or empty, string).
+
+   Octal and Hexadecimal Constants
+       You may use C-style octal and hexadecimal constants in your AWK program source code.  For example,  the  octal  value
+       011 is equal to decimal 9, and the hexadecimal value 0x11 is equal to decimal 17.
+
+   String Constants
+       String  constants  in AWK are sequences of characters enclosed between double quotes (like "value").  Within strings,
+       certain escape sequences are recognized, as in C.  These are:
+
+       \\   A literal backslash.
+
+       \a   The “alert” character; usually the ASCII BEL character.
+
+       \b   backspace.
+
+       \f   form-feed.
+
+       \n   newline.
+
+       \r   carriage return.
+
+       \t   horizontal tab.
+
+       \v   vertical tab.
+
+       \xhex digits
+            The character represented by the string of hexadecimal digits following the \x.  As in  ANSI  C,  all  following
+            hexadecimal  digits  are  considered  part of the escape sequence.  (This feature should tell us something about
+            language design by committee.)  E.g., "\x1B" is the ASCII ESC (escape) character.
+
+       \ddd The character represented by the 1-, 2-, or 3-digit sequence of octal digits.  E.g., "\033"  is  the  ASCII  ESC
+            (escape) character.
+
+       \c   The literal character c.
+
+       The  escape  sequences may also be used inside constant regular expressions (e.g., /[ \t\f\n\r\v]/ matches whitespace
+       characters).
+
+       In compatibility mode, the characters represented by octal and hexadecimal escape  sequences  are  treated  literally
+       when used in regular expression constants.  Thus, /a\52b/ is equivalent to /a\*b/.
+
+PATTERNS AND ACTIONS
+       AWK  is a line-oriented language.  The pattern comes first, and then the action.  Action statements are enclosed in {
+       and }.  Either the pattern may be missing, or the action may be missing, but, of course, not both.  If the pattern is
+       missing, the action is executed for every single record of input.  A missing action is equivalent to
+
+              { print }
+
+       which prints the entire record.
+
+       Comments  begin  with  the  # character, and continue until the end of the line.  Blank lines may be used to separate
+       statements.  Normally, a statement ends with a newline, however, this is not the case for lines ending in a comma, {,
+       ?,  :,  &&,  or  ||.   Lines ending in do or else also have their statements automatically continued on the following
+       line.  In other cases, a line can be continued by ending it with a “\”, in which case the newline is ignored.
+
+       Multiple statements may be put on one line by separating them with a “;”.  This applies to both the statements within
+       the action part of a pattern-action pair (the usual case), and to the pattern-action statements themselves.
+
+   Patterns
+       AWK patterns may be one of the following:
+
+              BEGIN
+              END
+              BEGINFILE
+              ENDFILE
+              /regular expression/
+              relational expression
+              pattern && pattern
+              pattern || pattern
+              pattern ? pattern : pattern
+              (pattern)
+              ! pattern
+              pattern1, pattern2
+
+       BEGIN  and  END  are  two  special kinds of patterns which are not tested against the input.  The action parts of all
+       BEGIN patterns are merged as if all the statements had been written in a  single  BEGIN  block.   They  are  executed
+       before  any  of  the  input  is  read.   Similarly, all the END blocks are merged, and executed when all the input is
+       exhausted (or when an exit statement is executed).  BEGIN and END patterns cannot be combined with other patterns  in
+       pattern expressions.  BEGIN and END patterns cannot have missing action parts.
+
+       BEGINFILE  and  ENDFILE  are additional special patterns whose bodies are executed before reading the first record of
+       each command line input file and after reading the last record of each file.  Inside the BEGINFILE rule, the value of
+       ERRNO  will  be the empty string if the file could be opened successfully.  Otherwise, there is some problem with the
+       file and the code should use nextfile to skip it. If that is not done, gawk produces its usual fatal error for  files
+       that cannot be opened.
+
+       For  /regular expression/ patterns, the associated statement is executed for each input record that matches the regu‐
+       lar expression.  Regular expressions are the same as those in egrep(1), and are summarized below.
+
+       A relational expression may use any of the operators defined below in the section on actions.  These  generally  test
+       whether certain fields match certain regular expressions.
+
+       The &&, ||, and !  operators are logical AND, logical OR, and logical NOT, respectively, as in C.  They do short-cir‐
+       cuit evaluation, also as in C, and are used for combining more primitive pattern expressions.  As in most  languages,
+       parentheses may be used to change the order of evaluation.
+
+       The  ?:  operator  is like the same operator in C.  If the first pattern is true then the pattern used for testing is
+       the second pattern, otherwise it is the third.  Only one of the second and third patterns is evaluated.
+
+       The pattern1, pattern2 form of an expression is called a range pattern.  It matches all input records starting with a
+       record  that  matches  pattern1, and continuing until a record that matches pattern2, inclusive.  It does not combine
+       with any other sort of pattern expression.
+
+   Regular Expressions
+       Regular expressions are the extended kind found in egrep.  They are composed of characters as follows:
+
+       c          matches the non-metacharacter c.
+
+       \c         matches the literal character c.
+
+       .          matches any character including newline.
+
+       ^          matches the beginning of a string.
+
+       $          matches the end of a string.
+
+       [abc...]   character list, matches any of the characters abc....
+
+       [^abc...]  negated character list, matches any character except abc....
+
+       r1|r2      alternation: matches either r1 or r2.
+
+       r1r2       concatenation: matches r1, and then r2.
+
+       r+         matches one or more r's.
+
+       r*         matches zero or more r's.
+
+       r?         matches zero or one r's.
+
+       (r)        grouping: matches r.
+
+       r{n}
+       r{n,}
+       r{n,m}     One or two numbers inside braces denote an interval expression.  If there is one number in the braces, the
+                  preceding  regular  expression r is repeated n times.  If there are two numbers separated by a comma, r is
+                  repeated n to m times.  If there is one number followed by a comma, then r is repeated at least n times.
+
+       \y         matches the empty string at either the beginning or the end of a word.
+
+       \B         matches the empty string within a word.
+
+       \<         matches the empty string at the beginning of a word.
+
+       \>         matches the empty string at the end of a word.
+
+       \s         matches any whitespace character.
+
+       \S         matches any nonwhitespace character.
+
+       \w         matches any word-constituent character (letter, digit, or underscore).
+
+       \W         matches any character that is not word-constituent.
+
+       \`         matches the empty string at the beginning of a buffer (string).
+
+       \'         matches the empty string at the end of a buffer.
+
+       The escape sequences that are valid in string constants (see below) are also valid in regular expressions.
+
+       Character classes are a feature introduced in the POSIX standard.  A  character  class  is  a  special  notation  for
+       describing  lists  of  characters that have a specific attribute, but where the actual characters themselves can vary
+       from country to country and/or from character set to character set.  For example, the notion of what is an alphabetic
+       character differs in the USA and in France.
+
+       A  character  class is only valid in a regular expression inside the brackets of a character list.  Character classes
+       consist of [:, a keyword denoting the class, and :].  The character classes defined by the POSIX standard are:
+
+       [:alnum:]  Alphanumeric characters.
+
+       [:alpha:]  Alphabetic characters.
+
+       [:blank:]  Space or tab characters.
+
+       [:cntrl:]  Control characters.
+
+       [:digit:]  Numeric characters.
+
+       [:graph:]  Characters that are both printable and visible.  (A space is printable, but not visible,  while  an  a  is
+                  both.)
+
+       [:lower:]  Lowercase alphabetic characters.
+
+       [:print:]  Printable characters (characters that are not control characters.)
+
+       [:punct:]  Punctuation characters (characters that are not letter, digits, control characters, or space characters).
+
+       [:space:]  Space characters (such as space, tab, and formfeed, to name a few).
+
+       [:upper:]  Uppercase alphabetic characters.
+
+       [:xdigit:] Characters that are hexadecimal digits.
+
+       For  example, before the POSIX standard, to match alphanumeric characters, you would have had to write /[A-Za-z0-9]/.
+       If your character set had other alphabetic characters in it, this would not match them, and  if  your  character  set
+       collated differently from ASCII, this might not even match the ASCII alphanumeric characters.  With the POSIX charac‐
+       ter classes, you can write /[[:alnum:]]/, and this matches the alphabetic and numeric characters  in  your  character
+       set, no matter what it is.
+
+       Two  additional  special sequences can appear in character lists.  These apply to non-ASCII character sets, which can
+       have single symbols (called collating elements) that are represented with more than one character, as well as several
+       characters  that  are  equivalent  for  collating,  or sorting, purposes.  (E.g., in French, a plain “e” and a grave-
+       accented “`” are equivalent.)
+
+       Collating Symbols
+              A collating symbol is a multi-character collating element enclosed in [.  and .].  For example,  if  ch  is  a
+              collating element, then [[.ch.]]  is a regular expression that matches this collating element, while [ch] is a
+              regular expression that matches either c or h.
+
+       Equivalence Classes
+              An equivalence class is a locale-specific name for a list of characters that  are  equivalent.   The  name  is
+              enclosed  in [= and =].  For example, the name e might be used to represent all of “e,” “´,” and “`.”  In this
+              case, [[=e=]] is a regular expression that matches any of e, ´, or `.
+
+       These features are very valuable in non-English speaking locales.  The library functions that gawk uses  for  regular
+       expression  matching  currently  only  recognize  POSIX character classes; they do not recognize collating symbols or
+       equivalence classes.
+
+       The \y, \B, \<, \>, \s, \S, \w, \W, \`, and \' operators are specific to gawk; they are extensions based  on  facili‐
+       ties in the GNU regular expression libraries.
+
+       The various command line options control how gawk interprets characters in regular expressions.
+
+       No options
+              In  the default case, gawk provide all the facilities of POSIX regular expressions and the GNU regular expres‐
+              sion operators described above.
+
+       --posix
+              Only POSIX regular expressions are supported, the GNU operators are not special.  (E.g., \w matches a  literal
+              w).
+
+       --traditional
+              Traditional Unix awk regular expressions are matched.  The GNU operators are not special, and interval expres‐
+              sions are not available.  Characters described by octal and hexadecimal escape sequences  are  treated  liter‐
+              ally, even if they represent regular expression metacharacters.
+
+       --re-interval
+              Allow interval expressions in regular expressions, even if --traditional has been provided.
+
+   Actions
+       Action  statements  are enclosed in braces, { and }.  Action statements consist of the usual assignment, conditional,
+       and looping statements found in most languages.  The  operators,  control  statements,  and  input/output  statements
+       available are patterned after those in C.
+
+   Operators
+       The operators in AWK, in order of decreasing precedence, are
+
+       (...)       Grouping
+
+       $           Field reference.
+
+       ++ --       Increment and decrement, both prefix and postfix.
+
+       ^           Exponentiation (** may also be used, and **= for the assignment operator).
+
+       + - !       Unary plus, unary minus, and logical negation.
+
+       * / %       Multiplication, division, and modulus.
+
+       + -         Addition and subtraction.
+
+       space       String concatenation.
+
+       |   |&      Piped I/O for getline, print, and printf.
+
+       < > <= >= != ==
+                   The regular relational operators.
+
+       ~ !~        Regular  expression  match, negated match.  NOTE: Do not use a constant regular expression (/foo/) on the
+                   left-hand side of a ~ or !~.  Only use one on the right-hand side.  The expression /foo/ ~  exp  has  the
+                   same meaning as (($0 ~ /foo/) ~ exp).  This is usually not what was intended.
+
+       in          Array membership.
+
+       &&          Logical AND.
+
+       ||          Logical OR.
+
+       ?:          The  C  conditional expression.  This has the form expr1 ? expr2 : expr3.  If expr1 is true, the value of
+                   the expression is expr2, otherwise it is expr3.  Only one of expr2 and expr3 is evaluated.
+
+       = += -= *= /= %= ^=
+                   Assignment.  Both absolute assignment (var = value) and operator-assignment (the other  forms)  are  sup‐
+                   ported.
+
+   Control Statements
+       The control statements are as follows:
+
+              if (condition) statement [ else statement ]
+              while (condition) statement
+              do statement while (condition)
+              for (expr1; expr2; expr3) statement
+              for (var in array) statement
+              break
+              continue
+              delete array[index]
+              delete array
+              exit [ expression ]
+              { statements }
+              switch (expression) {
+              case value|regex : statement
+              ...
+              [ default: statement ]
+              }
+
+   I/O Statements
+       The input/output statements are as follows:
+
+       close(file [, how])   Close file, pipe or co-process.  The optional how should only be used when closing one end of a
+                             two-way pipe to a co-process.  It must be a string value, either "to" or "from".
+
+       getline               Set $0 from next input record; set NF, NR, FNR.
+
+       getline <file         Set $0 from next record of file; set NF.
+
+       getline var           Set var from next input record; set NR, FNR.
+
+       getline var <file     Set var from next record of file.
+
+       command | getline [var]
+                             Run command piping the output either into $0 or var, as above.
+
+       command |& getline [var]
+                             Run command as a co-process piping the output either into $0 or var,  as  above.   Co-processes
+                             are  a  gawk extension.  (command can also be a socket.  See the subsection Special File Names,
+                             below.)
+
+       next                  Stop processing the current input record.  The next input record is read and processing  starts
+                             over  with  the first pattern in the AWK program.  If the end of the input data is reached, the
+                             END block(s), if any, are executed.
+
+       nextfile              Stop processing the current input file.  The next input record read comes from the  next  input
+                             file.   FILENAME and ARGIND are updated, FNR is reset to 1, and processing starts over with the
+                             first pattern in the AWK program. If the end of the input data is reached, the END block(s), if
+                             any, are executed.
+
+       print                 Print the current record.  The output record is terminated with the value of the ORS variable.
+
+       print expr-list       Print  expressions.  Each expression is separated by the value of the OFS variable.  The output
+                             record is terminated with the value of the ORS variable.
+
+       print expr-list >file Print expressions on file.  Each expression is separated by the value of the OFS variable.  The
+                             output record is terminated with the value of the ORS variable.
+
+       printf fmt, expr-list Format and print.  See The printf Statement, below.
+
+       printf fmt, expr-list >file
+                             Format and print on file.
+
+       system(cmd-line)      Execute  the  command cmd-line, and return the exit status.  (This may not be available on non-
+                             POSIX systems.)
+
+       fflush([file])        Flush any buffers associated with the open output file or pipe file.  If file is missing,  then
+                             flush standard output.  If file is the null string, then flush all open output files and pipes.
+
+       Additional output redirections are allowed for print and printf.
+
+       print ... >> file
+              Appends output to the file.
+
+       print ... | command
+              Writes on a pipe.
+
+       print ... |& command
+              Sends data to a co-process or socket.  (See also the subsection Special File Names, below.)
+
+       The  getline  command  returns  1  on success, 0 on end of file, and -1 on an error.  Upon an error, ERRNO contains a
+       string describing the problem.
+
+       NOTE: Failure in opening a two-way socket will result in a non-fatal error being returned to the calling function. If
+       using a pipe, co-process, or socket to getline, or from print or printf within a loop, you must use close() to create
+       new instances of the command or socket.  AWK does not automatically close pipes, sockets, or co-processes  when  they
+       return EOF.
+
+   The printf Statement
+       The  AWK versions of the printf statement and sprintf() function (see below) accept the following conversion specifi‐
+       cation formats:
+
+       %c      A single character.  If the argument used for %c is numeric, it is treated as a character and printed.   Oth‐
+               erwise, the argument is assumed to be a string, and the only first character of that string is printed.
+
+       %d, %i  A decimal number (the integer part).
+
+       %e, %E  A floating point number of the form [-]d.dddddde[+-]dd.  The %E format uses E instead of e.
+
+       %f, %F  A  floating  point  number  of the form [-]ddd.dddddd.  If the system library supports it, %F is available as
+               well. This is like %f, but uses capital letters for special “not a number” and “infinity” values.  If  %F  is
+               not available, gawk uses %f.
+
+       %g, %G  Use  %e  or %f conversion, whichever is shorter, with nonsignificant zeros suppressed.  The %G format uses %E
+               instead of %e.
+
+       %o      An unsigned octal number (also an integer).
+
+       %u      An unsigned decimal number (again, an integer).
+
+       %s      A character string.
+
+       %x, %X  An unsigned hexadecimal number (an integer).  The %X format uses ABCDEF instead of abcdef.
+
+       %%      A single % character; no argument is converted.
+
+       Optional, additional parameters may lie between the % and the control letter:
+
+       count$ Use the count'th argument at this point in the formatting.  This is  called  a  positional  specifier  and  is
+              intended  primarily  for use in translated versions of format strings, not in the original text of an AWK pro‐
+              gram.  It is a gawk extension.
+
+       -      The expression should be left-justified within its field.
+
+       space  For numeric conversions, prefix positive values with a space, and negative values with a minus sign.
+
+       +      The plus sign, used before the width modifier (see below), says to always supply a sign  for  numeric  conver‐
+              sions, even if the data to be formatted is positive.  The + overrides the space modifier.
+
+       #      Use an “alternate form” for certain control letters.  For %o, supply a leading zero.  For %x, and %X, supply a
+              leading 0x or 0X for a nonzero result.  For %e, %E, %f and %F, the result always  contains  a  decimal  point.
+              For %g, and %G, trailing zeros are not removed from the result.
+
+       0      A leading 0 (zero) acts as a flag, that indicates output should be padded with zeroes instead of spaces.  This
+              applies only to the numeric output formats.  This flag only has an effect when the field width is  wider  than
+              the value to be printed.
+
+       width  The  field  should be padded to this width.  The field is normally padded with spaces.  If the 0 flag has been
+              used, it is padded with zeroes.
+
+       .prec  A number that specifies the precision to use when printing.  For the %e, %E, %f and %F, formats,  this  speci‐
+              fies  the number of digits you want printed to the right of the decimal point.  For the %g, and %G formats, it
+              specifies the maximum number of significant digits.  For the %d, %i, %o, %u, %x, and %X formats, it  specifies
+              the  minimum number of digits to print.  For %s, it specifies the maximum number of characters from the string
+              that should be printed.
+
+       The dynamic width and prec capabilities of the ANSI C printf() routines are supported.  A * in place  of  either  the
+       width or prec specifications causes their values to be taken from the argument list to printf or sprintf().  To use a
+       positional specifier with a dynamic width or precision, supply the count$ after the *  in  the  format  string.   For
+       example, "%3$*2$.*1$s".
+
+   Special File Names
+       When  doing I/O redirection from either print or printf into a file, or via getline from a file, gawk recognizes cer‐
+       tain special filenames internally.  These filenames allow access to open file descriptors inherited from gawk's  par‐
+       ent  process  (usually  the  shell).   These file names may also be used on the command line to name data files.  The
+       filenames are:
+
+       /dev/stdin  The standard input.
+
+       /dev/stdout The standard output.
+
+       /dev/stderr The standard error output.
+
+       /dev/fd/n   The file associated with the open file descriptor n.
+
+       These are particularly useful for error messages.  For example:
+
+              print "You blew it!" > "/dev/stderr"
+
+       whereas you would otherwise have to use
+
+              print "You blew it!" | "cat 1>&2"
+
+       The following special filenames may be used with the |& co-process operator for creating TCP/IP network connections:
+
+       /inet/tcp/lport/rhost/rport
+       /inet4/tcp/lport/rhost/rport
+       /inet6/tcp/lport/rhost/rport
+              Files for a TCP/IP connection on local port lport to remote host rhost on remote port rport.  Use a port of  0
+              to  have  the system pick a port.  Use /inet4 to force an IPv4 connection, and /inet6 to force an IPv6 connec‐
+              tion.  Plain /inet uses the system default (most likely IPv4).
+
+       /inet/udp/lport/rhost/rport
+       /inet4/udp/lport/rhost/rport
+       /inet6/udp/lport/rhost/rport
+              Similar, but use UDP/IP instead of TCP/IP.
+
+   Numeric Functions
+       AWK has the following built-in arithmetic functions:
+
+       atan2(y, x)   Return the arctangent of y/x in radians.
+
+       cos(expr)     Return the cosine of expr, which is in radians.
+
+       exp(expr)     The exponential function.
+
+       int(expr)     Truncate to integer.
+
+       log(expr)     The natural logarithm function.
+
+       rand()        Return a random number N, between 0 and 1, such that 0 ≤ N < 1.
+
+       sin(expr)     Return the sine of expr, which is in radians.
+
+       sqrt(expr)    The square root function.
+
+       srand([expr]) Use expr as the new seed for the random number generator.  If no expr is provided, use the time of day.
+                     The return value is the previous seed for the random number generator.
+
+   String Functions
+       Gawk has the following built-in string functions:
+
+       asort(s [, d [, how] ]) Return  the  number  of  elements in the source array s.  Sort the contents of s using gawk's
+                               normal rules for comparing values, and replace the  indices  of  the  sorted  values  s  with
+                               sequential  integers  starting with 1. If the optional destination array d is specified, then
+                               first duplicate s into d, and then sort  d,  leaving  the  indices  of  the  source  array  s
+                               unchanged.  The  optional  string  how controls the direction and the comparison mode.  Valid
+                               values for how are any of the strings valid for PROCINFO["sorted_in"].  It can  also  be  the
+                               name of a user-defined comparison function as described in PROCINFO["sorted_in"].
+
+       asorti(s [, d [, how] ])
+                               Return  the  number  of  elements in the source array s.  The behavior is the same as that of
+                               asort(), except that the array indices are used for sorting,  not  the  array  values.   When
+                               done,  the  array  is  indexed numerically, and the values are those of the original indices.
+                               The original values are lost; thus provide a second array if you wish to preserve the  origi‐
+                               nal.  The purpose of the optional string how is the same as described in asort() above.
+
+       gensub(r, s, h [, t])   Search  the target string t for matches of the regular expression r.  If h is a string begin‐
+                               ning with g or G, then replace all matches of r with s.  Otherwise, h is a number  indicating
+                               which  match  of r to replace.  If t is not supplied, use $0 instead.  Within the replacement
+                               text s, the sequence \n, where n is a digit from 1 to 9, may be used  to  indicate  just  the
+                               text  that  matched  the  n'th  parenthesized  subexpression.  The sequence \0 represents the
+                               entire matched text, as does the character &.  Unlike sub() and gsub(), the  modified  string
+                               is returned as the result of the function, and the original target string is not changed.
+
+       gsub(r, s [, t])        For  each  substring matching the regular expression r in the string t, substitute the string
+                               s, and return the number of substitutions.  If t is not  supplied,  use  $0.   An  &  in  the
+                               replacement  text  is replaced with the text that was actually matched.  Use \& to get a lit‐
+                               eral &.  (This must be typed as "\\&"; see GAWK: Effective AWK Programming for a fuller  dis‐
+                               cussion  of  the  rules for &'s and backslashes in the replacement text of sub(), gsub(), and
+                               gensub().)
+
+       index(s, t)             Return the index of the string t in the string s, or 0 if t is not  present.   (This  implies
+                               that character indices start at one.)
+
+       length([s])             Return  the length of the string s, or the length of $0 if s is not supplied.  As a non-stan‐
+                               dard extension, with an array argument, length() returns the number of elements in the array.
+
+       match(s, r [, a])       Return the position in s where the regular expression r occurs, or 0 if r is not present, and
+                               set  the values of RSTART and RLENGTH.  Note that the argument order is the same as for the ~
+                               operator: str ~ re.  If array a is provided, a is cleared and then elements 1 through  n  are
+                               filled  with the portions of s that match the corresponding parenthesized subexpression in r.
+                               The 0'th element of a contains the portion of s matched by the entire regular  expression  r.
+                               Subscripts  a[n,  "start"],  and  a[n, "length"] provide the starting index in the string and
+                               length respectively, of each matching substring.
+
+       patsplit(s, a [, r [, seps] ])
+                               Split the string s into the array a and the separators array seps on the  regular  expression
+                               r,  and  return  the  number of fields.  Element values are the portions of s that matched r.
+                               The value of seps[i] is the separator that appeared in front of a[i+1].   If  r  is  omitted,
+                               FPAT  is  used  instead.  The arrays a and seps are cleared first.  Splitting behaves identi‐
+                               cally to field splitting with FPAT, described above.
+
+       split(s, a [, r [, seps] ])
+                               Split the string s into the array a and the separators array seps on the  regular  expression
+                               r,  and  return the number of fields.  If r is omitted, FS is used instead.  The arrays a and
+                               seps are cleared first.  seps[i] is the field separator matched by r between a[i] and a[i+1].
+                               If  r  is  a  single  space,  then  leading whitespace in s goes into the extra array element
+                               seps[0] and trailing whitespace goes into the extra array element seps[n],  where  n  is  the
+                               return  value  of  split(s,  a,  r, seps).  Splitting behaves identically to field splitting,
+                               described above.
+
+       sprintf(fmt, expr-list) Prints expr-list according to fmt, and returns the resulting string.
+
+       strtonum(str)           Examine str, and return its numeric value.  If  str  begins  with  a  leading  0,  strtonum()
+                               assumes  that  str  is  an  octal  number.  If str begins with a leading 0x or 0X, strtonum()
+                               assumes that str is a hexadecimal number.  Otherwise, decimal is assumed.
+
+       sub(r, s [, t])         Just like gsub(), but replace only the first matching substring.
+
+       substr(s, i [, n])      Return the at most n-character substring of s starting at i.  If n is omitted, use  the  rest
+                               of s.
+
+       tolower(str)            Return a copy of the string str, with all the uppercase characters in str translated to their
+                               corresponding lowercase counterparts.  Non-alphabetic characters are left unchanged.
+
+       toupper(str)            Return a copy of the string str, with all the lowercase characters in str translated to their
+                               corresponding uppercase counterparts.  Non-alphabetic characters are left unchanged.
+
+       Gawk  is  multibyte  aware.  This means that index(), length(), substr() and match() all work in terms of characters,
+       not bytes.
+
+   Time Functions
+       Since one of the primary uses of AWK programs is processing log files that contain time stamp information, gawk  pro‐
+       vides the following functions for obtaining time stamps and formatting them.
+
+       mktime(datespec)
+                 Turn  datespec  into  a  time  stamp of the same form as returned by systime(), and return the result.  The
+                 datespec is a string of the form YYYY MM DD HH MM SS[ DST].  The contents of the string are  six  or  seven
+                 numbers  representing  respectively the full year including century, the month from 1 to 12, the day of the
+                 month from 1 to 31, the hour of the day from 0 to 23, the minute from 0 to 59, the second from 0 to 60, and
+                 an optional daylight saving flag.  The values of these numbers need not be within the ranges specified; for
+                 example, an hour of -1 means 1 hour before midnight.  The origin-zero Gregorian calendar is  assumed,  with
+                 year 0 preceding year 1 and year -1 preceding year 0.  The time is assumed to be in the local timezone.  If
+                 the daylight saving flag is positive, the time is assumed to be daylight saving time; if zero, the time  is
+                 assumed to be standard time; and if negative (the default), mktime() attempts to determine whether daylight
+                 saving time is in effect for the specified time.  If datespec does not contain enough elements  or  if  the
+                 resulting time is out of range, mktime() returns -1.
+
+       strftime([format [, timestamp[, utc-flag]]])
+                 Format  timestamp according to the specification in format.  If utc-flag is present and is non-zero or non-
+                 null, the result is in UTC, otherwise the result is in local time.  The timestamp should  be  of  the  same
+                 form  as  returned  by  systime().  If timestamp is missing, the current time of day is used.  If format is
+                 missing, a default format equivalent to the output of date(1) is used.  The default format is available  in
+                 PROCINFO["strftime"].   See  the specification for the strftime() function in ANSI C for the format conver‐
+                 sions that are guaranteed to be available.
+
+       systime() Return the current time of day as the number of seconds since the Epoch (1970-01-01 00:00:00 UTC  on  POSIX
+                 systems).
+
+   Bit Manipulations Functions
+       Gawk supplies the following bit manipulation functions.  They work by converting double-precision floating point val‐
+       ues to uintmax_t integers, doing the operation, and then converting the result back to floating point.  The functions
+       are:
+
+       and(v1, v2)         Return the bitwise AND of the values provided by v1 and v2.
+
+       compl(val)          Return the bitwise complement of val.
+
+       lshift(val, count)  Return the value of val, shifted left by count bits.
+
+       or(v1, v2)          Return the bitwise OR of the values provided by v1 and v2.
+
+       rshift(val, count)  Return the value of val, shifted right by count bits.
+
+       xor(v1, v2)         Return the bitwise XOR of the values provided by v1 and v2.
+
+   Type Function
+       The following function is for use with multidimensional arrays.
+
+       isarray(x)
+              Return true if x is an array, false otherwise.
+
+   Internationalization Functions
+       The  following  functions  may  be  used  from within your AWK program for translating strings at run-time.  For full
+       details, see GAWK: Effective AWK Programming.
+
+       bindtextdomain(directory [, domain])
+              Specify the directory where gawk looks for the .mo files, in case they will not or cannot  be  placed  in  the
+              ``standard'' locations (e.g., during testing).  It returns the directory where domain is ``bound.''
+              The  default  domain  is the value of TEXTDOMAIN.  If directory is the null string (""), then bindtextdomain()
+              returns the current binding for the given domain.
+
+       dcgettext(string [, domain [, category]])
+              Return the translation of string in text domain domain for locale category category.  The  default  value  for
+              domain is the current value of TEXTDOMAIN.  The default value for category is "LC_MESSAGES".
+              If  you supply a value for category, it must be a string equal to one of the known locale categories described
+              in GAWK: Effective AWK Programming.  You must also supply a text domain.  Use TEXTDOMAIN if you  want  to  use
+              the current domain.
+
+       dcngettext(string1 , string2 , number [, domain [, category]])
+              Return  the  plural  form  used for number of the translation of string1 and string2 in text domain domain for
+              locale category category.  The default value for domain is the current value of TEXTDOMAIN.  The default value
+              for category is "LC_MESSAGES".
+              If  you supply a value for category, it must be a string equal to one of the known locale categories described
+              in GAWK: Effective AWK Programming.  You must also supply a text domain.  Use TEXTDOMAIN if you  want  to  use
+              the current domain.
+
+USER-DEFINED FUNCTIONS
+       Functions in AWK are defined as follows:
+
+              function name(parameter list) { statements }
+
+       Functions are executed when they are called from within expressions in either patterns or actions.  Actual parameters
+       supplied in the function call are used to instantiate the formal parameters declared in  the  function.   Arrays  are
+       passed by reference, other variables are passed by value.
+
+       Since  functions  were  not  originally part of the AWK language, the provision for local variables is rather clumsy:
+       They are declared as extra parameters in the parameter list.  The convention is to separate local variables from real
+       parameters by extra spaces in the parameter list.  For example:
+
+              function  f(p, q,     a, b)   # a and b are local
+              {
+                   ...
+              }
+
+              /abc/     { ... ; f(1, 2) ; ... }
+
+       The  left parenthesis in a function call is required to immediately follow the function name, without any intervening
+       whitespace.  This avoids a syntactic ambiguity with the concatenation operator.  This restriction does not  apply  to
+       the built-in functions listed above.
+
+       Functions  may  call each other and may be recursive.  Function parameters used as local variables are initialized to
+       the null string and the number zero upon function invocation.
+
+       Use return expr to return a value from a function.  The return value is undefined if no value is provided, or if  the
+       function returns by “falling off” the end.
+
+       As a gawk extension, functions may be called indirectly. To do this, assign the name of the function to be called, as
+       a string, to a variable.  Then use the variable as if it were the name of a function, prefixed with an @  sign,  like
+       so:
+              function  myfunc()
+              {
+                   print "myfunc called"
+                   ...
+              }
+
+              {    ...
+                   the_func = "myfunc"
+                   @the_func()    # call through the_func to myfunc
+                   ...
+              }
+
+       If  --lint  has  been  provided, gawk warns about calls to undefined functions at parse time, instead of at run time.
+       Calling an undefined function at run time is a fatal error.
+
+       The word func may be used in place of function.
+
+DYNAMICALLY LOADING NEW FUNCTIONS
+       You can dynamically add new built-in functions to the running gawk interpreter.  The  full  details  are  beyond  the
+       scope of this manual page; see GAWK: Effective AWK Programming for the details.
+
+       extension(object, function)
+               Dynamically  link the shared object file named by object, and invoke function in that object, to perform ini‐
+               tialization.  These should both be provided as strings.  Return the value returned by function.
+
+       Using this feature at the C level is not pretty, but it is unlikely to go away. Additional mechanisms may be added at
+       some point.
+
+SIGNALS
+       pgawk accepts two signals.  SIGUSR1 causes it to dump a profile and function call stack to the profile file, which is
+       either awkprof.out, or whatever file was named with the --profile option.  It then continues to run.   SIGHUP  causes
+       pgawk to dump the profile and function call stack and then exit.
+
+INTERNATIONALIZATION
+       String  constants are sequences of characters enclosed in double quotes.  In non-English speaking environments, it is
+       possible to mark strings in the AWK program as requiring translation to the local natural language. Such strings  are
+       marked in the AWK program with a leading underscore (“_”).  For example,
+
+              gawk 'BEGIN { print "hello, world" }'
+
+       always prints hello, world.  But,
+
+              gawk 'BEGIN { print _"hello, world" }'
+
+       might print bonjour, monde in France.
+
+       There are several steps involved in producing and running a localizable AWK program.
+
+       1.  Add  a BEGIN action to assign a value to the TEXTDOMAIN variable to set the text domain to a name associated with
+           your program:
+
+           BEGIN { TEXTDOMAIN = "myprog" }
+
+       This allows gawk to find the .mo file associated with your program.  Without this step, gawk uses the  messages  text
+       domain, which likely does not contain translations for your program.
+
+       2.  Mark all strings that should be translated with leading underscores.
+
+       3.  If necessary, use the dcgettext() and/or bindtextdomain() functions in your program, as appropriate.
+
+       4.  Run gawk --gen-pot -f myprog.awk > myprog.pot to generate a .po file for your program.
+
+       5.  Provide appropriate translations, and build and install the corresponding .mo files.
+
+       The internationalization features are described in full detail in GAWK: Effective AWK Programming.
+
+POSIX COMPATIBILITY
+       A primary goal for gawk is compatibility with the POSIX standard, as well as with the latest version of UNIX awk.  To
+       this end, gawk incorporates the following user visible features which are not described in the AWK book, but are part
+       of the Bell Laboratories version of awk, and are in the POSIX standard.
+
+       The  book  indicates  that  command  line variable assignment happens when awk would otherwise open the argument as a
+       file, which is after the BEGIN block is executed.  However, in  earlier  implementations,  when  such  an  assignment
+       appeared  before  any  file  names, the assignment would happen before the BEGIN block was run.  Applications came to
+       depend on this “feature.”  When awk was changed to match its documentation, the -v  option  for  assigning  variables
+       before  program  execution  was added to accommodate applications that depended upon the old behavior.  (This feature
+       was agreed upon by both the Bell Laboratories and the GNU developers.)
+
+       When processing arguments, gawk uses the special option “--” to signal the end of arguments.  In compatibility  mode,
+       it warns about but otherwise ignores undefined options.  In normal operation, such arguments are passed on to the AWK
+       program for it to process.
+
+       The AWK book does not define the return value of srand().  The POSIX standard has it return the seed it was using, to
+       allow keeping track of random number sequences.  Therefore srand() in gawk also returns its current seed.
+
+       Other  new  features  are:  The  use  of multiple -f options (from MKS awk); the ENVIRON array; the \a, and \v escape
+       sequences (done originally in gawk and fed back into the Bell Laboratories  version);  the  tolower()  and  toupper()
+       built-in  functions  (from  the  Bell Laboratories version); and the ANSI C conversion specifications in printf (done
+       first in the Bell Laboratories version).
+
+HISTORICAL FEATURES
+       There is one feature of historical AWK implementations that gawk supports: It is possible to call the length() built-
+       in function not only with no argument, but even without parentheses!  Thus,
+
+              a = length     # Holy Algol 60, Batman!
+
+       is the same as either of
+
+              a = length()
+              a = length($0)
+
+       Using  this  feature  is poor practice, and gawk issues a warning about its use if --lint is specified on the command
+       line.
+
+GNU EXTENSIONS
+       Gawk has a number of extensions to POSIX awk.  They are described in this section.  All the extensions described here
+       can be disabled by invoking gawk with the --traditional or --posix options.
+
+       The following features of gawk are not available in POSIX awk.
+
+       · No  path  search is performed for files named via the -f option.  Therefore the AWKPATH environment variable is not
+         special.
+
+       · There is no facility for doing file inclusion (gawk's @include mechanism).
+
+       · The \x escape sequence.  (Disabled with --posix.)
+
+       · The fflush() function.  (Disabled with --posix.)
+
+       · The ability to continue lines after ?  and :.  (Disabled with --posix.)
+
+       · Octal and hexadecimal constants in AWK programs.
+
+       · The ARGIND, BINMODE, ERRNO, LINT, RT and TEXTDOMAIN variables are not special.
+
+       · The IGNORECASE variable and its side-effects are not available.
+
+       · The FIELDWIDTHS variable and fixed-width field splitting.
+
+       · The FPAT variable and field splitting based on field values.
+
+       · The PROCINFO array is not available.
+
+       · The use of RS as a regular expression.
+
+       · The special file names available for I/O redirection are not recognized.
+
+       · The |& operator for creating co-processes.
+
+       · The BEGINFILE and ENDFILE special patterns are not available.
+
+       · The ability to split out individual characters using the null string as the value of FS, and as the third  argument
+         to split().
+
+       · An optional fourth argument to split() to receive the separator texts.
+
+       · The optional second argument to the close() function.
+
+       · The optional third argument to the match() function.
+
+       · The ability to use positional specifiers with printf and sprintf().
+
+       · The ability to pass an array to length().
+
+       · The use of delete array to delete the entire contents of an array.
+
+       · The use of nextfile to abandon processing of the current input file.
+
+       · The  and(),  asort(), asorti(), bindtextdomain(), compl(), dcgettext(), dcngettext(), gensub(), lshift(), mktime(),
+         or(), patsplit(), rshift(), strftime(), strtonum(), systime() and xor() functions.
+
+       · Localizable strings.
+
+       · Adding new built-in functions dynamically with the extension() function.
+
+       The AWK book does not define the return value of the  close()  function.   Gawk's  close()  returns  the  value  from
+       fclose(3),  or  pclose(3),  when  closing an output file or pipe, respectively.  It returns the process's exit status
+       when closing an input pipe.  The return value is -1 if the named file, pipe or co-process was not opened with a redi‐
+       rection.
+
+       When gawk is invoked with the --traditional option, if the fs argument to the -F option is “t”, then FS is set to the
+       tab character.  Note that typing gawk -F\t ...  simply causes the shell to quote the “t,” and does not pass  “\t”  to
+       the  -F  option.   Since this is a rather ugly special case, it is not the default behavior.  This behavior also does
+       not occur if --posix has been specified.  To really get a tab character as the field separator, it  is  best  to  use
+       single quotes: gawk -F'\t' ....
+
+ENVIRONMENT VARIABLES
+       The  AWKPATH  environment  variable  can be used to provide a list of directories that gawk searches when looking for
+       files named via the -f and --file options.
+
+       For socket communication,  two  special  environment  variables  can  be  used  to  control  the  number  of  retries
+       (GAWK_SOCK_RETRIES), and the interval between retries (GAWK_MSEC_SLEEP).  The interval is in milliseconds. On systems
+       that do not support usleep(3), the value is rounded up to an integral number of seconds.
+
+       If POSIXLY_CORRECT exists in the environment, then gawk behaves exactly as if --posix had been specified on the  com‐
+       mand line.  If --lint has been specified, gawk issues a warning message to this effect.
+
+EXIT STATUS
+       If the exit statement is used with a value, then gawk exits with the numeric value given to it.
+
+       Otherwise,  if  there  were  no  problems during execution, gawk exits with the value of the C constant EXIT_SUCCESS.
+       This is usually zero.
+
+       If an error occurs, gawk exits with the value of the C constant EXIT_FAILURE.  This is usually one.
+
+       If gawk exits because of a fatal error, the exit status is 2.  On non-POSIX systems, this  value  may  be  mapped  to
+       EXIT_FAILURE.
+
+VERSION INFORMATION
+       This man page documents gawk, version 4.0.
+
+AUTHORS
+       The original version of UNIX awk was designed and implemented by Alfred Aho, Peter Weinberger, and Brian Kernighan of
+       Bell Laboratories.  Brian Kernighan continues to maintain and enhance it.
+
+       Paul Rubin and Jay Fenlason, of the Free Software Foundation, wrote gawk, to be compatible with the original  version
+       of  awk distributed in Seventh Edition UNIX.  John Woods contributed a number of bug fixes.  David Trueman, with con‐
+       tributions from Arnold Robbins, made gawk compatible with the new version of UNIX awk.  Arnold Robbins is the current
+       maintainer.
+
+       The  initial  DOS  port was done by Conrad Kwok and Scott Garfinkle.  Scott Deifik maintains the port to MS-DOS using
+       DJGPP.  Eli Zaretskii maintains the port to MS-Windows using MinGW.  Pat Rankin did  the  port  to  VMS,  and  Michal
+       Jaegermann  did  the  port to the Atari ST.  The port to OS/2 was done by Kai Uwe Rommel, with contributions and help
+       from Darrel Hankerson.  Andreas Buening now maintains the OS/2 port.  The late Fred Fish  supplied  support  for  the
+       Amiga,  and  Martin  Brown  provided  the  BeOS  port.  Stephen Davies provided the original Tandem port, and Matthew
+       Woehlke provided changes for Tandem's POSIX-compliant systems.  Dave Pitts provided the port to z/OS.
+
+       See the README file in the gawk distribution for up-to-date information about maintainers and which  ports  are  cur‐
+       rently supported.
+
+BUG REPORTS
+       If you find a bug in gawk, please send electronic mail to bug-gawk@gnu.org.  Please include your operating system and
+       its revision, the version of gawk (from gawk --version), which C compiler you used to compile it, and a test  program
+       and data that are as small as possible for reproducing the problem.
+
+       Before sending a bug report, please do the following things.  First, verify that you have the latest version of gawk.
+       Many bugs (usually subtle ones) are fixed at each release, and if yours is out of date, the problem may already  have
+       been  solved.   Second,  please see if setting the environment variable LC_ALL to LC_ALL=C causes things to behave as
+       you expect. If so, it's a locale issue, and may or may not really be a bug.  Finally, please read this man  page  and
+       the reference manual carefully to be sure that what you think is a bug really is, instead of just a quirk in the lan‐
+       guage.
+
+       Whatever you do, do NOT post a bug report in comp.lang.awk.  While the gawk developers occasionally read  this  news‐
+       group,  posting  bug  reports  there  is  an  unreliable way to report bugs.  Instead, please use the electronic mail
+       addresses given above.
+
+       If you're using a GNU/Linux or BSD-based system, you may wish to submit a bug report to the vendor of your  distribu‐
+       tion.  That's fine, but please send a copy to the official email address as well, since there's no guarantee that the
+       bug report will be forwarded to the gawk maintainer.
+
+BUGS
+       The -F option is not necessary given the command line variable assignment feature; it remains only for backwards com‐
+       patibility.
+
+       Syntactically  invalid single character programs tend to overflow the parse stack, generating a rather unhelpful mes‐
+       sage.  Such programs are surprisingly difficult to diagnose in the completely general case, and the effort to  do  so
+       really is not worth it.
+
+SEE ALSO
+       egrep(1), getpid(2), getppid(2), getpgrp(2), getuid(2), geteuid(2), getgid(2), getegid(2), getgroups(2), usleep(3)
+
+       The  AWK  Programming  Language,  Alfred V. Aho, Brian W. Kernighan, Peter J. Weinberger, Addison-Wesley, 1988.  ISBN
+       0-201-07981-X.
+
+       GAWK: Effective AWK Programming, Edition 4.0, shipped with the gawk source.  The current version of this document  is
+       available online at http://www.gnu.org/software/gawk/manual.
+
+EXAMPLES
+       Print and sort the login names of all users:
+
+            BEGIN     { FS = ":" }
+                 { print $1 | "sort" }
+
+       Count lines in a file:
+
+                 { nlines++ }
+            END  { print nlines }
+
+       Precede each line by its number in the file:
+
+            { print FNR, $0 }
+
+       Concatenate and line number (a variation on a theme):
+
+            { print NR, $0 }
+
+       Run an external command for particular lines of data:
+
+            tail -f access_log |
+            awk '/myhome.html/ { system("nmap " $1 ">> logdir/myhome.html") }'
+
+ACKNOWLEDGEMENTS
+       Brian Kernighan of Bell Laboratories provided valuable assistance during testing and debugging.  We thank him.
+
+COPYING PERMISSIONS
+       Copyright  ©  1989,  1991,  1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2001, 2002, 2003, 2004, 2005, 2007, 2009,
+       2010, 2011 Free Software Foundation, Inc.
+
+       Permission is granted to make and distribute verbatim copies of this manual page provided the  copyright  notice  and
+       this permission notice are preserved on all copies.
+
+       Permission  is granted to copy and distribute modified versions of this manual page under the conditions for verbatim
+       copying, provided that the entire resulting derived work is distributed under the terms of a permission notice  iden‐
+       tical to this one.
+
+       Permission  is granted to copy and distribute translations of this manual page into another language, under the above
+       conditions for modified versions, except that this permission notice may be stated in a translation approved  by  the
+       Foundation.
+
+
+
+Free Software Foundation                                 Nov 10 2011                                                 GAWK(1)
+CAT(1)                                                  User Commands                                                 CAT(1)
+
+
+
+NAME
+       cat - concatenate files and print on the standard output
+
+SYNOPSIS
+       cat [OPTION]... [FILE]...
+
+DESCRIPTION
+       Concatenate FILE(s), or standard input, to standard output.
+
+       -A, --show-all
+              equivalent to -vET
+
+       -b, --number-nonblank
+              number nonempty output lines, overrides -n
+
+       -e     equivalent to -vE
+
+       -E, --show-ends
+              display $ at end of each line
+
+       -n, --number
+              number all output lines
+
+       -s, --squeeze-blank
+              suppress repeated empty output lines
+
+       -t     equivalent to -vT
+
+       -T, --show-tabs
+              display TAB characters as ^I
+
+       -u     (ignored)
+
+       -v, --show-nonprinting
+              use ^ and M- notation, except for LFD and TAB
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       With no FILE, or when FILE is -, read standard input.
+
+EXAMPLES
+       cat f - g
+              Output f's contents, then standard input, then g's contents.
+
+       cat    Copy standard input to standard output.
+
+AUTHOR
+       Written by Torbjorn Granlund and Richard M. Stallman.
+
+REPORTING BUGS
+       Report cat bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report cat translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       tac(1)
+
+       The  full  documentation  for  cat  is  maintained  as  a  Texinfo manual.  If the info and cat programs are properly
+       installed at your site, the command
+
+              info coreutils 'cat invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                   CAT(1)
+CMP(1)                                                  User Commands                                                 CMP(1)
+
+
+
+NAME
+       cmp - compare two files byte by byte
+
+SYNOPSIS
+       cmp [OPTION]... FILE1 [FILE2 [SKIP1 [SKIP2]]]
+
+DESCRIPTION
+       Compare two files byte by byte.
+
+       The optional SKIP1 and SKIP2 specify the number of bytes to skip at the beginning of each file (zero by default).
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -b, --print-bytes
+              print differing bytes
+
+       -i, --ignore-initial=SKIP
+              skip first SKIP bytes of both inputs
+
+       -i, --ignore-initial=SKIP1:SKIP2
+              skip first SKIP1 bytes of FILE1 and first SKIP2 bytes of FILE2
+
+       -l, --verbose
+              output byte numbers and differing byte values
+
+       -n, --bytes=LIMIT
+              compare at most LIMIT bytes
+
+       -s, --quiet, --silent
+              suppress all normal output
+
+       --help display this help and exit
+
+       -v, --version
+              output version information and exit
+
+       SKIP  values may be followed by the following multiplicative suffixes: kB 1000, K 1024, MB 1,000,000, M 1,048,576, GB
+       1,000,000,000, G 1,073,741,824, and so on for T, P, E, Z, Y.
+
+       If a FILE is `-' or missing, read standard input.  Exit status is 0 if inputs are the same,  1  if  different,  2  if
+       trouble.
+
+AUTHOR
+       Written by Torbjorn Granlund and David MacKenzie.
+
+REPORTING BUGS
+       Report bugs to: bug-diffutils@gnu.org
+       GNU diffutils home page: <http://www.gnu.org/software/diffutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+
+COPYRIGHT
+       Copyright   ©   2011   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       diff(1), diff3(1), sdiff(1)
+
+       The  full  documentation  for  cmp  is  maintained  as  a  Texinfo manual.  If the info and cmp programs are properly
+       installed at your site, the command
+
+              info cmp
+
+       should give you access to the complete manual.
+
+
+
+diffutils 3.3                                            March 2013                                                   CMP(1)
+COLRM(1)                                         BSD General Commands Manual                                        COLRM(1)
+
+NAME
+     colrm — remove columns from a file
+
+SYNOPSIS
+     colrm [start [stop]]
+
+DESCRIPTION
+     The colrm utility removes selected columns from the lines of a file.  A column is defined as a single character in a
+     line.  Input is read from the standard input.  Output is written to the standard output.
+
+     If only the start column is specified, columns numbered less than the start column will be written.  If both start and
+     stop columns are specified, columns numbered less than the start column or greater than the stop column will be writ‐
+     ten.  Column numbering starts with one, not zero.
+
+     Tab characters increment the column count to the next multiple of eight.  Backspace characters decrement the column
+     count by one.
+
+ENVIRONMENT
+     The LANG, LC_ALL and LC_CTYPE environment variables affect the execution of colrm as described in environ(7).
+
+EXIT STATUS
+     The colrm utility exits 0 on success, and >0 if an error occurs.
+
+SEE ALSO
+     awk(1), column(1), cut(1), paste(1)
+
+HISTORY
+     The colrm command appeared in 3.0BSD.
+
+BSD                                                    August 4, 2004                                                    BSD
+COMM(1)                                                 User Commands                                                COMM(1)
+
+
+
+NAME
+       comm - compare two sorted files line by line
+
+SYNOPSIS
+       comm [OPTION]... FILE1 FILE2
+
+DESCRIPTION
+       Compare sorted files FILE1 and FILE2 line by line.
+
+       With  no  options, produce three-column output.  Column one contains lines unique to FILE1, column two contains lines
+       unique to FILE2, and column three contains lines common to both files.
+
+       -1     suppress column 1 (lines unique to FILE1)
+
+       -2     suppress column 2 (lines unique to FILE2)
+
+       -3     suppress column 3 (lines that appear in both files)
+
+       --check-order
+              check that the input is correctly sorted, even if all input lines are pairable
+
+       --nocheck-order
+              do not check that the input is correctly sorted
+
+       --output-delimiter=STR
+              separate columns with STR
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       Note, comparisons honor the rules specified by 'LC_COLLATE'.
+
+EXAMPLES
+       comm -12 file1 file2
+              Print only lines present in both file1 and file2.
+
+       comm -3 file1 file2
+              Print lines in file1 not in file2, and vice versa.
+
+AUTHOR
+       Written by Richard M. Stallman and David MacKenzie.
+
+REPORTING BUGS
+       Report comm bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report comm translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright  ©  2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3   or   later
+       <http://gnu.org/licenses/gpl.html>.
+       This  is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted by
+       law.
+
+SEE ALSO
+       join(1), uniq(1)
+
+       The full documentation for comm is maintained as a Texinfo manual.  If  the  info  and  comm  programs  are  properly
+       installed at your site, the command
+
+              info coreutils 'comm invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                  COMM(1)
+CUT(1)                                                  User Commands                                                 CUT(1)
+
+
+
+NAME
+       cut - remove sections from each line of files
+
+SYNOPSIS
+       cut OPTION... [FILE]...
+
+DESCRIPTION
+       Print selected parts of lines from each FILE to standard output.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -b, --bytes=LIST
+              select only these bytes
+
+       -c, --characters=LIST
+              select only these characters
+
+       -d, --delimiter=DELIM
+              use DELIM instead of TAB for field delimiter
+
+       -f, --fields=LIST
+              select  only  these fields;  also print any line that contains no delimiter character, unless the -s option is
+              specified
+
+       -n     (ignored)
+
+       --complement
+              complement the set of selected bytes, characters or fields
+
+       -s, --only-delimited
+              do not print lines not containing delimiters
+
+       --output-delimiter=STRING
+              use STRING as the output delimiter the default is to use the input delimiter
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       Use one, and only one of -b, -c or -f.  Each LIST is made up of one  range,  or  many  ranges  separated  by  commas.
+       Selected input is written in the same order that it is read, and is written exactly once.  Each range is one of:
+
+       N      N'th byte, character or field, counted from 1
+
+       N-     from N'th byte, character or field, to end of line
+
+       N-M    from N'th to M'th (included) byte, character or field
+
+       -M     from first to M'th (included) byte, character or field
+
+       With no FILE, or when FILE is -, read standard input.
+
+AUTHOR
+       Written by David M. Ihnat, David MacKenzie, and Jim Meyering.
+
+REPORTING BUGS
+       Report cut bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report cut translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       The  full  documentation  for  cut  is  maintained  as  a  Texinfo manual.  If the info and cut programs are properly
+       installed at your site, the command
+
+              info coreutils 'cut invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                   CUT(1)
+DATE(1)                                                 User Commands                                                DATE(1)
+
+
+
+NAME
+       date - print or set the system date and time
+
+SYNOPSIS
+       date [OPTION]... [+FORMAT]
+       date [-u|--utc|--universal] [MMDDhhmm[[CC]YY][.ss]]
+
+DESCRIPTION
+       Display the current time in the given FORMAT, or set the system date.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -d, --date=STRING
+              display time described by STRING, not 'now'
+
+       -f, --file=DATEFILE
+              like --date once for each line of DATEFILE
+
+       -I[TIMESPEC], --iso-8601[=TIMESPEC]
+              output  date/time  in ISO 8601 format.  TIMESPEC='date' for date only (the default), 'hours', 'minutes', 'sec‐
+              onds', or 'ns' for date and time to the indicated precision.
+
+       -r, --reference=FILE
+              display the last modification time of FILE
+
+       -R, --rfc-2822
+              output date and time in RFC 2822 format.  Example: Mon, 07 Aug 2006 12:34:56 -0600
+
+       --rfc-3339=TIMESPEC
+              output date and time in RFC 3339 format.  TIMESPEC='date', 'seconds', or 'ns' for date and time to  the  indi‐
+              cated precision.  Date and time components are separated by a single space: 2006-08-07 12:34:56-06:00
+
+       -s, --set=STRING
+              set time described by STRING
+
+       -u, --utc, --universal
+              print or set Coordinated Universal Time
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       FORMAT controls the output.  Interpreted sequences are:
+
+       %%     a literal %
+
+       %a     locale's abbreviated weekday name (e.g., Sun)
+
+       %A     locale's full weekday name (e.g., Sunday)
+
+       %b     locale's abbreviated month name (e.g., Jan)
+
+       %B     locale's full month name (e.g., January)
+
+       %c     locale's date and time (e.g., Thu Mar  3 23:05:25 2005)
+
+       %C     century; like %Y, except omit last two digits (e.g., 20)
+
+       %d     day of month (e.g., 01)
+
+       %D     date; same as %m/%d/%y
+
+       %e     day of month, space padded; same as %_d
+
+       %F     full date; same as %Y-%m-%d
+
+       %g     last two digits of year of ISO week number (see %G)
+
+       %G     year of ISO week number (see %V); normally useful only with %V
+
+       %h     same as %b
+
+       %H     hour (00..23)
+
+       %I     hour (01..12)
+
+       %j     day of year (001..366)
+
+       %k     hour, space padded ( 0..23); same as %_H
+
+       %l     hour, space padded ( 1..12); same as %_I
+
+       %m     month (01..12)
+
+       %M     minute (00..59)
+
+       %n     a newline
+
+       %N     nanoseconds (000000000..999999999)
+
+       %p     locale's equivalent of either AM or PM; blank if not known
+
+       %P     like %p, but lower case
+
+       %r     locale's 12-hour clock time (e.g., 11:11:04 PM)
+
+       %R     24-hour hour and minute; same as %H:%M
+
+       %s     seconds since 1970-01-01 00:00:00 UTC
+
+       %S     second (00..60)
+
+       %t     a tab
+
+       %T     time; same as %H:%M:%S
+
+       %u     day of week (1..7); 1 is Monday
+
+       %U     week number of year, with Sunday as first day of week (00..53)
+
+       %V     ISO week number, with Monday as first day of week (01..53)
+
+       %w     day of week (0..6); 0 is Sunday
+
+       %W     week number of year, with Monday as first day of week (00..53)
+
+       %x     locale's date representation (e.g., 12/31/99)
+
+       %X     locale's time representation (e.g., 23:13:48)
+
+       %y     last two digits of year (00..99)
+
+       %Y     year
+
+       %z     +hhmm numeric time zone (e.g., -0400)
+
+       %:z    +hh:mm numeric time zone (e.g., -04:00)
+
+       %::z   +hh:mm:ss numeric time zone (e.g., -04:00:00)
+
+       %:::z  numeric time zone with : to necessary precision (e.g., -04, +05:30)
+
+       %Z     alphabetic time zone abbreviation (e.g., EDT)
+
+       By default, date pads numeric fields with zeroes.  The following optional flags may follow '%':
+
+       -      (hyphen) do not pad the field
+
+       _      (underscore) pad with spaces
+
+       0      (zero) pad with zeros
+
+       ^      use upper case if possible
+
+       #      use opposite case if possible
+
+       After  any  flags comes an optional field width, as a decimal number; then an optional modifier, which is either E to
+       use the locale's alternate representations if available, or O to use the locale's alternate numeric symbols if avail‐
+       able.
+
+EXAMPLES
+       Convert seconds since the epoch (1970-01-01 UTC) to a date
+
+              $ date --date='@2147483647'
+
+       Show the time on the west coast of the US (use tzselect(1) to find TZ)
+
+              $ TZ='America/Los_Angeles' date
+
+       Show the local time for 9AM next Friday on the west coast of the US
+
+              $ date --date='TZ="America/Los_Angeles" 09:00 next Fri'
+
+DATE STRING
+       The  --date=STRING  is  a  mostly free format human readable date string such as "Sun, 29 Feb 2004 16:21:42 -0800" or
+       "2004-02-29 16:21:42" or even "next Thursday".  A date string may contain items indicating  calendar  date,  time  of
+       day,  time  zone, day of week, relative time, relative date, and numbers.  An empty string indicates the beginning of
+       the day.  The date string format is more complex than is easily documented here but is fully described  in  the  info
+       documentation.
+
+AUTHOR
+       Written by David MacKenzie.
+
+REPORTING BUGS
+       Report date bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report date translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       The  full  documentation  for  date  is  maintained  as a Texinfo manual.  If the info and date programs are properly
+       installed at your site, the command
+
+              info coreutils 'date invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                  DATE(1)
+DATE(1)                                                 User Commands                                                DATE(1)
+
+
+
+NAME
+       date - print or set the system date and time
+
+SYNOPSIS
+       date [OPTION]... [+FORMAT]
+       date [-u|--utc|--universal] [MMDDhhmm[[CC]YY][.ss]]
+
+DESCRIPTION
+       Display the current time in the given FORMAT, or set the system date.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -d, --date=STRING
+              display time described by STRING, not 'now'
+
+       -f, --file=DATEFILE
+              like --date once for each line of DATEFILE
+
+       -I[TIMESPEC], --iso-8601[=TIMESPEC]
+              output  date/time  in ISO 8601 format.  TIMESPEC='date' for date only (the default), 'hours', 'minutes', 'sec‐
+              onds', or 'ns' for date and time to the indicated precision.
+
+       -r, --reference=FILE
+              display the last modification time of FILE
+
+       -R, --rfc-2822
+              output date and time in RFC 2822 format.  Example: Mon, 07 Aug 2006 12:34:56 -0600
+
+       --rfc-3339=TIMESPEC
+              output date and time in RFC 3339 format.  TIMESPEC='date', 'seconds', or 'ns' for date and time to  the  indi‐
+              cated precision.  Date and time components are separated by a single space: 2006-08-07 12:34:56-06:00
+
+       -s, --set=STRING
+              set time described by STRING
+
+       -u, --utc, --universal
+              print or set Coordinated Universal Time
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       FORMAT controls the output.  Interpreted sequences are:
+
+       %%     a literal %
+
+       %a     locale's abbreviated weekday name (e.g., Sun)
+
+       %A     locale's full weekday name (e.g., Sunday)
+
+       %b     locale's abbreviated month name (e.g., Jan)
+
+       %B     locale's full month name (e.g., January)
+
+       %c     locale's date and time (e.g., Thu Mar  3 23:05:25 2005)
+
+       %C     century; like %Y, except omit last two digits (e.g., 20)
+
+       %d     day of month (e.g., 01)
+
+       %D     date; same as %m/%d/%y
+
+       %e     day of month, space padded; same as %_d
+
+       %F     full date; same as %Y-%m-%d
+
+       %g     last two digits of year of ISO week number (see %G)
+
+       %G     year of ISO week number (see %V); normally useful only with %V
+
+       %h     same as %b
+
+       %H     hour (00..23)
+
+       %I     hour (01..12)
+
+       %j     day of year (001..366)
+
+       %k     hour, space padded ( 0..23); same as %_H
+
+       %l     hour, space padded ( 1..12); same as %_I
+
+       %m     month (01..12)
+
+       %M     minute (00..59)
+
+       %n     a newline
+
+       %N     nanoseconds (000000000..999999999)
+
+       %p     locale's equivalent of either AM or PM; blank if not known
+
+       %P     like %p, but lower case
+
+       %r     locale's 12-hour clock time (e.g., 11:11:04 PM)
+
+       %R     24-hour hour and minute; same as %H:%M
+
+       %s     seconds since 1970-01-01 00:00:00 UTC
+
+       %S     second (00..60)
+
+       %t     a tab
+
+       %T     time; same as %H:%M:%S
+
+       %u     day of week (1..7); 1 is Monday
+
+       %U     week number of year, with Sunday as first day of week (00..53)
+
+       %V     ISO week number, with Monday as first day of week (01..53)
+
+       %w     day of week (0..6); 0 is Sunday
+
+       %W     week number of year, with Monday as first day of week (00..53)
+
+       %x     locale's date representation (e.g., 12/31/99)
+
+       %X     locale's time representation (e.g., 23:13:48)
+
+       %y     last two digits of year (00..99)
+
+       %Y     year
+
+       %z     +hhmm numeric time zone (e.g., -0400)
+
+       %:z    +hh:mm numeric time zone (e.g., -04:00)
+
+       %::z   +hh:mm:ss numeric time zone (e.g., -04:00:00)
+
+       %:::z  numeric time zone with : to necessary precision (e.g., -04, +05:30)
+
+       %Z     alphabetic time zone abbreviation (e.g., EDT)
+
+       By default, date pads numeric fields with zeroes.  The following optional flags may follow '%':
+
+       -      (hyphen) do not pad the field
+
+       _      (underscore) pad with spaces
+
+       0      (zero) pad with zeros
+
+       ^      use upper case if possible
+
+       #      use opposite case if possible
+
+       After  any  flags comes an optional field width, as a decimal number; then an optional modifier, which is either E to
+       use the locale's alternate representations if available, or O to use the locale's alternate numeric symbols if avail‐
+       able.
+
+EXAMPLES
+       Convert seconds since the epoch (1970-01-01 UTC) to a date
+
+              $ date --date='@2147483647'
+
+       Show the time on the west coast of the US (use tzselect(1) to find TZ)
+
+              $ TZ='America/Los_Angeles' date
+
+       Show the local time for 9AM next Friday on the west coast of the US
+
+              $ date --date='TZ="America/Los_Angeles" 09:00 next Fri'
+
+DATE STRING
+       The  --date=STRING  is  a  mostly free format human readable date string such as "Sun, 29 Feb 2004 16:21:42 -0800" or
+       "2004-02-29 16:21:42" or even "next Thursday".  A date string may contain items indicating  calendar  date,  time  of
+       day,  time  zone, day of week, relative time, relative date, and numbers.  An empty string indicates the beginning of
+       the day.  The date string format is more complex than is easily documented here but is fully described  in  the  info
+       documentation.
+
+AUTHOR
+       Written by David MacKenzie.
+
+REPORTING BUGS
+       Report date bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report date translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       The  full  documentation  for  date  is  maintained  as a Texinfo manual.  If the info and date programs are properly
+       installed at your site, the command
+
+              info coreutils 'date invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                  DATE(1)
+DIFF(1)                                                 User Commands                                                DIFF(1)
+
+
+
+NAME
+       diff - compare files line by line
+
+SYNOPSIS
+       diff [OPTION]... FILES
+
+DESCRIPTION
+       Compare FILES line by line.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       --normal
+              output a normal diff (the default)
+
+       -q, --brief
+              report only when files differ
+
+       -s, --report-identical-files
+              report when two files are the same
+
+       -c, -C NUM, --context[=NUM]
+              output NUM (default 3) lines of copied context
+
+       -u, -U NUM, --unified[=NUM]
+              output NUM (default 3) lines of unified context
+
+       -e, --ed
+              output an ed script
+
+       -n, --rcs
+              output an RCS format diff
+
+       -y, --side-by-side
+              output in two columns
+
+       -W, --width=NUM
+              output at most NUM (default 130) print columns
+
+       --left-column
+              output only the left column of common lines
+
+       --suppress-common-lines
+              do not output common lines
+
+       -p, --show-c-function
+              show which C function each change is in
+
+       -F, --show-function-line=RE
+              show the most recent line matching RE
+
+       --label LABEL
+              use LABEL instead of file name (can be repeated)
+
+       -t, --expand-tabs
+              expand tabs to spaces in output
+
+       -T, --initial-tab
+              make tabs line up by prepending a tab
+
+       --tabsize=NUM
+              tab stops every NUM (default 8) print columns
+
+       --suppress-blank-empty
+              suppress space or tab before empty output lines
+
+       -l, --paginate
+              pass output through `pr' to paginate it
+
+       -r, --recursive
+              recursively compare any subdirectories found
+
+       -N, --new-file
+              treat absent files as empty
+
+       --unidirectional-new-file
+              treat absent first files as empty
+
+       --ignore-file-name-case
+              ignore case when comparing file names
+
+       --no-ignore-file-name-case
+              consider case when comparing file names
+
+       -x, --exclude=PAT
+              exclude files that match PAT
+
+       -X, --exclude-from=FILE
+              exclude files that match any pattern in FILE
+
+       -S, --starting-file=FILE
+              start with FILE when comparing directories
+
+       --from-file=FILE1
+              compare FILE1 to all operands; FILE1 can be a directory
+
+       --to-file=FILE2
+              compare all operands to FILE2; FILE2 can be a directory
+
+       -i, --ignore-case
+              ignore case differences in file contents
+
+       -E, --ignore-tab-expansion
+              ignore changes due to tab expansion
+
+       -Z, --ignore-trailing-space
+              ignore white space at line end
+
+       -b, --ignore-space-change
+              ignore changes in the amount of white space
+
+       -w, --ignore-all-space
+              ignore all white space
+
+       -B, --ignore-blank-lines
+              ignore changes whose lines are all blank
+
+       -I, --ignore-matching-lines=RE
+              ignore changes whose lines all match RE
+
+       -a, --text
+              treat all files as text
+
+       --strip-trailing-cr
+              strip trailing carriage return on input
+
+       -D, --ifdef=NAME
+              output merged file with `#ifdef NAME' diffs
+
+       --GTYPE-group-format=GFMT
+              format GTYPE input groups with GFMT
+
+       --line-format=LFMT
+              format all input lines with LFMT
+
+       --LTYPE-line-format=LFMT
+              format LTYPE input lines with LFMT
+
+              These format options provide fine-grained control over the output
+
+              of diff, generalizing -D/--ifdef.
+
+       LTYPE is `old', `new', or `unchanged'.
+              GTYPE is LTYPE or `changed'.
+
+              GFMT (only) may contain:
+
+       %<     lines from FILE1
+
+       %>     lines from FILE2
+
+       %=     lines common to FILE1 and FILE2
+
+       %[-][WIDTH][.[PREC]]{doxX}LETTER
+              printf-style spec for LETTER
+
+              LETTERs are as follows for new group, lower case for old group:
+
+       F      first line number
+
+       L      last line number
+
+       N      number of lines = L-F+1
+
+       E      F-1
+
+       M      L+1
+
+       %(A=B?T:E)
+              if A equals B then T else E
+
+              LFMT (only) may contain:
+
+       %L     contents of line
+
+       %l     contents of line, excluding any trailing newline
+
+       %[-][WIDTH][.[PREC]]{doxX}n
+              printf-style spec for input line number
+
+              Both GFMT and LFMT may contain:
+
+       %%     %
+
+       %c'C'  the single character C
+
+       %c'\OOO'
+              the character with octal code OOO
+
+       C      the character C (other characters represent themselves)
+
+       -d, --minimal
+              try hard to find a smaller set of changes
+
+       --horizon-lines=NUM
+              keep NUM lines of the common prefix and suffix
+
+       --speed-large-files
+              assume large files and many scattered small changes
+
+       --help display this help and exit
+
+       -v, --version
+              output version information and exit
+
+       FILES  are  `FILE1  FILE2'  or  `DIR1 DIR2' or `DIR FILE...' or `FILE... DIR'.  If --from-file or --to-file is given,
+       there are no restrictions on FILE(s).  If a FILE is `-', read standard input.  Exit status is 0  if  inputs  are  the
+       same, 1 if different, 2 if trouble.
+
+AUTHOR
+       Written by Paul Eggert, Mike Haertel, David Hayes, Richard Stallman, and Len Tower.
+
+REPORTING BUGS
+       Report bugs to: bug-diffutils@gnu.org
+       GNU diffutils home page: <http://www.gnu.org/software/diffutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+
+COPYRIGHT
+       Copyright   ©   2011   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       wdiff(1), cmp(1), diff3(1), sdiff(1), patch(1)
+
+       The  full  documentation  for  diff  is  maintained  as a Texinfo manual.  If the info and diff programs are properly
+       installed at your site, the command
+
+              info diff
+
+       should give you access to the complete manual.
+
+
+
+diffutils 3.3                                            March 2013                                                  DIFF(1)
+ENV(1)                                                  User Commands                                                 ENV(1)
+
+
+
+NAME
+       env - run a program in a modified environment
+
+SYNOPSIS
+       env [OPTION]... [-] [NAME=VALUE]... [COMMAND [ARG]...]
+
+DESCRIPTION
+       Set each NAME to VALUE in the environment and run COMMAND.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -i, --ignore-environment
+              start with an empty environment
+
+       -0, --null
+              end each output line with 0 byte rather than newline
+
+       -u, --unset=NAME
+              remove variable from the environment
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       A mere - implies -i.  If no COMMAND, print the resulting environment.
+
+AUTHOR
+       Written by Richard Mlynarik and David MacKenzie.
+
+REPORTING BUGS
+       Report env bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report env translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       The  full  documentation  for  env  is  maintained  as  a  Texinfo manual.  If the info and env programs are properly
+       installed at your site, the command
+
+              info coreutils 'env invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                   ENV(1)
+GREP(1)                                            General Commands Manual                                           GREP(1)
+
+
+
+NAME
+       grep, egrep, fgrep, rgrep - print lines matching a pattern
+
+SYNOPSIS
+       grep [OPTIONS] PATTERN [FILE...]
+       grep [OPTIONS] [-e PATTERN | -f FILE] [FILE...]
+
+DESCRIPTION
+       grep  searches  the  named  input  FILEs (or standard input if no files are named, or if a single hyphen-minus (-) is
+       given as file name) for lines containing a match to the given PATTERN.  By default, grep prints the matching lines.
+
+       In addition, three variant programs egrep, fgrep and rgrep are available.  egrep is the same as  grep -E.   fgrep  is
+       the same as grep -F.  rgrep is the same as grep -r.  Direct invocation as either egrep or fgrep is deprecated, but is
+       provided to allow historical applications that rely on them to run unmodified.
+
+OPTIONS
+   Generic Program Information
+       --help Print a usage message briefly summarizing these command-line options and the bug-reporting address, then exit.
+
+       -V, --version
+              Print the version number of grep to the standard output stream.  This version number should be included in all
+              bug reports (see below).
+
+   Matcher Selection
+       -E, --extended-regexp
+              Interpret PATTERN as an extended regular expression (ERE, see below).  (-E is specified by POSIX.)
+
+       -F, --fixed-strings
+              Interpret  PATTERN  as  a list of fixed strings, separated by newlines, any of which is to be matched.  (-F is
+              specified by POSIX.)
+
+       -G, --basic-regexp
+              Interpret PATTERN as a basic regular expression (BRE, see below).  This is the default.
+
+       -P, --perl-regexp
+              Interpret PATTERN as a Perl regular expression (PCRE, see below).  This is highly experimental and grep -P may
+              warn of unimplemented features.
+
+   Matching Control
+       -e PATTERN, --regexp=PATTERN
+              Use  PATTERN  as  the  pattern.  This can be used to specify multiple search patterns, or to protect a pattern
+              beginning with a hyphen (-).  (-e is specified by POSIX.)
+
+       -f FILE, --file=FILE
+              Obtain patterns from FILE, one per line.  The  empty  file  contains  zero  patterns,  and  therefore  matches
+              nothing.  (-f is specified by POSIX.)
+
+       -i, --ignore-case
+              Ignore case distinctions in both the PATTERN and the input files.  (-i is specified by POSIX.)
+
+       -v, --invert-match
+              Invert the sense of matching, to select non-matching lines.  (-v is specified by POSIX.)
+
+       -w, --word-regexp
+              Select  only  those  lines  containing matches that form whole words.  The test is that the matching substring
+              must either be at the beginning of the line, or preceded by a non-word constituent character.   Similarly,  it
+              must  be  either  at  the  end  of the line or followed by a non-word constituent character.  Word-constituent
+              characters are letters, digits, and the underscore.
+
+       -x, --line-regexp
+              Select only those matches that exactly match the whole line.  (-x is specified by POSIX.)
+
+       -y     Obsolete synonym for -i.
+
+   General Output Control
+       -c, --count
+              Suppress normal output; instead print  a  count  of  matching  lines  for  each  input  file.   With  the  -v,
+              --invert-match option (see below), count non-matching lines.  (-c is specified by POSIX.)
+
+       --color[=WHEN], --colour[=WHEN]
+              Surround  the  matched  (non-empty)  strings,  matching  lines,  context lines, file names, line numbers, byte
+              offsets, and separators (for fields and groups of context lines) with escape  sequences  to  display  them  in
+              color  on  the  terminal.   The  colors  are  defined by the environment variable GREP_COLORS.  The deprecated
+              environment variable GREP_COLOR is still supported, but its setting does not have priority.   WHEN  is  never,
+              always, or auto.
+
+       -L, --files-without-match
+              Suppress  normal  output;  instead  print the name of each input file from which no output would normally have
+              been printed.  The scanning will stop on the first match.
+
+       -l, --files-with-matches
+              Suppress normal output; instead print the name of each input file from which output would normally  have  been
+              printed.  The scanning will stop on the first match.  (-l is specified by POSIX.)
+
+       -m NUM, --max-count=NUM
+              Stop  reading  a  file  after NUM matching lines.  If the input is standard input from a regular file, and NUM
+              matching lines are output, grep ensures that the standard input is positioned to just after the last  matching
+              line  before exiting, regardless of the presence of trailing context lines.  This enables a calling process to
+              resume a search.  When grep stops after NUM matching lines, it outputs any trailing context lines.   When  the
+              -c  or  --count  option  is  also  used,  grep  does  not  output  a  count  greater than NUM.  When the -v or
+              --invert-match option is also used, grep stops after outputting NUM non-matching lines.
+
+       -o, --only-matching
+              Print only the matched (non-empty) parts of a matching line, with each such part on a separate output line.
+
+       -q, --quiet, --silent
+              Quiet; do not write anything to standard output.  Exit immediately with zero status if  any  match  is  found,
+              even if an error was detected.  Also see the -s or --no-messages option.  (-q is specified by POSIX.)
+
+       -s, --no-messages
+              Suppress error messages about nonexistent or unreadable files.  Portability note: unlike GNU grep, 7th Edition
+              Unix grep did not conform to POSIX, because it lacked -q and its -s option behaved like GNU grep's -q  option.
+              USG-style  grep  also  lacked -q but its -s option behaved like GNU grep.  Portable shell scripts should avoid
+              both -q and -s and should redirect standard and error output  to  /dev/null  instead.   (-s  is  specified  by
+              POSIX.)
+
+   Output Line Prefix Control
+       -b, --byte-offset
+              Print  the  0-based  byte offset within the input file before each line of output.  If -o (--only-matching) is
+              specified, print the offset of the matching part itself.
+
+       -H, --with-filename
+              Print the file name for each match.  This is the default when there is more than one file to search.
+
+       -h, --no-filename
+              Suppress the prefixing of file names on output.  This is the default when there is  only  one  file  (or  only
+              standard input) to search.
+
+       --label=LABEL
+              Display  input actually coming from standard input as input coming from file LABEL.  This is especially useful
+              when implementing tools like zgrep, e.g., gzip -cd foo.gz | grep --label=foo -H something.  See  also  the  -H
+              option.
+
+       -n, --line-number
+              Prefix each line of output with the 1-based line number within its input file.  (-n is specified by POSIX.)
+
+       -T, --initial-tab
+              Make  sure  that  the first character of actual line content lies on a tab stop, so that the alignment of tabs
+              looks normal.  This is useful with options that prefix their output to the actual content: -H,-n, and -b.   In
+              order  to  improve  the probability that lines from a single file will all start at the same column, this also
+              causes the line number and byte offset (if present) to be printed in a minimum size field width.
+
+       -u, --unix-byte-offsets
+              Report Unix-style byte offsets.  This switch causes grep to report byte offsets as if the file  were  a  Unix-
+              style  text  file, i.e., with CR characters stripped off.  This will produce results identical to running grep
+              on a Unix machine.  This option has no effect unless -b option is also used; it has  no  effect  on  platforms
+              other than MS-DOS and MS-Windows.
+
+       -Z, --null
+              Output  a zero byte (the ASCII NUL character) instead of the character that normally follows a file name.  For
+              example, grep -lZ outputs a zero byte after each file name instead of the usual newline.   This  option  makes
+              the  output unambiguous, even in the presence of file names containing unusual characters like newlines.  This
+              option can be used with commands like find -print0, perl -0, sort -z, and xargs -0 to process  arbitrary  file
+              names, even those that contain newline characters.
+
+   Context Line Control
+       -A NUM, --after-context=NUM
+              Print  NUM  lines  of  trailing context after matching lines.  Places a line containing a group separator (--)
+              between contiguous groups of matches.  With the -o or --only-matching option, this has no effect and a warning
+              is given.
+
+       -B NUM, --before-context=NUM
+              Print  NUM  lines  of  leading context before matching lines.  Places a line containing a group separator (--)
+              between contiguous groups of matches.  With the -o or --only-matching option, this has no effect and a warning
+              is given.
+
+       -C NUM, -NUM, --context=NUM
+              Print  NUM lines of output context.  Places a line containing a group separator (--) between contiguous groups
+              of matches.  With the -o or --only-matching option, this has no effect and a warning is given.
+
+   File and Directory Selection
+       -a, --text
+              Process a binary file as if it were text; this is equivalent to the --binary-files=text option.
+
+       --binary-files=TYPE
+              If the first few bytes of a file indicate that the file contains binary data, assume that the file is of  type
+              TYPE.   By  default,  TYPE is binary, and grep normally outputs either a one-line message saying that a binary
+              file matches, or no message if there is no match.  If TYPE is without-match, grep assumes that a  binary  file
+              does  not  match; this is equivalent to the -I option.  If TYPE is text, grep processes a binary file as if it
+              were text; this is equivalent to the  -a  option.   Warning:  grep  --binary-files=text  might  output  binary
+              garbage,  which  can have nasty side effects if the output is a terminal and if the terminal driver interprets
+              some of it as commands.
+
+       -D ACTION, --devices=ACTION
+              If an input file is a device, FIFO or socket, use ACTION to process it.  By default,  ACTION  is  read,  which
+              means  that  devices  are  read  just as if they were ordinary files.  If ACTION is skip, devices are silently
+              skipped.
+
+       -d ACTION, --directories=ACTION
+              If an input file is a directory, use ACTION to process it.  By default, ACTION is read, i.e., read directories
+              just  as  if  they  were ordinary files.  If ACTION is skip, silently skip directories.  If ACTION is recurse,
+              read all files under each directory, recursively, following symbolic links only if they  are  on  the  command
+              line.  This is equivalent to the -r option.
+
+       --exclude=GLOB
+              Skip  files  whose base name matches GLOB (using wildcard matching).  A file-name glob can use *, ?, and [...]
+              as wildcards, and \ to quote a wildcard or backslash character literally.
+
+       --exclude-from=FILE
+              Skip files whose base name matches any of the file-name globs read  from  FILE  (using  wildcard  matching  as
+              described under --exclude).
+
+       --exclude-dir=DIR
+              Exclude directories matching the pattern DIR from recursive searches.
+
+       -I     Process   a   binary   file   as   if   it   did  not  contain  matching  data;  this  is  equivalent  to  the
+              --binary-files=without-match option.
+
+       --include=GLOB
+              Search only files whose base name matches GLOB (using wildcard matching as described under --exclude).
+
+       -r, --recursive
+              Read all files under each directory, recursively, following symbolic links only if they  are  on  the  command
+              line.  This is equivalent to the -d recurse option.
+
+       -R, --dereference-recursive
+              Read all files under each directory, recursively.  Follow all symbolic links, unlike -r.
+
+   Other Options
+       --line-buffered
+              Use line buffering on output.  This can cause a performance penalty.
+
+       --mmap If  possible,  use the mmap(2) system call to read input, instead of the default read(2) system call.  In some
+              situations, --mmap yields better performance.  However, --mmap can cause undefined  behavior  (including  core
+              dumps) if an input file shrinks while grep is operating, or if an I/O error occurs.
+
+       -U, --binary
+              Treat  the  file(s) as binary.  By default, under MS-DOS and MS-Windows, grep guesses the file type by looking
+              at the contents of the first 32KB read from the file.  If grep decides the file is a text file, it strips  the
+              CR  characters  from  the  original  file  contents (to make regular expressions with ^ and $ work correctly).
+              Specifying -U overrules this guesswork, causing all files to be read and  passed  to  the  matching  mechanism
+              verbatim;  if  the  file is a text file with CR/LF pairs at the end of each line, this will cause some regular
+              expressions to fail.  This option has no effect on platforms other than MS-DOS and MS-Windows.
+
+       -z, --null-data
+              Treat the input as a set of lines, each terminated by a zero byte (the  ASCII  NUL  character)  instead  of  a
+              newline.   Like  the  -Z  or  --null  option,  this  option  can be used with commands like sort -z to process
+              arbitrary file names.
+
+REGULAR EXPRESSIONS
+       A regular expression is a pattern that describes a set of strings.  Regular expressions are  constructed  analogously
+       to arithmetic expressions, by using various operators to combine smaller expressions.
+
+       grep  understands  three  different versions of regular expression syntax: “basic” (BRE), “extended” (ERE) and “perl”
+       (PRCE). In GNU grep, there is no difference in available functionality between basic and extended syntaxes.  In other
+       implementations,  basic regular expressions are less powerful.  The following description applies to extended regular
+       expressions; differences for basic regular expressions are summarized  afterwards.   Perl  regular  expressions  give
+       additional  functionality, and are documented in pcresyntax(3) and pcrepattern(3), but only work if pcre is available
+       in the system.
+
+       The fundamental building blocks are the  regular  expressions  that  match  a  single  character.   Most  characters,
+       including  all  letters  and  digits, are regular expressions that match themselves.  Any meta-character with special
+       meaning may be quoted by preceding it with a backslash.
+
+       The period . matches any single character.
+
+   Character Classes and Bracket Expressions
+       A bracket expression is a list of characters enclosed by [ and ].  It matches any single character in that  list;  if
+       the  first  character  of  the  list  is the caret ^ then it matches any character not in the list.  For example, the
+       regular expression [0123456789] matches any single digit.
+
+       Within a bracket expression, a range expression consists of two characters separated by a  hyphen.   It  matches  any
+       single  character  that  sorts  between  the  two  characters,  inclusive,  using the locale's collating sequence and
+       character set.  For example, in the default C locale, [a-d] is equivalent to [abcd].  Many locales sort characters in
+       dictionary  order,  and  in  these  locales  [a-d]  is  typically not equivalent to [abcd]; it might be equivalent to
+       [aBbCcDd], for example.  To obtain the traditional interpretation of bracket expressions, you can use the C locale by
+       setting the LC_ALL environment variable to the value C.
+
+       Finally,  certain named classes of characters are predefined within bracket expressions, as follows.  Their names are
+       self explanatory,  and  they  are  [:alnum:],  [:alpha:],  [:cntrl:],  [:digit:],  [:graph:],  [:lower:],  [:print:],
+       [:punct:],  [:space:],  [:upper:], and [:xdigit:].  For example, [[:alnum:]] means the character class of numbers and
+       letters in the current locale. In the C locale and ASCII character set encoding, this is  the  same  as  [0-9A-Za-z].
+       (Note  that the brackets in these class names are part of the symbolic names, and must be included in addition to the
+       brackets delimiting the bracket  expression.)   Most  meta-characters  lose  their  special  meaning  inside  bracket
+       expressions.  To include a literal ] place it first in the list.  Similarly, to include a literal ^ place it anywhere
+       but first.  Finally, to include a literal - place it last.
+
+   Anchoring
+       The caret ^ and the dollar sign $ are meta-characters that respectively match the empty string at the  beginning  and
+       end of a line.
+
+   The Backslash Character and Special Expressions
+       The  symbols \< and \> respectively match the empty string at the beginning and end of a word.  The symbol \b matches
+       the empty string at the edge of a word, and \B matches the empty string provided it's not at the edge of a word.  The
+       symbol \w is a synonym for [_[:alnum:]] and \W is a synonym for [^_[:alnum:]].
+
+   Repetition
+       A regular expression may be followed by one of several repetition operators:
+       ?      The preceding item is optional and matched at most once.
+       *      The preceding item will be matched zero or more times.
+       +      The preceding item will be matched one or more times.
+       {n}    The preceding item is matched exactly n times.
+       {n,}   The preceding item is matched n or more times.
+       {,m}   The preceding item is matched at most m times.  This is a GNU extension.
+       {n,m}  The preceding item is matched at least n times, but not more than m times.
+
+   Concatenation
+       Two  regular  expressions  may  be  concatenated;  the  resulting  regular  expression  matches  any string formed by
+       concatenating two substrings that respectively match the concatenated expressions.
+
+   Alternation
+       Two regular expressions may be joined by the infix operator |; the resulting regular expression  matches  any  string
+       matching either alternate expression.
+
+   Precedence
+       Repetition  takes precedence over concatenation, which in turn takes precedence over alternation.  A whole expression
+       may be enclosed in parentheses to override these precedence rules and form a subexpression.
+
+   Back References and Subexpressions
+       The back-reference \n, where n is a single digit, matches the substring previously matched by the  nth  parenthesized
+       subexpression of the regular expression.
+
+   Basic vs Extended Regular Expressions
+       In  basic  regular  expressions  the meta-characters ?, +, {, |, (, and ) lose their special meaning; instead use the
+       backslashed versions \?, \+, \{, \|, \(, and \).
+
+       Traditional egrep did not support the { meta-character,  and  some  egrep  implementations  support  \{  instead,  so
+       portable scripts should avoid { in grep -E patterns and should use [{] to match a literal {.
+
+       GNU  grep -E  attempts  to support traditional usage by assuming that { is not special if it would be the start of an
+       invalid interval specification.  For example, the command grep -E '{1'  searches  for  the  two-character  string  {1
+       instead  of  reporting  a  syntax  error  in the regular expression.  POSIX allows this behavior as an extension, but
+       portable scripts should avoid it.
+
+ENVIRONMENT VARIABLES
+       The behavior of grep is affected by the following environment variables.
+
+       The locale for category LC_foo is specified by examining the three environment variables  LC_ALL,  LC_foo,  LANG,  in
+       that  order.   The first of these variables that is set specifies the locale.  For example, if LC_ALL is not set, but
+       LC_MESSAGES is set to pt_BR, then the Brazilian Portuguese locale is used for the LC_MESSAGES category.  The C locale
+       is  used  if  none of these environment variables are set, if the locale catalog is not installed, or if grep was not
+       compiled with national language support (NLS).
+
+       GREP_OPTIONS
+              This variable specifies default options to be placed in front  of  any  explicit  options.   For  example,  if
+              GREP_OPTIONS  is  '--binary-files=without-match  --directories=skip',  grep  behaves  as  if  the  two options
+              --binary-files=without-match and --directories=skip had been specified before any  explicit  options.   Option
+              specifications  are  separated  by  whitespace.   A backslash escapes the next character, so it can be used to
+              specify an option containing whitespace or a backslash.
+
+       GREP_COLOR
+              This variable specifies the color used to highlight matched (non-empty) text.  It is deprecated  in  favor  of
+              GREP_COLORS,  but  still supported.  The mt, ms, and mc capabilities of GREP_COLORS have priority over it.  It
+              can only specify the color used to highlight the matching non-empty text in any matching line (a selected line
+              when  the  -v  command-line option is omitted, or a context line when -v is specified).  The default is 01;31,
+              which means a bold red foreground text on the terminal's default background.
+
+       GREP_COLORS
+              Specifies the colors and other attributes used to highlight various parts of  the  output.   Its  value  is  a
+              colon-separated  list  of capabilities that defaults to ms=01;31:mc=01;31:sl=:cx=:fn=35:ln=32:bn=32:se=36 with
+              the rv and ne boolean capabilities omitted (i.e., false).  Supported capabilities are as follows.
+
+              sl=    SGR substring for whole selected lines (i.e.,  matching  lines  when  the  -v  command-line  option  is
+                     omitted,  or non-matching lines when -v is specified).  If however the boolean rv capability and the -v
+                     command-line option are both specified, it applies to context matching lines instead.  The  default  is
+                     empty (i.e., the terminal's default color pair).
+
+              cx=    SGR  substring  for  whole  context  lines (i.e., non-matching lines when the -v command-line option is
+                     omitted, or matching lines when -v is specified).  If however the boolean  rv  capability  and  the  -v
+                     command-line option are both specified, it applies to selected non-matching lines instead.  The default
+                     is empty (i.e., the terminal's default color pair).
+
+              rv     Boolean value that reverses (swaps) the meanings of the sl= and cx= capabilities when the  -v  command-
+                     line option is specified.  The default is false (i.e., the capability is omitted).
+
+              mt=01;31
+                     SGR  substring  for  matching  non-empty  text  in any matching line (i.e., a selected line when the -v
+                     command-line option is omitted, or a context line when -v is specified).  Setting this is equivalent to
+                     setting both ms= and mc= at once to the same value.  The default is a bold red text foreground over the
+                     current line background.
+
+              ms=01;31
+                     SGR substring for matching non-empty text in a selected line.  (This is only used when the -v  command-
+                     line  option  is  omitted.)   The  effect of the sl= (or cx= if rv) capability remains active when this
+                     kicks in.  The default is a bold red text foreground over the current line background.
+
+              mc=01;31
+                     SGR substring for matching non-empty text in a context line.  (This is only used when the  -v  command-
+                     line  option  is  specified.)  The effect of the cx= (or sl= if rv) capability remains active when this
+                     kicks in.  The default is a bold red text foreground over the current line background.
+
+              fn=35  SGR substring for file names prefixing any content line.  The default is a magenta text foreground over
+                     the terminal's default background.
+
+              ln=32  SGR substring for line numbers prefixing any content line.  The default is a green text foreground over
+                     the terminal's default background.
+
+              bn=32  SGR substring for byte offsets prefixing any content line.  The default is a green text foreground over
+                     the terminal's default background.
+
+              se=36  SGR  substring  for separators that are inserted between selected line fields (:), between context line
+                     fields, (-), and between groups of adjacent lines when nonzero context is specified (--).  The  default
+                     is a cyan text foreground over the terminal's default background.
+
+              ne     Boolean  value that prevents clearing to the end of line using Erase in Line (EL) to Right (\33[K) each
+                     time a colorized item ends.  This is needed on terminals on which EL is not supported.  It is otherwise
+                     useful  on  terminals  for which the back_color_erase (bce) boolean terminfo capability does not apply,
+                     when the chosen highlight colors do not affect the background, or when EL is too  slow  or  causes  too
+                     much flicker.  The default is false (i.e., the capability is omitted).
+
+              Note  that boolean capabilities have no =...  part.  They are omitted (i.e., false) by default and become true
+              when specified.
+
+              See the Select Graphic Rendition (SGR) section in the documentation of the text  terminal  that  is  used  for
+              permitted  values  and  their meaning as character attributes.  These substring values are integers in decimal
+              representation and can be concatenated with semicolons.  grep takes care  of  assembling  the  result  into  a
+              complete  SGR  sequence  (\33[...m).   Common values to concatenate include 1 for bold, 4 for underline, 5 for
+              blink, 7 for inverse, 39 for default foreground color, 30 to 37 for foreground colors, 90 to 97  for  16-color
+              mode  foreground colors, 38;5;0 to 38;5;255 for 88-color and 256-color modes foreground colors, 49 for default
+              background color, 40 to 47 for background colors, 100 to 107 for 16-color mode background colors,  and  48;5;0
+              to 48;5;255 for 88-color and 256-color modes background colors.
+
+       LC_ALL, LC_COLLATE, LANG
+              These  variables  specify the locale for the LC_COLLATE category, which determines the collating sequence used
+              to interpret range expressions like [a-z].
+
+       LC_ALL, LC_CTYPE, LANG
+              These variables specify the locale for the LC_CTYPE category, which determines the type of  characters,  e.g.,
+              which characters are whitespace.
+
+       LC_ALL, LC_MESSAGES, LANG
+              These  variables specify the locale for the LC_MESSAGES category, which determines the language that grep uses
+              for messages.  The default C locale uses American English messages.
+
+       POSIXLY_CORRECT
+              If set, grep behaves as POSIX requires; otherwise, grep behaves more like other GNU programs.  POSIX  requires
+              that  options  that  follow file names must be treated as file names; by default, such options are permuted to
+              the front of the operand list and are treated as options.  Also, POSIX requires that unrecognized  options  be
+              diagnosed  as  “illegal”,  but  since  they  are not really against the law the default is to diagnose them as
+              “invalid”.  POSIXLY_CORRECT also disables _N_GNU_nonoption_argv_flags_, described below.
+
+       _N_GNU_nonoption_argv_flags_
+              (Here N is grep's numeric process ID.)  If the ith character of this environment variable's value is 1, do not
+              consider the ith operand of grep to be an option, even if it appears to be one.  A shell can put this variable
+              in the environment for each command it runs, specifying which operands are the results of file  name  wildcard
+              expansion  and  therefore  should  not  be treated as options.  This behavior is available only with the GNU C
+              library, and only when POSIXLY_CORRECT is not set.
+
+EXIT STATUS
+       The exit status is 0 if selected lines are found, and 1 if not found.  If an error occurred the  exit  status  is  2.
+       (Note: POSIX error handling code should check for '2' or greater.)
+
+COPYRIGHT
+       Copyright 1998-2000, 2002, 2005-2014 Free Software Foundation, Inc.
+
+       This  is free software; see the source for copying conditions.  There is NO warranty; not even for MERCHANTABILITY or
+       FITNESS FOR A PARTICULAR PURPOSE.
+
+BUGS
+   Reporting Bugs
+       Email     bug     reports     to     <bug-grep@gnu.org>,     a     mailing     list     whose     web     page     is
+       <http://lists.gnu.org/mailman/listinfo/bug-grep>.      grep's     Savannah     bug     tracker    is    located    at
+       <http://savannah.gnu.org/bugs/?group=grep>.
+
+   Known Bugs
+       Large repetition counts in the {n,m} construct may cause grep to use lots of  memory.   In  addition,  certain  other
+       obscure regular expressions require exponential time and space, and may cause grep to run out of memory.
+
+       Back-references are very slow, and may require exponential time.
+
+SEE ALSO
+   Regular Manual Pages
+       awk(1),  cmp(1),  diff(1), find(1), gzip(1), perl(1), sed(1), sort(1), xargs(1), zgrep(1), mmap(2), read(2), pcre(3),
+       pcresyntax(3), pcrepattern(3), terminfo(5), glob(7), regex(7).
+
+   POSIX Programmer's Manual Page
+       grep(1p).
+
+   TeXinfo Documentation
+       The  full   documentation   for   grep   is   maintained   as   a   TeXinfo   manual,   which   you   can   read   at
+       http://www.gnu.org/software/grep/manual/.   If  the  info  and grep programs are properly installed at your site, the
+       command
+
+              info grep
+
+       should give you access to the complete manual.
+
+NOTES
+       This man page is maintained only fitfully; the full documentation is often more up-to-date.
+
+       GNU's not Unix, but Unix is a beast; its plural form is Unixen.
+
+
+
+User Commands                                           GNU grep 2.16                                                GREP(1)
+HEAD(1)                                                 User Commands                                                HEAD(1)
+
+
+
+NAME
+       head - output the first part of files
+
+SYNOPSIS
+       head [OPTION]... [FILE]...
+
+DESCRIPTION
+       Print the first 10 lines of each FILE to standard output.  With more than one FILE, precede each with a header giving
+       the file name.  With no FILE, or when FILE is -, read standard input.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -c, --bytes=[-]K
+              print the first K bytes of each file; with the leading '-', print all but the last K bytes of each file
+
+       -n, --lines=[-]K
+              print the first K lines instead of the first 10; with the leading '-', print all but the last K lines of  each
+              file
+
+       -q, --quiet, --silent
+              never print headers giving file names
+
+       -v, --verbose
+              always print headers giving file names
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       K  may  have  a  multiplier  suffix:  b  512,  kB  1000,  K  1024,  MB  1000*1000,  M 1024*1024, GB 1000*1000*1000, G
+       1024*1024*1024, and so on for T, P, E, Z, Y.
+
+AUTHOR
+       Written by David MacKenzie and Jim Meyering.
+
+REPORTING BUGS
+       Report head bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report head translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright  ©  2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3   or   later
+       <http://gnu.org/licenses/gpl.html>.
+       This  is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted by
+       law.
+
+SEE ALSO
+       The full documentation for head is maintained as a Texinfo manual.  If  the  info  and  head  programs  are  properly
+       installed at your site, the command
+
+              info coreutils 'head invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                  HEAD(1)
+PASTE(1)                                                User Commands                                               PASTE(1)
+
+
+
+NAME
+       paste - merge lines of files
+
+SYNOPSIS
+       paste [OPTION]... [FILE]...
+
+DESCRIPTION
+       Write lines consisting of the sequentially corresponding lines from each FILE, separated by TABs, to standard output.
+       With no FILE, or when FILE is -, read standard input.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -d, --delimiters=LIST
+              reuse characters from LIST instead of TABs
+
+       -s, --serial
+              paste one file at a time instead of in parallel
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+AUTHOR
+       Written by David M. Ihnat and David MacKenzie.
+
+REPORTING BUGS
+       Report paste bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report paste translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright  ©  2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3   or   later
+       <http://gnu.org/licenses/gpl.html>.
+       This  is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted by
+       law.
+
+SEE ALSO
+       The full documentation for paste is maintained as a Texinfo manual.  If the info  and  paste  programs  are  properly
+       installed at your site, the command
+
+              info coreutils 'paste invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                 PASTE(1)
+REV(1)                                                  User Commands                                                 REV(1)
+
+NAME
+     rev — reverse lines of a file or files
+
+SYNOPSIS
+     rev [-V] [-h] [file ...]
+
+DESCRIPTION
+     The rev utility copies the specified files to standard output, reversing the order of characters in every line.  If no
+     files are specified, standard input is read.
+
+     -V, --version
+             Output version information and exit.
+
+     -h, --help
+             Output help and exit.
+
+AVAILABILITY
+     The rev command is part of the util-linux package and is available from ftp://ftp.kernel.org/pub/linux/utils/util-
+     linux/.
+
+util-linux                                              April 2011                                                util-linux
+SED(1)                                                  User Commands                                                 SED(1)
+
+
+
+NAME
+       sed - stream editor for filtering and transforming text
+
+SYNOPSIS
+       sed [OPTION]... {script-only-if-no-other-script} [input-file]...
+
+DESCRIPTION
+       Sed  is a stream editor.  A stream editor is used to perform basic text transformations on an input stream (a file or
+       input from a pipeline).  While in some ways similar to an editor which permits scripted edits (such as ed), sed works
+       by  making  only  one  pass over the input(s), and is consequently more efficient.  But it is sed's ability to filter
+       text in a pipeline which particularly distinguishes it from other types of editors.
+
+       -n, --quiet, --silent
+
+              suppress automatic printing of pattern space
+
+       -e script, --expression=script
+
+              add the script to the commands to be executed
+
+       -f script-file, --file=script-file
+
+              add the contents of script-file to the commands to be executed
+
+       --follow-symlinks
+
+              follow symlinks when processing in place
+
+       -i[SUFFIX], --in-place[=SUFFIX]
+
+              edit files in place (makes backup if SUFFIX supplied)
+
+       -l N, --line-length=N
+
+              specify the desired line-wrap length for the `l' command
+
+       --posix
+
+              disable all GNU extensions.
+
+       -r, --regexp-extended
+
+              use extended regular expressions in the script.
+
+       -s, --separate
+
+              consider files as separate rather than as a single continuous long stream.
+
+       -u, --unbuffered
+
+              load minimal amounts of data from the input files and flush the output buffers more often
+
+       -z, --null-data
+
+              separate lines by NUL characters
+
+       --help
+              display this help and exit
+
+       --version
+              output version information and exit
+
+       If no -e, --expression, -f, or --file option is given, then the first non-option argument is taken as the sed  script
+       to  interpret.   All remaining arguments are names of input files; if no input files are specified, then the standard
+       input is read.
+
+       GNU sed home page: <http://www.gnu.org/software/sed/>.  General help using  GNU  software:  <http://www.gnu.org/geth‐
+       elp/>.   E-mail bug reports to: <bug-sed@gnu.org>.  Be sure to include the word ``sed'' somewhere in the ``Subject:''
+       field.
+
+COMMAND SYNOPSIS
+       This is just a brief synopsis of sed commands to serve as a reminder to those who already know sed; other  documenta‐
+       tion (such as the texinfo document) must be consulted for fuller descriptions.
+
+   Zero-address ``commands''
+       : label
+              Label for b and t commands.
+
+       #comment
+              The comment extends until the next newline (or the end of a -e script fragment).
+
+       }      The closing bracket of a { } block.
+
+   Zero- or One- address commands
+       =      Print the current line number.
+
+       a \
+
+       text   Append text, which has each embedded newline preceded by a backslash.
+
+       i \
+
+       text   Insert text, which has each embedded newline preceded by a backslash.
+
+       q [exit-code]
+              Immediately  quit  the sed script without processing any more input, except that if auto-print is not disabled
+              the current pattern space will be printed.  The exit code argument is a GNU extension.
+
+       Q [exit-code]
+              Immediately quit the sed script without processing any more input.  This is a GNU extension.
+
+       r filename
+              Append text read from filename.
+
+       R filename
+              Append a line read from filename.  Each invocation of the command reads a line from the file.  This is  a  GNU
+              extension.
+
+   Commands which accept address ranges
+       {      Begin a block of commands (end with a }).
+
+       b label
+              Branch to label; if label is omitted, branch to end of script.
+
+       c \
+
+       text   Replace the selected lines with text, which has each embedded newline preceded by a backslash.
+
+       d      Delete pattern space.  Start next cycle.
+
+       D      If  pattern  space  contains  no newline, start a normal new cycle as if the d command was issued.  Otherwise,
+              delete text in the pattern space up to the first newline, and restart cycle with the resultant pattern  space,
+              without reading a new line of input.
+
+       h H    Copy/append pattern space to hold space.
+
+       g G    Copy/append hold space to pattern space.
+
+       l      List out the current line in a ``visually unambiguous'' form.
+
+       l width
+              List  out the current line in a ``visually unambiguous'' form, breaking it at width characters.  This is a GNU
+              extension.
+
+       n N    Read/append the next line of input into the pattern space.
+
+       p      Print the current pattern space.
+
+       P      Print up to the first embedded newline of the current pattern space.
+
+       s/regexp/replacement/
+              Attempt to match regexp against the pattern space.  If successful, replace that portion matched with  replace‐
+              ment.  The replacement may contain the special character & to refer to that portion of the pattern space which
+              matched, and the special escapes \1 through \9 to refer to the corresponding matching sub-expressions  in  the
+              regexp.
+
+       t label
+              If a s/// has done a successful substitution since the last input line was read and since the last t or T com‐
+              mand, then branch to label; if label is omitted, branch to end of script.
+
+       T label
+              If no s/// has done a successful substitution since the last input line was read and since the  last  t  or  T
+              command, then branch to label; if label is omitted, branch to end of script.  This is a GNU extension.
+
+       w filename
+              Write the current pattern space to filename.
+
+       W filename
+              Write the first line of the current pattern space to filename.  This is a GNU extension.
+
+       x      Exchange the contents of the hold and pattern spaces.
+
+       y/source/dest/
+              Transliterate  the  characters  in  the pattern space which appear in source to the corresponding character in
+              dest.
+
+Addresses
+       Sed commands can be given with no addresses, in which case the command will be executed for all input lines; with one
+       address,  in  which  case  the  command  will  only be executed for input lines which match that address; or with two
+       addresses, in which case the command will be executed for all input lines which match the inclusive  range  of  lines
+       starting from the first address and continuing to the second address.  Three things to note about address ranges: the
+       syntax is addr1,addr2 (i.e., the addresses are separated by a comma); the line which addr1  matched  will  always  be
+       accepted,  even  if  addr2  selects an earlier line; and if addr2 is a regexp, it will not be tested against the line
+       that addr1 matched.
+
+       After the address (or address-range), and before the command, a !  may be inserted, which specifies that the  command
+       shall only be executed if the address (or address-range) does not match.
+
+       The following address types are supported:
+
+       number Match  only  the  specified  line  number (which increments cumulatively across files, unless the -s option is
+              specified on the command line).
+
+       first~step
+              Match every step'th line starting with line first.  For example, ``sed -n 1~2p'' will print all  the  odd-num‐
+              bered  lines  in  the input stream, and the address 2~5 will match every fifth line, starting with the second.
+              first can be zero; in this case, sed operates as if it were equal to step.  (This is an extension.)
+
+       $      Match the last line.
+
+       /regexp/
+              Match lines matching the regular expression regexp.
+
+       \cregexpc
+              Match lines matching the regular expression regexp.  The c may be any character.
+
+       GNU sed also supports some special 2-address forms:
+
+       0,addr2
+              Start out in "matched first address" state, until addr2 is found.  This is similar to 1,addr2, except that  if
+              addr2  matches  the  very  first  line  of input the 0,addr2 form will be at the end of its range, whereas the
+              1,addr2 form will still be at the beginning of its range.  This works only when addr2 is a regular expression.
+
+       addr1,+N
+              Will match addr1 and the N lines following addr1.
+
+       addr1,~N
+              Will match addr1 and the lines following addr1 until the next line whose input line number is a multiple of N.
+
+REGULAR EXPRESSIONS
+       POSIX.2 BREs should be supported, but they aren't completely because of performance problems.  The \n sequence  in  a
+       regular expression matches the newline character, and similarly for \a, \t, and other sequences.
+
+BUGS
+       E-mail  bug  reports  to  bug-sed@gnu.org.   Also, please include the output of ``sed --version'' in the body of your
+       report if at all possible.
+
+AUTHOR
+       Written by Jay Fenlason, Tom Lord, Ken Pizzini, and Paolo Bonzini.   GNU  sed  home  page:  <http://www.gnu.org/soft‐
+       ware/sed/>.   General  help  using  GNU  software:  <http://www.gnu.org/gethelp/>.   E-mail  bug  reports  to:  <bug-
+       sed@gnu.org>.  Be sure to include the word ``sed'' somewhere in the ``Subject:'' field.
+
+COPYRIGHT
+       Copyright  ©  2012   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3   or   later
+       <http://gnu.org/licenses/gpl.html>.
+       This  is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted by
+       law.
+
+SEE ALSO
+       awk(1), ed(1), grep(1), tr(1), perlre(1), sed.info, any of various books on sed, the sed FAQ (http://sed.sf.net/grab‐
+       bag/tutorials/sedfaq.txt), http://sed.sf.net/grabbag/.
+
+       The full documentation for sed is maintained as a Texinfo manual.  If the info and sed programs are properly
+       installed at your site, the command
+
+              info sed
+
+       should give you access to the complete manual.
+
+
+
+sed 4.2.2                                               December 2012                                                 SED(1)
+SORT(1)                                                 User Commands                                                SORT(1)
+
+
+
+NAME
+       sort - sort lines of text files
+
+SYNOPSIS
+       sort [OPTION]... [FILE]...
+       sort [OPTION]... --files0-from=F
+
+DESCRIPTION
+       Write sorted concatenation of all FILE(s) to standard output.
+
+       Mandatory arguments to long options are mandatory for short options too.  Ordering options:
+
+       -b, --ignore-leading-blanks
+              ignore leading blanks
+
+       -d, --dictionary-order
+              consider only blanks and alphanumeric characters
+
+       -f, --ignore-case
+              fold lower case to upper case characters
+
+       -g, --general-numeric-sort
+              compare according to general numerical value
+
+       -i, --ignore-nonprinting
+              consider only printable characters
+
+       -M, --month-sort
+              compare (unknown) < 'JAN' < ... < 'DEC'
+
+       -h, --human-numeric-sort
+              compare human readable numbers (e.g., 2K 1G)
+
+       -n, --numeric-sort
+              compare according to string numerical value
+
+       -R, --random-sort
+              sort by random hash of keys
+
+       --random-source=FILE
+              get random bytes from FILE
+
+       -r, --reverse
+              reverse the result of comparisons
+
+       --sort=WORD
+              sort according to WORD: general-numeric -g, human-numeric -h, month -M, numeric -n, random -R, version -V
+
+       -V, --version-sort
+              natural sort of (version) numbers within text
+
+       Other options:
+
+       --batch-size=NMERGE
+              merge at most NMERGE inputs at once; for more use temp files
+
+       -c, --check, --check=diagnose-first
+              check for sorted input; do not sort
+
+       -C, --check=quiet, --check=silent
+              like -c, but do not report first bad line
+
+       --compress-program=PROG
+              compress temporaries with PROG; decompress them with PROG -d
+
+       --debug
+              annotate the part of the line used to sort, and warn about questionable usage to stderr
+
+       --files0-from=F
+              read input from the files specified by NUL-terminated names in file F; If F is - then read names from standard
+              input
+
+       -k, --key=KEYDEF
+              sort via a key; KEYDEF gives location and type
+
+       -m, --merge
+              merge already sorted files; do not sort
+
+       -o, --output=FILE
+              write result to FILE instead of standard output
+
+       -s, --stable
+              stabilize sort by disabling last-resort comparison
+
+       -S, --buffer-size=SIZE
+              use SIZE for main memory buffer
+
+       -t, --field-separator=SEP
+              use SEP instead of non-blank to blank transition
+
+       -T, --temporary-directory=DIR
+              use DIR for temporaries, not $TMPDIR or /tmp; multiple options specify multiple directories
+
+       --parallel=N
+              change the number of sorts run concurrently to N
+
+       -u, --unique
+              with -c, check for strict ordering; without -c, output only the first of an equal run
+
+       -z, --zero-terminated
+              end lines with 0 byte, not newline
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       KEYDEF is F[.C][OPTS][,F[.C][OPTS]] for start and stop position, where F is a field number and C a character position
+       in  the  field;  both  are  origin  1,  and the stop position defaults to the line's end.  If neither -t nor -b is in
+       effect, characters in a field are counted from the beginning of the preceding whitespace.  OPTS is one or  more  sin‐
+       gle-letter  ordering options [bdfgiMhnRrV], which override global ordering options for that key.  If no key is given,
+       use the entire line as the key.
+
+       SIZE may be followed by the following multiplicative suffixes: % 1% of memory, b 1, K 1024 (default), and so  on  for
+       M, G, T, P, E, Z, Y.
+
+       With no FILE, or when FILE is -, read standard input.
+
+       *** WARNING *** The locale specified by the environment affects sort order.  Set LC_ALL=C to get the traditional sort
+       order that uses native byte values.
+
+AUTHOR
+       Written by Mike Haertel and Paul Eggert.
+
+REPORTING BUGS
+       Report sort bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report sort translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright  ©  2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3   or   later
+       <http://gnu.org/licenses/gpl.html>.
+       This  is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted by
+       law.
+
+SEE ALSO
+       uniq(1)
+
+       The full documentation for sort is maintained as a Texinfo manual.  If  the  info  and  sort  programs  are  properly
+       installed at your site, the command
+
+              info coreutils 'sort invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                  SORT(1)
+SPLIT(1)                                                User Commands                                               SPLIT(1)
+
+
+
+NAME
+       split - split a file into pieces
+
+SYNOPSIS
+       split [OPTION]... [INPUT [PREFIX]]
+
+DESCRIPTION
+       Output  fixed-size pieces of INPUT to PREFIXaa, PREFIXab, ...; default size is 1000 lines, and default PREFIX is 'x'.
+       With no INPUT, or when INPUT is -, read standard input.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -a, --suffix-length=N
+              generate suffixes of length N (default 2)
+
+       --additional-suffix=SUFFIX
+              append an additional SUFFIX to file names.
+
+       -b, --bytes=SIZE
+              put SIZE bytes per output file
+
+       -C, --line-bytes=SIZE
+              put at most SIZE bytes of lines per output file
+
+       -d, --numeric-suffixes[=FROM]
+              use numeric suffixes instead of alphabetic.  FROM changes the start value (default 0).
+
+       -e, --elide-empty-files
+              do not generate empty output files with '-n'
+
+       --filter=COMMAND
+              write to shell COMMAND; file name is $FILE
+
+       -l, --lines=NUMBER
+              put NUMBER lines per output file
+
+       -n, --number=CHUNKS
+              generate CHUNKS output files.  See below
+
+       -u, --unbuffered
+              immediately copy input to output with '-n r/...'
+
+       --verbose
+              print a diagnostic just before each output file is opened
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       SIZE is an integer and optional unit (example: 10M is 10*1024*1024).  Units are K, M, G, T, P, E,  Z,  Y  (powers  of
+       1024) or KB, MB, ... (powers of 1000).
+
+       CHUNKS may be: N       split into N files based on size of input K/N     output Kth of N to stdout l/N     split into
+       N files without splitting lines l/K/N   output Kth of N to stdout without splitting lines r/N     like  'l'  but  use
+       round robin distribution r/K/N   likewise but only output Kth of N to stdout
+
+AUTHOR
+       Written by Torbjorn Granlund and Richard M. Stallman.
+
+REPORTING BUGS
+       Report split bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report split translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       The  full  documentation  for  split  is maintained as a Texinfo manual.  If the info and split programs are properly
+       installed at your site, the command
+
+              info coreutils 'split invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                 SPLIT(1)
+TAC(1)                                                  User Commands                                                 TAC(1)
+
+
+
+NAME
+       tac - concatenate and print files in reverse
+
+SYNOPSIS
+       tac [OPTION]... [FILE]...
+
+DESCRIPTION
+       Write each FILE to standard output, last line first.  With no FILE, or when FILE is -, read standard input.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -b, --before
+              attach the separator before instead of after
+
+       -r, --regex
+              interpret the separator as a regular expression
+
+       -s, --separator=STRING
+              use STRING as the separator instead of newline
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+AUTHOR
+       Written by Jay Lepreau and David MacKenzie.
+
+REPORTING BUGS
+       Report tac bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report tac translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       rev(1)
+
+       The  full  documentation  for  tac  is  maintained  as  a  Texinfo manual.  If the info and tac programs are properly
+       installed at your site, the command
+
+              info coreutils 'tac invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                   TAC(1)
+TAIL(1)                                                 User Commands                                                TAIL(1)
+
+
+
+NAME
+       tail - output the last part of files
+
+SYNOPSIS
+       tail [OPTION]... [FILE]...
+
+DESCRIPTION
+       Print  the last 10 lines of each FILE to standard output.  With more than one FILE, precede each with a header giving
+       the file name.  With no FILE, or when FILE is -, read standard input.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -c, --bytes=K
+              output the last K bytes; alternatively, use -c +K to output bytes starting with the Kth of each file
+
+       -f, --follow[={name|descriptor}]
+              output appended data as the file grows; -f, --follow, and --follow=descriptor are equivalent
+
+       -F     same as --follow=name --retry
+
+       -n, --lines=K
+              output the last K lines, instead of the last 10; or use -n +K to output lines starting with the Kth
+
+       --max-unchanged-stats=N
+              with --follow=name, reopen a FILE which has not changed size after N (default 5) iterations to see if  it  has
+              been  unlinked  or renamed (this is the usual case of rotated log files).  With inotify, this option is rarely
+              useful.
+
+       --pid=PID
+              with -f, terminate after process ID, PID dies
+
+       -q, --quiet, --silent
+              never output headers giving file names
+
+       --retry
+              keep trying to open a file even when it is or becomes inaccessible; useful when following by name, i.e.,  with
+              --follow=name
+
+       -s, --sleep-interval=N
+              with  -f, sleep for approximately N seconds (default 1.0) between iterations.  With inotify and --pid=P, check
+              process P at least once every N seconds.
+
+       -v, --verbose
+              always output headers giving file names
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       If the first character of K (the number of bytes or lines) is a '+', print beginning with the Kth item from the start
+       of each file, otherwise, print the last K items in the file.  K may have a multiplier suffix: b 512, kB 1000, K 1024,
+       MB 1000*1000, M 1024*1024, GB 1000*1000*1000, G 1024*1024*1024, and so on for T, P, E, Z, Y.
+
+       With --follow (-f), tail defaults to following the file descriptor, which means  that  even  if  a  tail'ed  file  is
+       renamed,  tail  will continue to track its end.  This default behavior is not desirable when you really want to track
+       the actual name of the file, not the file descriptor (e.g., log rotation).  Use --follow=name  in  that  case.   That
+       causes tail to track the named file in a way that accommodates renaming, removal and creation.
+
+AUTHOR
+       Written by Paul Rubin, David MacKenzie, Ian Lance Taylor, and Jim Meyering.
+
+REPORTING BUGS
+       Report tail bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report tail translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       The  full  documentation  for  tail  is  maintained  as a Texinfo manual.  If the info and tail programs are properly
+       installed at your site, the command
+
+              info coreutils 'tail invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                  TAIL(1)
+# Learn Basic Shell Command
+- env, set
+- cat
+- grep, sed, awk
+- sort, head
+GAWK(1)                                               Utility Commands                                               GAWK(1)
+
+
+
+NAME
+       gawk - pattern scanning and processing language
+
+SYNOPSIS
+       gawk [ POSIX or GNU style options ] -f program-file [ -- ] file ...
+       gawk [ POSIX or GNU style options ] [ -- ] program-text file ...
+
+       pgawk [ POSIX or GNU style options ] -f program-file [ -- ] file ...
+       pgawk [ POSIX or GNU style options ] [ -- ] program-text file ...
+
+       dgawk [ POSIX or GNU style options ] -f program-file [ -- ] file ...
+
+DESCRIPTION
+       Gawk  is the GNU Project's implementation of the AWK programming language.  It conforms to the definition of the lan‐
+       guage in the POSIX 1003.1 Standard.  This version in turn is based on the description in  The  AWK  Programming  Lan‐
+       guage, by Aho, Kernighan, and Weinberger.  Gawk provides the additional features found in the current version of UNIX
+       awk and a number of GNU-specific extensions.
+
+       The command line consists of options to gawk itself, the AWK program text (if not  supplied  via  the  -f  or  --file
+       options), and values to be made available in the ARGC and ARGV pre-defined AWK variables.
+
+       Pgawk  is the profiling version of gawk.  It is identical in every way to gawk, except that programs run more slowly,
+       and it automatically produces an execution profile in the file awkprof.out when  done.   See  the  --profile  option,
+       below.
+
+       Dgawk  is an awk debugger. Instead of running the program directly, it loads the AWK source code and then prompts for
+       debugging commands.  Unlike gawk and pgawk, dgawk only processes AWK program source provided with the -f option.  The
+       debugger is documented in GAWK: Effective AWK Programming.
+
+OPTION FORMAT
+       Gawk  options  may  be  either  traditional POSIX-style one letter options, or GNU-style long options.  POSIX options
+       start with a single “-”, while long options start with “--”.  Long options are provided for  both  GNU-specific  fea‐
+       tures and for POSIX-mandated features.
+
+       Gawk-  specific options are typically used in long-option form.  Arguments to long options are either joined with the
+       option by an = sign, with no intervening spaces, or they may be provided in the next  command  line  argument.   Long
+       options may be abbreviated, as long as the abbreviation remains unique.
+
+       Additionally,  each long option has a corresponding short option, so that the option's functionality may be used from
+       within #!  executable scripts.
+
+OPTIONS
+       Gawk accepts the following options.  Standard options are listed first, followed  by  options  for  gawk  extensions,
+       listed alphabetically by short option.
+
+       -f program-file
+       --file program-file
+              Read the AWK program source from the file program-file, instead of from the first command line argument.  Mul‐
+              tiple -f (or --file) options may be used.
+
+       -F fs
+       --field-separator fs
+              Use fs for the input field separator (the value of the FS predefined variable).
+
+       -v var=val
+       --assign var=val
+              Assign the value val to the variable var, before execution of the program begins.  Such  variable  values  are
+              available to the BEGIN block of an AWK program.
+
+       -b
+       --characters-as-bytes
+              Treat all input data as single-byte characters. In other words, don't pay any attention to the locale informa‐
+              tion when attempting to process strings as multibyte characters.  The --posix option overrides this one.
+
+       -c
+       --traditional
+              Run in compatibility mode.  In compatibility mode, gawk behaves identically to UNIX awk; none of the  GNU-spe‐
+              cific extensions are recognized.  See GNU EXTENSIONS, below, for more information.
+
+       -C
+       --copyright
+              Print the short version of the GNU copyright information message on the standard output and exit successfully.
+
+       -d[file]
+       --dump-variables[=file]
+              Print  a  sorted list of global variables, their types and final values to file.  If no file is provided, gawk
+              uses a file named awkvars.out in the current directory.
+              Having a list of all the global variables is a good way to look for typographical  errors  in  your  programs.
+              You  would  also  use this option if you have a large program with a lot of functions, and you want to be sure
+              that your functions don't inadvertently use global variables that you meant to be local.  (This is a  particu‐
+              larly easy mistake to make with simple variable names like i, j, and so on.)
+
+       -e program-text
+       --source program-text
+              Use  program-text  as  AWK  program source code.  This option allows the easy intermixing of library functions
+              (used via the -f and --file options) with source code entered on the command line.  It is  intended  primarily
+              for medium to large AWK programs used in shell scripts.
+
+       -E file
+       --exec file
+              Similar  to -f, however, this is option is the last one processed.  This should be used with #!  scripts, par‐
+              ticularly for CGI applications, to avoid passing in options or source code (!) on the command line from a URL.
+              This option disables command-line variable assignments.
+
+       -g
+       --gen-pot
+              Scan  and  parse  the  AWK program, and generate a GNU .pot (Portable Object Template) format file on standard
+              output with entries for all localizable strings in the program.  The program itself is not executed.  See  the
+              GNU gettext distribution for more information on .pot files.
+
+       -h
+       --help Print  a  relatively short summary of the available options on the standard output.  (Per the GNU Coding Stan‐
+              dards, these options cause an immediate, successful exit.)
+
+       -L [value]
+       --lint[=value]
+              Provide warnings about constructs that are dubious or non-portable to  other  AWK  implementations.   With  an
+              optional  argument  of  fatal,  lint warnings become fatal errors.  This may be drastic, but its use will cer‐
+              tainly encourage the development of cleaner AWK programs.  With an optional argument of invalid, only warnings
+              about things that are actually invalid are issued. (This is not fully implemented yet.)
+
+       -n
+       --non-decimal-data
+              Recognize octal and hexadecimal values in input data.  Use this option with great caution!
+
+       -N
+       --use-lc-numeric
+              This  forces  gawk  to  use  the locale's decimal point character when parsing input data.  Although the POSIX
+              standard requires this behavior, and gawk does so when --posix is in effect, the default is to  follow  tradi‐
+              tional  behavior  and  use  a period as the decimal point, even in locales where the period is not the decimal
+              point character.  This option overrides the default behavior, without the full  draconian  strictness  of  the
+              --posix option.
+
+       -O
+       --optimize
+              Enable  optimizations  upon  the internal representation of the program.  Currently, this includes just simple
+              constant-folding. The gawk maintainer hopes to add additional optimizations over time.
+
+       -p[prof_file]
+       --profile[=prof_file]
+              Send profiling data to prof_file.  The default is awkprof.out.  When run with gawk,  the  profile  is  just  a
+              “pretty  printed”  version of the program.  When run with pgawk, the profile contains execution counts of each
+              statement in the program in the left margin and function call counts for each user-defined function.
+
+       -P
+       --posix
+              This turns on compatibility mode, with the following additional restrictions:
+
+              · \x escape sequences are not recognized.
+
+              · Only space and tab act as field separators when FS is set to a single space, newline does not.
+
+              · You cannot continue lines after ?  and :.
+
+              · The synonym func for the keyword function is not recognized.
+
+              · The operators ** and **= cannot be used in place of ^ and ^=.
+
+              · The fflush() function is not available.
+
+       -r
+       --re-interval
+              Enable the use of interval expressions in  regular  expression  matching  (see  Regular  Expressions,  below).
+              Interval  expressions were not traditionally available in the AWK language.  The POSIX standard added them, to
+              make awk and egrep consistent with each other.  They are enabled by default, but this option remains  for  use
+              with --traditional.
+
+       -R
+       --command file
+              Dgawk only.  Read stored debugger commands from file.
+
+       -S
+       --sandbox
+              Runs gawk in sandbox mode, disabling the system() function, input redirection with getline, output redirection
+              with print and printf, and loading dynamic extensions.  Command execution (through  pipelines)  is  also  dis‐
+              abled.  This effectively blocks a script from accessing local resources (except for the files specified on the
+              command line).
+
+       -t
+       --lint-old
+              Provide warnings about constructs that are not portable to the original version of Unix awk.
+
+       -V
+       --version
+              Print version information for this particular copy of gawk on the standard output.  This is useful mainly  for
+              knowing  if  the  current copy of gawk on your system is up to date with respect to whatever the Free Software
+              Foundation is distributing.  This is also useful when reporting bugs.  (Per the GNU  Coding  Standards,  these
+              options cause an immediate, successful exit.)
+
+       --     Signal the end of options. This is useful to allow further arguments to the AWK program itself to start with a
+              “-”.  This provides consistency with the argument parsing convention used by most other POSIX programs.
+
+       In compatibility mode, any other options are flagged as invalid, but are otherwise ignored.  In normal operation,  as
+       long  as  program text has been supplied, unknown options are passed on to the AWK program in the ARGV array for pro‐
+       cessing.  This is particularly useful for running AWK programs via the “#!” executable interpreter mechanism.
+
+AWK PROGRAM EXECUTION
+       An AWK program consists of a sequence of pattern-action statements and optional function definitions.
+
+              @include "filename" pattern   { action statements }
+              function name(parameter list) { statements }
+
+       Gawk first reads the program source from the program-file(s) if specified, from arguments to --source,  or  from  the
+       first non-option argument on the command line.  The -f and --source options may be used multiple times on the command
+       line.  Gawk reads the program text as if all the program-files and command line source texts  had  been  concatenated
+       together.   This  is  useful  for building libraries of AWK functions, without having to include them in each new AWK
+       program that uses them.  It also provides the ability to mix library functions with command line programs.
+
+       In addition, lines beginning with @include may be used to include  other  source  files  into  your  program,  making
+       library use even easier.
+
+       The  environment  variable AWKPATH specifies a search path to use when finding source files named with the -f option.
+       If this variable does not exist, the default path is  ".:/usr/local/share/awk".   (The  actual  directory  may  vary,
+       depending upon how gawk was built and installed.)  If a file name given to the -f option contains a “/” character, no
+       path search is performed.
+
+       Gawk executes AWK programs in the following order.  First, all variable assignments specified via the -v  option  are
+       performed.   Next,  gawk  compiles  the  program  into  an  internal form.  Then, gawk executes the code in the BEGIN
+       block(s) (if any), and then proceeds to read each file named in the ARGV array (up to ARGV[ARGC]).  If there  are  no
+       files named on the command line, gawk reads the standard input.
+
+       If a filename on the command line has the form var=val it is treated as a variable assignment.  The variable var will
+       be assigned the value val.  (This happens after any BEGIN block(s) have been run.)  Command line variable  assignment
+       is  most useful for dynamically assigning values to the variables AWK uses to control how input is broken into fields
+       and records.  It is also useful for controlling state if multiple passes are needed over a single data file.
+
+       If the value of a particular element of ARGV is empty (""), gawk skips over it.
+
+       For each input file, if a BEGINFILE rule exists, gawk executes the associated code before processing the contents  of
+       the file. Similarly, gawk executes the code associated with ENDFILE after processing the file.
+
+       For  each record in the input, gawk tests to see if it matches any pattern in the AWK program.  For each pattern that
+       the record matches, the associated action is executed.  The patterns are tested in the order they occur in  the  pro‐
+       gram.
+
+       Finally, after all the input is exhausted, gawk executes the code in the END block(s) (if any).
+
+   Command Line Directories
+       According  to  POSIX,  files named on the awk command line must be text files.  The behavior is ``undefined'' if they
+       are not.  Most versions of awk treat a directory on the command line as a fatal error.
+
+       Starting with version 4.0 of gawk, a directory on the command line produces a warning, but is otherwise skipped.   If
+       either  of  the  --posix  or --traditional options is given, then gawk reverts to treating directories on the command
+       line as a fatal error.
+
+VARIABLES, RECORDS AND FIELDS
+       AWK variables are dynamic; they come into existence when they are first used.  Their values are either floating-point
+       numbers or strings, or both, depending upon how they are used.  AWK also has one dimensional arrays; arrays with mul‐
+       tiple dimensions may be simulated.  Several pre-defined variables are set as a program runs; these are  described  as
+       needed and summarized below.
+
+   Records
+       Normally, records are separated by newline characters.  You can control how records are separated by assigning values
+       to the built-in variable RS.  If RS is any single character, that character separates records.  Otherwise,  RS  is  a
+       regular  expression.   Text in the input that matches this regular expression separates the record.  However, in com‐
+       patibility mode, only the first character of its string value is used for separating records.  If RS is  set  to  the
+       null  string,  then  records  are separated by blank lines.  When RS is set to the null string, the newline character
+       always acts as a field separator, in addition to whatever value FS may have.
+
+   Fields
+       As each input record is read, gawk splits the record into fields, using the value of the FS  variable  as  the  field
+       separator.  If FS is a single character, fields are separated by that character.  If FS is the null string, then each
+       individual character becomes a separate field.  Otherwise, FS is expected to be a full regular  expression.   In  the
+       special case that FS is a single space, fields are separated by runs of spaces and/or tabs and/or newlines.  (But see
+       the section POSIX COMPATIBILITY, below).  NOTE: The value of IGNORECASE (see below) also affects how fields are split
+       when FS is a regular expression, and how records are separated when RS is a regular expression.
+
+       If  the FIELDWIDTHS variable is set to a space separated list of numbers, each field is expected to have fixed width,
+       and gawk splits up the record using the specified widths.  The value of FS is ignored.  Assigning a new value  to  FS
+       or FPAT overrides the use of FIELDWIDTHS.
+
+       Similarly,  if  the FPAT variable is set to a string representing a regular expression, each field is made up of text
+       that matches that regular expression. In this case, the regular expression describes the fields  themselves,  instead
+       of the text that separates the fields.  Assigning a new value to FS or FIELDWIDTHS overrides the use of FPAT.
+
+       Each field in the input record may be referenced by its position, $1, $2, and so on.  $0 is the whole record.  Fields
+       need not be referenced by constants:
+
+              n = 5
+              print $n
+
+       prints the fifth field in the input record.
+
+       The variable NF is set to the total number of fields in the input record.
+
+       References to non-existent fields (i.e. fields after $NF) produce the null-string.  However, assigning to a non-exis‐
+       tent  field  (e.g.,  $(NF+2)  =  5) increases the value of NF, creates any intervening fields with the null string as
+       their value, and causes the value of $0 to be recomputed, with the fields being separated by the value of OFS.   Ref‐
+       erences  to  negative  numbered fields cause a fatal error.  Decrementing NF causes the values of fields past the new
+       value to be lost, and the value of $0 to be recomputed, with the fields being separated by the value of OFS.
+
+       Assigning a value to an existing field causes the whole record to be  rebuilt  when  $0  is  referenced.   Similarly,
+       assigning a value to $0 causes the record to be resplit, creating new values for the fields.
+
+   Built-in Variables
+       Gawk's built-in variables are:
+
+       ARGC        The number of command line arguments (does not include options to gawk, or the program source).
+
+       ARGIND      The index in ARGV of the current file being processed.
+
+       ARGV        Array of command line arguments.  The array is indexed from 0 to ARGC - 1.  Dynamically changing the con‐
+                   tents of ARGV can control the files used for data.
+
+       BINMODE     On non-POSIX systems, specifies use of “binary” mode for all file I/O.  Numeric values of  1,  2,  or  3,
+                   specify that input files, output files, or all files, respectively, should use binary I/O.  String values
+                   of "r", or "w" specify that input files, or output files, respectively, should use  binary  I/O.   String
+                   values  of  "rw" or "wr" specify that all files should use binary I/O.  Any other string value is treated
+                   as "rw", but generates a warning message.
+
+       CONVFMT     The conversion format for numbers, "%.6g", by default.
+
+       ENVIRON     An array containing the values of the current environment.  The array is indexed by the environment vari‐
+                   ables,  each  element  being  the  value  of that variable (e.g., ENVIRON["HOME"] might be /home/arnold).
+                   Changing this array does not affect the environment seen by programs which gawk spawns via redirection or
+                   the system() function.
+
+       ERRNO       If  a  system error occurs either doing a redirection for getline, during a read for getline, or during a
+                   close(), then ERRNO will contain a string describing the error.  The value is subject to  translation  in
+                   non-English locales.
+
+       FIELDWIDTHS A whitespace separated list of field widths.  When set, gawk parses the input into fields of fixed width,
+                   instead of using the value of the FS variable as the field separator.  See Fields, above.
+
+       FILENAME    The name of the current input file.  If no files are specified on the command line, the value of FILENAME
+                   is “-”.  However, FILENAME is undefined inside the BEGIN block (unless set by getline).
+
+       FNR         The input record number in the current input file.
+
+       FPAT        A  regular expression describing the contents of the fields in a record.  When set, gawk parses the input
+                   into fields, where the fields match the regular expression, instead of using the value of the FS variable
+                   as the field separator.  See Fields, above.
+
+       FS          The input field separator, a space by default.  See Fields, above.
+
+       IGNORECASE  Controls  the case-sensitivity of all regular expression and string operations.  If IGNORECASE has a non-
+                   zero value, then string comparisons and pattern matching in rules, field  splitting  with  FS  and  FPAT,
+                   record  separating with RS, regular expression matching with ~ and !~, and the gensub(), gsub(), index(),
+                   match(), patsplit(), split(), and sub() built-in functions all ignore case when doing regular  expression
+                   operations.   NOTE:  Array subscripting is not affected.  However, the asort() and asorti() functions are
+                   affected.
+                   Thus, if IGNORECASE is not equal to zero, /aB/ matches all of the strings "ab", "aB", "Ab", and "AB".  As
+                   with  all  AWK  variables,  the initial value of IGNORECASE is zero, so all regular expression and string
+                   operations are normally case-sensitive.
+
+       LINT        Provides dynamic control of the --lint option from within an AWK program.  When true,  gawk  prints  lint
+                   warnings.  When  false,  it does not.  When assigned the string value "fatal", lint warnings become fatal
+                   errors, exactly like --lint=fatal.  Any other true value just prints warnings.
+
+       NF          The number of fields in the current input record.
+
+       NR          The total number of input records seen so far.
+
+       OFMT        The output format for numbers, "%.6g", by default.
+
+       OFS         The output field separator, a space by default.
+
+       ORS         The output record separator, by default a newline.
+
+       PROCINFO    The elements of this array provide access to information about the running AWK program.  On some systems,
+                   there  may be elements in the array, "group1" through "groupn" for some n, which is the number of supple‐
+                   mentary groups that the process has.  Use the in operator to test for these elements.  The following ele‐
+                   ments are guaranteed to be available:
+
+                   PROCINFO["egid"]    the value of the getegid(2) system call.
+
+                   PROCINFO["strftime"]
+                                       The default time format string for strftime().
+
+                   PROCINFO["euid"]    the value of the geteuid(2) system call.
+
+                   PROCINFO["FS"]      "FS"  if field splitting with FS is in effect, "FPAT" if field splitting with FPAT is
+                                       in effect, or "FIELDWIDTHS" if field splitting with FIELDWIDTHS is in effect.
+
+                   PROCINFO["gid"]     the value of the getgid(2) system call.
+
+                   PROCINFO["pgrpid"]  the process group ID of the current process.
+
+                   PROCINFO["pid"]     the process ID of the current process.
+
+                   PROCINFO["ppid"]    the parent process ID of the current process.
+
+                   PROCINFO["uid"]     the value of the getuid(2) system call.
+
+                   PROCINFO["sorted_in"]
+                                       If this element exists in PROCINFO, then its value controls the order in which  array
+                                       elements   are   traversed  in  for  loops.   Supported  values  are  "@ind_str_asc",
+                                       "@ind_num_asc",  "@val_type_asc",  "@val_str_asc",  "@val_num_asc",  "@ind_str_desc",
+                                       "@ind_num_desc", "@val_type_desc", "@val_str_desc", "@val_num_desc", and "@unsorted".
+                                       The value can also be the name of any comparison function defined as follows:
+
+                          function cmp_func(i1, v1, i2, v2)
+
+                   where i1 and i2 are the indices, and v1 and v2 are the corresponding values of  the  two  elements  being
+                   compared.   It  should  return a number less than, equal to, or greater than 0, depending on how the ele‐
+                   ments of the array are to be ordered.
+
+                   PROCINFO["version"]
+                          the version of gawk.
+
+       RS          The input record separator, by default a newline.
+
+       RT          The record terminator.  Gawk sets RT to the input text that matched the character or  regular  expression
+                   specified by RS.
+
+       RSTART      The index of the first character matched by match(); 0 if no match.  (This implies that character indices
+                   start at one.)
+
+       RLENGTH     The length of the string matched by match(); -1 if no match.
+
+       SUBSEP      The character used to separate multiple subscripts in array elements, by default "\034".
+
+       TEXTDOMAIN  The text domain of the AWK program; used to find the localized translations for the program's strings.
+
+   Arrays
+       Arrays are subscripted with an expression between square brackets ([ and ]).  If the expression is an expression list
+       (expr,  expr ...)  then the array subscript is a string consisting of the concatenation of the (string) value of each
+       expression, separated by the value of the SUBSEP variable.  This facility is used to  simulate  multiply  dimensioned
+       arrays.  For example:
+
+              i = "A"; j = "B"; k = "C"
+              x[i, j, k] = "hello, world\n"
+
+       assigns  the string "hello, world\n" to the element of the array x which is indexed by the string "A\034B\034C".  All
+       arrays in AWK are associative, i.e. indexed by string values.
+
+       The special operator in may be used to test if an array has an index consisting of a particular value:
+
+              if (val in array)
+                   print array[val]
+
+       If the array has multiple subscripts, use (i, j) in array.
+
+       The in construct may also be used in a for loop to iterate over all the elements of an array.
+
+       An element may be deleted from an array using the delete statement.  The delete statement may also be used to  delete
+       the entire contents of an array, just by specifying the array name without a subscript.
+
+       gawk  supports  true multidimensional arrays. It does not require that such arrays be ``rectangular'' as in C or C++.
+       For example:
+              a[1] = 5
+              a[2][1] = 6
+              a[2][2] = 7
+
+   Variable Typing And Conversion
+       Variables and fields may be (floating point) numbers, or strings, or both.  How the value of  a  variable  is  inter‐
+       preted  depends  upon  its  context.   If  used in a numeric expression, it will be treated as a number; if used as a
+       string it will be treated as a string.
+
+       To force a variable to be treated as a number, add 0 to it; to force it to be treated as  a  string,  concatenate  it
+       with the null string.
+
+       When  a  string must be converted to a number, the conversion is accomplished using strtod(3).  A number is converted
+       to a string by using the value of CONVFMT as a format string for sprintf(3), with the numeric value of  the  variable
+       as the argument.  However, even though all numbers in AWK are floating-point, integral values are always converted as
+       integers.  Thus, given
+
+              CONVFMT = "%2.2f"
+              a = 12
+              b = a ""
+
+       the variable b has a string value of "12" and not "12.00".
+
+       NOTE: When operating in POSIX mode (such as with the --posix command line option), beware that  locale  settings  may
+       interfere with the way decimal numbers are treated: the decimal separator of the numbers you are feeding to gawk must
+       conform to what your locale would expect, be it a comma (,) or a period (.).
+
+       Gawk performs comparisons as follows: If two variables are numeric, they are compared numerically.  If one  value  is
+       numeric  and  the  other  has  a string value that is a “numeric string,” then comparisons are also done numerically.
+       Otherwise, the numeric value is converted to a string and a string comparison is performed.   Two  strings  are  com‐
+       pared, of course, as strings.
+
+       Note  that  string constants, such as "57", are not numeric strings, they are string constants.  The idea of “numeric
+       string” only applies to fields, getline input, FILENAME, ARGV elements, ENVIRON elements and the elements of an array
+       created  by  split() or patsplit() that are numeric strings.  The basic idea is that user input, and only user input,
+       that looks numeric, should be treated that way.
+
+       Uninitialized variables have the numeric value 0 and the string value "" (the null, or empty, string).
+
+   Octal and Hexadecimal Constants
+       You may use C-style octal and hexadecimal constants in your AWK program source code.  For example,  the  octal  value
+       011 is equal to decimal 9, and the hexadecimal value 0x11 is equal to decimal 17.
+
+   String Constants
+       String  constants  in AWK are sequences of characters enclosed between double quotes (like "value").  Within strings,
+       certain escape sequences are recognized, as in C.  These are:
+
+       \\   A literal backslash.
+
+       \a   The “alert” character; usually the ASCII BEL character.
+
+       \b   backspace.
+
+       \f   form-feed.
+
+       \n   newline.
+
+       \r   carriage return.
+
+       \t   horizontal tab.
+
+       \v   vertical tab.
+
+       \xhex digits
+            The character represented by the string of hexadecimal digits following the \x.  As in  ANSI  C,  all  following
+            hexadecimal  digits  are  considered  part of the escape sequence.  (This feature should tell us something about
+            language design by committee.)  E.g., "\x1B" is the ASCII ESC (escape) character.
+
+       \ddd The character represented by the 1-, 2-, or 3-digit sequence of octal digits.  E.g., "\033"  is  the  ASCII  ESC
+            (escape) character.
+
+       \c   The literal character c.
+
+       The  escape  sequences may also be used inside constant regular expressions (e.g., /[ \t\f\n\r\v]/ matches whitespace
+       characters).
+
+       In compatibility mode, the characters represented by octal and hexadecimal escape  sequences  are  treated  literally
+       when used in regular expression constants.  Thus, /a\52b/ is equivalent to /a\*b/.
+
+PATTERNS AND ACTIONS
+       AWK  is a line-oriented language.  The pattern comes first, and then the action.  Action statements are enclosed in {
+       and }.  Either the pattern may be missing, or the action may be missing, but, of course, not both.  If the pattern is
+       missing, the action is executed for every single record of input.  A missing action is equivalent to
+
+              { print }
+
+       which prints the entire record.
+
+       Comments  begin  with  the  # character, and continue until the end of the line.  Blank lines may be used to separate
+       statements.  Normally, a statement ends with a newline, however, this is not the case for lines ending in a comma, {,
+       ?,  :,  &&,  or  ||.   Lines ending in do or else also have their statements automatically continued on the following
+       line.  In other cases, a line can be continued by ending it with a “\”, in which case the newline is ignored.
+
+       Multiple statements may be put on one line by separating them with a “;”.  This applies to both the statements within
+       the action part of a pattern-action pair (the usual case), and to the pattern-action statements themselves.
+
+   Patterns
+       AWK patterns may be one of the following:
+
+              BEGIN
+              END
+              BEGINFILE
+              ENDFILE
+              /regular expression/
+              relational expression
+              pattern && pattern
+              pattern || pattern
+              pattern ? pattern : pattern
+              (pattern)
+              ! pattern
+              pattern1, pattern2
+
+       BEGIN  and  END  are  two  special kinds of patterns which are not tested against the input.  The action parts of all
+       BEGIN patterns are merged as if all the statements had been written in a  single  BEGIN  block.   They  are  executed
+       before  any  of  the  input  is  read.   Similarly, all the END blocks are merged, and executed when all the input is
+       exhausted (or when an exit statement is executed).  BEGIN and END patterns cannot be combined with other patterns  in
+       pattern expressions.  BEGIN and END patterns cannot have missing action parts.
+
+       BEGINFILE  and  ENDFILE  are additional special patterns whose bodies are executed before reading the first record of
+       each command line input file and after reading the last record of each file.  Inside the BEGINFILE rule, the value of
+       ERRNO  will  be the empty string if the file could be opened successfully.  Otherwise, there is some problem with the
+       file and the code should use nextfile to skip it. If that is not done, gawk produces its usual fatal error for  files
+       that cannot be opened.
+
+       For  /regular expression/ patterns, the associated statement is executed for each input record that matches the regu‐
+       lar expression.  Regular expressions are the same as those in egrep(1), and are summarized below.
+
+       A relational expression may use any of the operators defined below in the section on actions.  These  generally  test
+       whether certain fields match certain regular expressions.
+
+       The &&, ||, and !  operators are logical AND, logical OR, and logical NOT, respectively, as in C.  They do short-cir‐
+       cuit evaluation, also as in C, and are used for combining more primitive pattern expressions.  As in most  languages,
+       parentheses may be used to change the order of evaluation.
+
+       The  ?:  operator  is like the same operator in C.  If the first pattern is true then the pattern used for testing is
+       the second pattern, otherwise it is the third.  Only one of the second and third patterns is evaluated.
+
+       The pattern1, pattern2 form of an expression is called a range pattern.  It matches all input records starting with a
+       record  that  matches  pattern1, and continuing until a record that matches pattern2, inclusive.  It does not combine
+       with any other sort of pattern expression.
+
+   Regular Expressions
+       Regular expressions are the extended kind found in egrep.  They are composed of characters as follows:
+
+       c          matches the non-metacharacter c.
+
+       \c         matches the literal character c.
+
+       .          matches any character including newline.
+
+       ^          matches the beginning of a string.
+
+       $          matches the end of a string.
+
+       [abc...]   character list, matches any of the characters abc....
+
+       [^abc...]  negated character list, matches any character except abc....
+
+       r1|r2      alternation: matches either r1 or r2.
+
+       r1r2       concatenation: matches r1, and then r2.
+
+       r+         matches one or more r's.
+
+       r*         matches zero or more r's.
+
+       r?         matches zero or one r's.
+
+       (r)        grouping: matches r.
+
+       r{n}
+       r{n,}
+       r{n,m}     One or two numbers inside braces denote an interval expression.  If there is one number in the braces, the
+                  preceding  regular  expression r is repeated n times.  If there are two numbers separated by a comma, r is
+                  repeated n to m times.  If there is one number followed by a comma, then r is repeated at least n times.
+
+       \y         matches the empty string at either the beginning or the end of a word.
+
+       \B         matches the empty string within a word.
+
+       \<         matches the empty string at the beginning of a word.
+
+       \>         matches the empty string at the end of a word.
+
+       \s         matches any whitespace character.
+
+       \S         matches any nonwhitespace character.
+
+       \w         matches any word-constituent character (letter, digit, or underscore).
+
+       \W         matches any character that is not word-constituent.
+
+       \`         matches the empty string at the beginning of a buffer (string).
+
+       \'         matches the empty string at the end of a buffer.
+
+       The escape sequences that are valid in string constants (see below) are also valid in regular expressions.
+
+       Character classes are a feature introduced in the POSIX standard.  A  character  class  is  a  special  notation  for
+       describing  lists  of  characters that have a specific attribute, but where the actual characters themselves can vary
+       from country to country and/or from character set to character set.  For example, the notion of what is an alphabetic
+       character differs in the USA and in France.
+
+       A  character  class is only valid in a regular expression inside the brackets of a character list.  Character classes
+       consist of [:, a keyword denoting the class, and :].  The character classes defined by the POSIX standard are:
+
+       [:alnum:]  Alphanumeric characters.
+
+       [:alpha:]  Alphabetic characters.
+
+       [:blank:]  Space or tab characters.
+
+       [:cntrl:]  Control characters.
+
+       [:digit:]  Numeric characters.
+
+       [:graph:]  Characters that are both printable and visible.  (A space is printable, but not visible,  while  an  a  is
+                  both.)
+
+       [:lower:]  Lowercase alphabetic characters.
+
+       [:print:]  Printable characters (characters that are not control characters.)
+
+       [:punct:]  Punctuation characters (characters that are not letter, digits, control characters, or space characters).
+
+       [:space:]  Space characters (such as space, tab, and formfeed, to name a few).
+
+       [:upper:]  Uppercase alphabetic characters.
+
+       [:xdigit:] Characters that are hexadecimal digits.
+
+       For  example, before the POSIX standard, to match alphanumeric characters, you would have had to write /[A-Za-z0-9]/.
+       If your character set had other alphabetic characters in it, this would not match them, and  if  your  character  set
+       collated differently from ASCII, this might not even match the ASCII alphanumeric characters.  With the POSIX charac‐
+       ter classes, you can write /[[:alnum:]]/, and this matches the alphabetic and numeric characters  in  your  character
+       set, no matter what it is.
+
+       Two  additional  special sequences can appear in character lists.  These apply to non-ASCII character sets, which can
+       have single symbols (called collating elements) that are represented with more than one character, as well as several
+       characters  that  are  equivalent  for  collating,  or sorting, purposes.  (E.g., in French, a plain “e” and a grave-
+       accented “`” are equivalent.)
+
+       Collating Symbols
+              A collating symbol is a multi-character collating element enclosed in [.  and .].  For example,  if  ch  is  a
+              collating element, then [[.ch.]]  is a regular expression that matches this collating element, while [ch] is a
+              regular expression that matches either c or h.
+
+       Equivalence Classes
+              An equivalence class is a locale-specific name for a list of characters that  are  equivalent.   The  name  is
+              enclosed  in [= and =].  For example, the name e might be used to represent all of “e,” “´,” and “`.”  In this
+              case, [[=e=]] is a regular expression that matches any of e, ´, or `.
+
+       These features are very valuable in non-English speaking locales.  The library functions that gawk uses  for  regular
+       expression  matching  currently  only  recognize  POSIX character classes; they do not recognize collating symbols or
+       equivalence classes.
+
+       The \y, \B, \<, \>, \s, \S, \w, \W, \`, and \' operators are specific to gawk; they are extensions based  on  facili‐
+       ties in the GNU regular expression libraries.
+
+       The various command line options control how gawk interprets characters in regular expressions.
+
+       No options
+              In  the default case, gawk provide all the facilities of POSIX regular expressions and the GNU regular expres‐
+              sion operators described above.
+
+       --posix
+              Only POSIX regular expressions are supported, the GNU operators are not special.  (E.g., \w matches a  literal
+              w).
+
+       --traditional
+              Traditional Unix awk regular expressions are matched.  The GNU operators are not special, and interval expres‐
+              sions are not available.  Characters described by octal and hexadecimal escape sequences  are  treated  liter‐
+              ally, even if they represent regular expression metacharacters.
+
+       --re-interval
+              Allow interval expressions in regular expressions, even if --traditional has been provided.
+
+   Actions
+       Action  statements  are enclosed in braces, { and }.  Action statements consist of the usual assignment, conditional,
+       and looping statements found in most languages.  The  operators,  control  statements,  and  input/output  statements
+       available are patterned after those in C.
+
+   Operators
+       The operators in AWK, in order of decreasing precedence, are
+
+       (...)       Grouping
+
+       $           Field reference.
+
+       ++ --       Increment and decrement, both prefix and postfix.
+
+       ^           Exponentiation (** may also be used, and **= for the assignment operator).
+
+       + - !       Unary plus, unary minus, and logical negation.
+
+       * / %       Multiplication, division, and modulus.
+
+       + -         Addition and subtraction.
+
+       space       String concatenation.
+
+       |   |&      Piped I/O for getline, print, and printf.
+
+       < > <= >= != ==
+                   The regular relational operators.
+
+       ~ !~        Regular  expression  match, negated match.  NOTE: Do not use a constant regular expression (/foo/) on the
+                   left-hand side of a ~ or !~.  Only use one on the right-hand side.  The expression /foo/ ~  exp  has  the
+                   same meaning as (($0 ~ /foo/) ~ exp).  This is usually not what was intended.
+
+       in          Array membership.
+
+       &&          Logical AND.
+
+       ||          Logical OR.
+
+       ?:          The  C  conditional expression.  This has the form expr1 ? expr2 : expr3.  If expr1 is true, the value of
+                   the expression is expr2, otherwise it is expr3.  Only one of expr2 and expr3 is evaluated.
+
+       = += -= *= /= %= ^=
+                   Assignment.  Both absolute assignment (var = value) and operator-assignment (the other  forms)  are  sup‐
+                   ported.
+
+   Control Statements
+       The control statements are as follows:
+
+              if (condition) statement [ else statement ]
+              while (condition) statement
+              do statement while (condition)
+              for (expr1; expr2; expr3) statement
+              for (var in array) statement
+              break
+              continue
+              delete array[index]
+              delete array
+              exit [ expression ]
+              { statements }
+              switch (expression) {
+              case value|regex : statement
+              ...
+              [ default: statement ]
+              }
+
+   I/O Statements
+       The input/output statements are as follows:
+
+       close(file [, how])   Close file, pipe or co-process.  The optional how should only be used when closing one end of a
+                             two-way pipe to a co-process.  It must be a string value, either "to" or "from".
+
+       getline               Set $0 from next input record; set NF, NR, FNR.
+
+       getline <file         Set $0 from next record of file; set NF.
+
+       getline var           Set var from next input record; set NR, FNR.
+
+       getline var <file     Set var from next record of file.
+
+       command | getline [var]
+                             Run command piping the output either into $0 or var, as above.
+
+       command |& getline [var]
+                             Run command as a co-process piping the output either into $0 or var,  as  above.   Co-processes
+                             are  a  gawk extension.  (command can also be a socket.  See the subsection Special File Names,
+                             below.)
+
+       next                  Stop processing the current input record.  The next input record is read and processing  starts
+                             over  with  the first pattern in the AWK program.  If the end of the input data is reached, the
+                             END block(s), if any, are executed.
+
+       nextfile              Stop processing the current input file.  The next input record read comes from the  next  input
+                             file.   FILENAME and ARGIND are updated, FNR is reset to 1, and processing starts over with the
+                             first pattern in the AWK program. If the end of the input data is reached, the END block(s), if
+                             any, are executed.
+
+       print                 Print the current record.  The output record is terminated with the value of the ORS variable.
+
+       print expr-list       Print  expressions.  Each expression is separated by the value of the OFS variable.  The output
+                             record is terminated with the value of the ORS variable.
+
+       print expr-list >file Print expressions on file.  Each expression is separated by the value of the OFS variable.  The
+                             output record is terminated with the value of the ORS variable.
+
+       printf fmt, expr-list Format and print.  See The printf Statement, below.
+
+       printf fmt, expr-list >file
+                             Format and print on file.
+
+       system(cmd-line)      Execute  the  command cmd-line, and return the exit status.  (This may not be available on non-
+                             POSIX systems.)
+
+       fflush([file])        Flush any buffers associated with the open output file or pipe file.  If file is missing,  then
+                             flush standard output.  If file is the null string, then flush all open output files and pipes.
+
+       Additional output redirections are allowed for print and printf.
+
+       print ... >> file
+              Appends output to the file.
+
+       print ... | command
+              Writes on a pipe.
+
+       print ... |& command
+              Sends data to a co-process or socket.  (See also the subsection Special File Names, below.)
+
+       The  getline  command  returns  1  on success, 0 on end of file, and -1 on an error.  Upon an error, ERRNO contains a
+       string describing the problem.
+
+       NOTE: Failure in opening a two-way socket will result in a non-fatal error being returned to the calling function. If
+       using a pipe, co-process, or socket to getline, or from print or printf within a loop, you must use close() to create
+       new instances of the command or socket.  AWK does not automatically close pipes, sockets, or co-processes  when  they
+       return EOF.
+
+   The printf Statement
+       The  AWK versions of the printf statement and sprintf() function (see below) accept the following conversion specifi‐
+       cation formats:
+
+       %c      A single character.  If the argument used for %c is numeric, it is treated as a character and printed.   Oth‐
+               erwise, the argument is assumed to be a string, and the only first character of that string is printed.
+
+       %d, %i  A decimal number (the integer part).
+
+       %e, %E  A floating point number of the form [-]d.dddddde[+-]dd.  The %E format uses E instead of e.
+
+       %f, %F  A  floating  point  number  of the form [-]ddd.dddddd.  If the system library supports it, %F is available as
+               well. This is like %f, but uses capital letters for special “not a number” and “infinity” values.  If  %F  is
+               not available, gawk uses %f.
+
+       %g, %G  Use  %e  or %f conversion, whichever is shorter, with nonsignificant zeros suppressed.  The %G format uses %E
+               instead of %e.
+
+       %o      An unsigned octal number (also an integer).
+
+       %u      An unsigned decimal number (again, an integer).
+
+       %s      A character string.
+
+       %x, %X  An unsigned hexadecimal number (an integer).  The %X format uses ABCDEF instead of abcdef.
+
+       %%      A single % character; no argument is converted.
+
+       Optional, additional parameters may lie between the % and the control letter:
+
+       count$ Use the count'th argument at this point in the formatting.  This is  called  a  positional  specifier  and  is
+              intended  primarily  for use in translated versions of format strings, not in the original text of an AWK pro‐
+              gram.  It is a gawk extension.
+
+       -      The expression should be left-justified within its field.
+
+       space  For numeric conversions, prefix positive values with a space, and negative values with a minus sign.
+
+       +      The plus sign, used before the width modifier (see below), says to always supply a sign  for  numeric  conver‐
+              sions, even if the data to be formatted is positive.  The + overrides the space modifier.
+
+       #      Use an “alternate form” for certain control letters.  For %o, supply a leading zero.  For %x, and %X, supply a
+              leading 0x or 0X for a nonzero result.  For %e, %E, %f and %F, the result always  contains  a  decimal  point.
+              For %g, and %G, trailing zeros are not removed from the result.
+
+       0      A leading 0 (zero) acts as a flag, that indicates output should be padded with zeroes instead of spaces.  This
+              applies only to the numeric output formats.  This flag only has an effect when the field width is  wider  than
+              the value to be printed.
+
+       width  The  field  should be padded to this width.  The field is normally padded with spaces.  If the 0 flag has been
+              used, it is padded with zeroes.
+
+       .prec  A number that specifies the precision to use when printing.  For the %e, %E, %f and %F, formats,  this  speci‐
+              fies  the number of digits you want printed to the right of the decimal point.  For the %g, and %G formats, it
+              specifies the maximum number of significant digits.  For the %d, %i, %o, %u, %x, and %X formats, it  specifies
+              the  minimum number of digits to print.  For %s, it specifies the maximum number of characters from the string
+              that should be printed.
+
+       The dynamic width and prec capabilities of the ANSI C printf() routines are supported.  A * in place  of  either  the
+       width or prec specifications causes their values to be taken from the argument list to printf or sprintf().  To use a
+       positional specifier with a dynamic width or precision, supply the count$ after the *  in  the  format  string.   For
+       example, "%3$*2$.*1$s".
+
+   Special File Names
+       When  doing I/O redirection from either print or printf into a file, or via getline from a file, gawk recognizes cer‐
+       tain special filenames internally.  These filenames allow access to open file descriptors inherited from gawk's  par‐
+       ent  process  (usually  the  shell).   These file names may also be used on the command line to name data files.  The
+       filenames are:
+
+       /dev/stdin  The standard input.
+
+       /dev/stdout The standard output.
+
+       /dev/stderr The standard error output.
+
+       /dev/fd/n   The file associated with the open file descriptor n.
+
+       These are particularly useful for error messages.  For example:
+
+              print "You blew it!" > "/dev/stderr"
+
+       whereas you would otherwise have to use
+
+              print "You blew it!" | "cat 1>&2"
+
+       The following special filenames may be used with the |& co-process operator for creating TCP/IP network connections:
+
+       /inet/tcp/lport/rhost/rport
+       /inet4/tcp/lport/rhost/rport
+       /inet6/tcp/lport/rhost/rport
+              Files for a TCP/IP connection on local port lport to remote host rhost on remote port rport.  Use a port of  0
+              to  have  the system pick a port.  Use /inet4 to force an IPv4 connection, and /inet6 to force an IPv6 connec‐
+              tion.  Plain /inet uses the system default (most likely IPv4).
+
+       /inet/udp/lport/rhost/rport
+       /inet4/udp/lport/rhost/rport
+       /inet6/udp/lport/rhost/rport
+              Similar, but use UDP/IP instead of TCP/IP.
+
+   Numeric Functions
+       AWK has the following built-in arithmetic functions:
+
+       atan2(y, x)   Return the arctangent of y/x in radians.
+
+       cos(expr)     Return the cosine of expr, which is in radians.
+
+       exp(expr)     The exponential function.
+
+       int(expr)     Truncate to integer.
+
+       log(expr)     The natural logarithm function.
+
+       rand()        Return a random number N, between 0 and 1, such that 0 ≤ N < 1.
+
+       sin(expr)     Return the sine of expr, which is in radians.
+
+       sqrt(expr)    The square root function.
+
+       srand([expr]) Use expr as the new seed for the random number generator.  If no expr is provided, use the time of day.
+                     The return value is the previous seed for the random number generator.
+
+   String Functions
+       Gawk has the following built-in string functions:
+
+       asort(s [, d [, how] ]) Return  the  number  of  elements in the source array s.  Sort the contents of s using gawk's
+                               normal rules for comparing values, and replace the  indices  of  the  sorted  values  s  with
+                               sequential  integers  starting with 1. If the optional destination array d is specified, then
+                               first duplicate s into d, and then sort  d,  leaving  the  indices  of  the  source  array  s
+                               unchanged.  The  optional  string  how controls the direction and the comparison mode.  Valid
+                               values for how are any of the strings valid for PROCINFO["sorted_in"].  It can  also  be  the
+                               name of a user-defined comparison function as described in PROCINFO["sorted_in"].
+
+       asorti(s [, d [, how] ])
+                               Return  the  number  of  elements in the source array s.  The behavior is the same as that of
+                               asort(), except that the array indices are used for sorting,  not  the  array  values.   When
+                               done,  the  array  is  indexed numerically, and the values are those of the original indices.
+                               The original values are lost; thus provide a second array if you wish to preserve the  origi‐
+                               nal.  The purpose of the optional string how is the same as described in asort() above.
+
+       gensub(r, s, h [, t])   Search  the target string t for matches of the regular expression r.  If h is a string begin‐
+                               ning with g or G, then replace all matches of r with s.  Otherwise, h is a number  indicating
+                               which  match  of r to replace.  If t is not supplied, use $0 instead.  Within the replacement
+                               text s, the sequence \n, where n is a digit from 1 to 9, may be used  to  indicate  just  the
+                               text  that  matched  the  n'th  parenthesized  subexpression.  The sequence \0 represents the
+                               entire matched text, as does the character &.  Unlike sub() and gsub(), the  modified  string
+                               is returned as the result of the function, and the original target string is not changed.
+
+       gsub(r, s [, t])        For  each  substring matching the regular expression r in the string t, substitute the string
+                               s, and return the number of substitutions.  If t is not  supplied,  use  $0.   An  &  in  the
+                               replacement  text  is replaced with the text that was actually matched.  Use \& to get a lit‐
+                               eral &.  (This must be typed as "\\&"; see GAWK: Effective AWK Programming for a fuller  dis‐
+                               cussion  of  the  rules for &'s and backslashes in the replacement text of sub(), gsub(), and
+                               gensub().)
+
+       index(s, t)             Return the index of the string t in the string s, or 0 if t is not  present.   (This  implies
+                               that character indices start at one.)
+
+       length([s])             Return  the length of the string s, or the length of $0 if s is not supplied.  As a non-stan‐
+                               dard extension, with an array argument, length() returns the number of elements in the array.
+
+       match(s, r [, a])       Return the position in s where the regular expression r occurs, or 0 if r is not present, and
+                               set  the values of RSTART and RLENGTH.  Note that the argument order is the same as for the ~
+                               operator: str ~ re.  If array a is provided, a is cleared and then elements 1 through  n  are
+                               filled  with the portions of s that match the corresponding parenthesized subexpression in r.
+                               The 0'th element of a contains the portion of s matched by the entire regular  expression  r.
+                               Subscripts  a[n,  "start"],  and  a[n, "length"] provide the starting index in the string and
+                               length respectively, of each matching substring.
+
+       patsplit(s, a [, r [, seps] ])
+                               Split the string s into the array a and the separators array seps on the  regular  expression
+                               r,  and  return  the  number of fields.  Element values are the portions of s that matched r.
+                               The value of seps[i] is the separator that appeared in front of a[i+1].   If  r  is  omitted,
+                               FPAT  is  used  instead.  The arrays a and seps are cleared first.  Splitting behaves identi‐
+                               cally to field splitting with FPAT, described above.
+
+       split(s, a [, r [, seps] ])
+                               Split the string s into the array a and the separators array seps on the  regular  expression
+                               r,  and  return the number of fields.  If r is omitted, FS is used instead.  The arrays a and
+                               seps are cleared first.  seps[i] is the field separator matched by r between a[i] and a[i+1].
+                               If  r  is  a  single  space,  then  leading whitespace in s goes into the extra array element
+                               seps[0] and trailing whitespace goes into the extra array element seps[n],  where  n  is  the
+                               return  value  of  split(s,  a,  r, seps).  Splitting behaves identically to field splitting,
+                               described above.
+
+       sprintf(fmt, expr-list) Prints expr-list according to fmt, and returns the resulting string.
+
+       strtonum(str)           Examine str, and return its numeric value.  If  str  begins  with  a  leading  0,  strtonum()
+                               assumes  that  str  is  an  octal  number.  If str begins with a leading 0x or 0X, strtonum()
+                               assumes that str is a hexadecimal number.  Otherwise, decimal is assumed.
+
+       sub(r, s [, t])         Just like gsub(), but replace only the first matching substring.
+
+       substr(s, i [, n])      Return the at most n-character substring of s starting at i.  If n is omitted, use  the  rest
+                               of s.
+
+       tolower(str)            Return a copy of the string str, with all the uppercase characters in str translated to their
+                               corresponding lowercase counterparts.  Non-alphabetic characters are left unchanged.
+
+       toupper(str)            Return a copy of the string str, with all the lowercase characters in str translated to their
+                               corresponding uppercase counterparts.  Non-alphabetic characters are left unchanged.
+
+       Gawk  is  multibyte  aware.  This means that index(), length(), substr() and match() all work in terms of characters,
+       not bytes.
+
+   Time Functions
+       Since one of the primary uses of AWK programs is processing log files that contain time stamp information, gawk  pro‐
+       vides the following functions for obtaining time stamps and formatting them.
+
+       mktime(datespec)
+                 Turn  datespec  into  a  time  stamp of the same form as returned by systime(), and return the result.  The
+                 datespec is a string of the form YYYY MM DD HH MM SS[ DST].  The contents of the string are  six  or  seven
+                 numbers  representing  respectively the full year including century, the month from 1 to 12, the day of the
+                 month from 1 to 31, the hour of the day from 0 to 23, the minute from 0 to 59, the second from 0 to 60, and
+                 an optional daylight saving flag.  The values of these numbers need not be within the ranges specified; for
+                 example, an hour of -1 means 1 hour before midnight.  The origin-zero Gregorian calendar is  assumed,  with
+                 year 0 preceding year 1 and year -1 preceding year 0.  The time is assumed to be in the local timezone.  If
+                 the daylight saving flag is positive, the time is assumed to be daylight saving time; if zero, the time  is
+                 assumed to be standard time; and if negative (the default), mktime() attempts to determine whether daylight
+                 saving time is in effect for the specified time.  If datespec does not contain enough elements  or  if  the
+                 resulting time is out of range, mktime() returns -1.
+
+       strftime([format [, timestamp[, utc-flag]]])
+                 Format  timestamp according to the specification in format.  If utc-flag is present and is non-zero or non-
+                 null, the result is in UTC, otherwise the result is in local time.  The timestamp should  be  of  the  same
+                 form  as  returned  by  systime().  If timestamp is missing, the current time of day is used.  If format is
+                 missing, a default format equivalent to the output of date(1) is used.  The default format is available  in
+                 PROCINFO["strftime"].   See  the specification for the strftime() function in ANSI C for the format conver‐
+                 sions that are guaranteed to be available.
+
+       systime() Return the current time of day as the number of seconds since the Epoch (1970-01-01 00:00:00 UTC  on  POSIX
+                 systems).
+
+   Bit Manipulations Functions
+       Gawk supplies the following bit manipulation functions.  They work by converting double-precision floating point val‐
+       ues to uintmax_t integers, doing the operation, and then converting the result back to floating point.  The functions
+       are:
+
+       and(v1, v2)         Return the bitwise AND of the values provided by v1 and v2.
+
+       compl(val)          Return the bitwise complement of val.
+
+       lshift(val, count)  Return the value of val, shifted left by count bits.
+
+       or(v1, v2)          Return the bitwise OR of the values provided by v1 and v2.
+
+       rshift(val, count)  Return the value of val, shifted right by count bits.
+
+       xor(v1, v2)         Return the bitwise XOR of the values provided by v1 and v2.
+
+   Type Function
+       The following function is for use with multidimensional arrays.
+
+       isarray(x)
+              Return true if x is an array, false otherwise.
+
+   Internationalization Functions
+       The  following  functions  may  be  used  from within your AWK program for translating strings at run-time.  For full
+       details, see GAWK: Effective AWK Programming.
+
+       bindtextdomain(directory [, domain])
+              Specify the directory where gawk looks for the .mo files, in case they will not or cannot  be  placed  in  the
+              ``standard'' locations (e.g., during testing).  It returns the directory where domain is ``bound.''
+              The  default  domain  is the value of TEXTDOMAIN.  If directory is the null string (""), then bindtextdomain()
+              returns the current binding for the given domain.
+
+       dcgettext(string [, domain [, category]])
+              Return the translation of string in text domain domain for locale category category.  The  default  value  for
+              domain is the current value of TEXTDOMAIN.  The default value for category is "LC_MESSAGES".
+              If  you supply a value for category, it must be a string equal to one of the known locale categories described
+              in GAWK: Effective AWK Programming.  You must also supply a text domain.  Use TEXTDOMAIN if you  want  to  use
+              the current domain.
+
+       dcngettext(string1 , string2 , number [, domain [, category]])
+              Return  the  plural  form  used for number of the translation of string1 and string2 in text domain domain for
+              locale category category.  The default value for domain is the current value of TEXTDOMAIN.  The default value
+              for category is "LC_MESSAGES".
+              If  you supply a value for category, it must be a string equal to one of the known locale categories described
+              in GAWK: Effective AWK Programming.  You must also supply a text domain.  Use TEXTDOMAIN if you  want  to  use
+              the current domain.
+
+USER-DEFINED FUNCTIONS
+       Functions in AWK are defined as follows:
+
+              function name(parameter list) { statements }
+
+       Functions are executed when they are called from within expressions in either patterns or actions.  Actual parameters
+       supplied in the function call are used to instantiate the formal parameters declared in  the  function.   Arrays  are
+       passed by reference, other variables are passed by value.
+
+       Since  functions  were  not  originally part of the AWK language, the provision for local variables is rather clumsy:
+       They are declared as extra parameters in the parameter list.  The convention is to separate local variables from real
+       parameters by extra spaces in the parameter list.  For example:
+
+              function  f(p, q,     a, b)   # a and b are local
+              {
+                   ...
+              }
+
+              /abc/     { ... ; f(1, 2) ; ... }
+
+       The  left parenthesis in a function call is required to immediately follow the function name, without any intervening
+       whitespace.  This avoids a syntactic ambiguity with the concatenation operator.  This restriction does not  apply  to
+       the built-in functions listed above.
+
+       Functions  may  call each other and may be recursive.  Function parameters used as local variables are initialized to
+       the null string and the number zero upon function invocation.
+
+       Use return expr to return a value from a function.  The return value is undefined if no value is provided, or if  the
+       function returns by “falling off” the end.
+
+       As a gawk extension, functions may be called indirectly. To do this, assign the name of the function to be called, as
+       a string, to a variable.  Then use the variable as if it were the name of a function, prefixed with an @  sign,  like
+       so:
+              function  myfunc()
+              {
+                   print "myfunc called"
+                   ...
+              }
+
+              {    ...
+                   the_func = "myfunc"
+                   @the_func()    # call through the_func to myfunc
+                   ...
+              }
+
+       If  --lint  has  been  provided, gawk warns about calls to undefined functions at parse time, instead of at run time.
+       Calling an undefined function at run time is a fatal error.
+
+       The word func may be used in place of function.
+
+DYNAMICALLY LOADING NEW FUNCTIONS
+       You can dynamically add new built-in functions to the running gawk interpreter.  The  full  details  are  beyond  the
+       scope of this manual page; see GAWK: Effective AWK Programming for the details.
+
+       extension(object, function)
+               Dynamically  link the shared object file named by object, and invoke function in that object, to perform ini‐
+               tialization.  These should both be provided as strings.  Return the value returned by function.
+
+       Using this feature at the C level is not pretty, but it is unlikely to go away. Additional mechanisms may be added at
+       some point.
+
+SIGNALS
+       pgawk accepts two signals.  SIGUSR1 causes it to dump a profile and function call stack to the profile file, which is
+       either awkprof.out, or whatever file was named with the --profile option.  It then continues to run.   SIGHUP  causes
+       pgawk to dump the profile and function call stack and then exit.
+
+INTERNATIONALIZATION
+       String  constants are sequences of characters enclosed in double quotes.  In non-English speaking environments, it is
+       possible to mark strings in the AWK program as requiring translation to the local natural language. Such strings  are
+       marked in the AWK program with a leading underscore (“_”).  For example,
+
+              gawk 'BEGIN { print "hello, world" }'
+
+       always prints hello, world.  But,
+
+              gawk 'BEGIN { print _"hello, world" }'
+
+       might print bonjour, monde in France.
+
+       There are several steps involved in producing and running a localizable AWK program.
+
+       1.  Add  a BEGIN action to assign a value to the TEXTDOMAIN variable to set the text domain to a name associated with
+           your program:
+
+           BEGIN { TEXTDOMAIN = "myprog" }
+
+       This allows gawk to find the .mo file associated with your program.  Without this step, gawk uses the  messages  text
+       domain, which likely does not contain translations for your program.
+
+       2.  Mark all strings that should be translated with leading underscores.
+
+       3.  If necessary, use the dcgettext() and/or bindtextdomain() functions in your program, as appropriate.
+
+       4.  Run gawk --gen-pot -f myprog.awk > myprog.pot to generate a .po file for your program.
+
+       5.  Provide appropriate translations, and build and install the corresponding .mo files.
+
+       The internationalization features are described in full detail in GAWK: Effective AWK Programming.
+
+POSIX COMPATIBILITY
+       A primary goal for gawk is compatibility with the POSIX standard, as well as with the latest version of UNIX awk.  To
+       this end, gawk incorporates the following user visible features which are not described in the AWK book, but are part
+       of the Bell Laboratories version of awk, and are in the POSIX standard.
+
+       The  book  indicates  that  command  line variable assignment happens when awk would otherwise open the argument as a
+       file, which is after the BEGIN block is executed.  However, in  earlier  implementations,  when  such  an  assignment
+       appeared  before  any  file  names, the assignment would happen before the BEGIN block was run.  Applications came to
+       depend on this “feature.”  When awk was changed to match its documentation, the -v  option  for  assigning  variables
+       before  program  execution  was added to accommodate applications that depended upon the old behavior.  (This feature
+       was agreed upon by both the Bell Laboratories and the GNU developers.)
+
+       When processing arguments, gawk uses the special option “--” to signal the end of arguments.  In compatibility  mode,
+       it warns about but otherwise ignores undefined options.  In normal operation, such arguments are passed on to the AWK
+       program for it to process.
+
+       The AWK book does not define the return value of srand().  The POSIX standard has it return the seed it was using, to
+       allow keeping track of random number sequences.  Therefore srand() in gawk also returns its current seed.
+
+       Other  new  features  are:  The  use  of multiple -f options (from MKS awk); the ENVIRON array; the \a, and \v escape
+       sequences (done originally in gawk and fed back into the Bell Laboratories  version);  the  tolower()  and  toupper()
+       built-in  functions  (from  the  Bell Laboratories version); and the ANSI C conversion specifications in printf (done
+       first in the Bell Laboratories version).
+
+HISTORICAL FEATURES
+       There is one feature of historical AWK implementations that gawk supports: It is possible to call the length() built-
+       in function not only with no argument, but even without parentheses!  Thus,
+
+              a = length     # Holy Algol 60, Batman!
+
+       is the same as either of
+
+              a = length()
+              a = length($0)
+
+       Using  this  feature  is poor practice, and gawk issues a warning about its use if --lint is specified on the command
+       line.
+
+GNU EXTENSIONS
+       Gawk has a number of extensions to POSIX awk.  They are described in this section.  All the extensions described here
+       can be disabled by invoking gawk with the --traditional or --posix options.
+
+       The following features of gawk are not available in POSIX awk.
+
+       · No  path  search is performed for files named via the -f option.  Therefore the AWKPATH environment variable is not
+         special.
+
+       · There is no facility for doing file inclusion (gawk's @include mechanism).
+
+       · The \x escape sequence.  (Disabled with --posix.)
+
+       · The fflush() function.  (Disabled with --posix.)
+
+       · The ability to continue lines after ?  and :.  (Disabled with --posix.)
+
+       · Octal and hexadecimal constants in AWK programs.
+
+       · The ARGIND, BINMODE, ERRNO, LINT, RT and TEXTDOMAIN variables are not special.
+
+       · The IGNORECASE variable and its side-effects are not available.
+
+       · The FIELDWIDTHS variable and fixed-width field splitting.
+
+       · The FPAT variable and field splitting based on field values.
+
+       · The PROCINFO array is not available.
+
+       · The use of RS as a regular expression.
+
+       · The special file names available for I/O redirection are not recognized.
+
+       · The |& operator for creating co-processes.
+
+       · The BEGINFILE and ENDFILE special patterns are not available.
+
+       · The ability to split out individual characters using the null string as the value of FS, and as the third  argument
+         to split().
+
+       · An optional fourth argument to split() to receive the separator texts.
+
+       · The optional second argument to the close() function.
+
+       · The optional third argument to the match() function.
+
+       · The ability to use positional specifiers with printf and sprintf().
+
+       · The ability to pass an array to length().
+
+       · The use of delete array to delete the entire contents of an array.
+
+       · The use of nextfile to abandon processing of the current input file.
+
+       · The  and(),  asort(), asorti(), bindtextdomain(), compl(), dcgettext(), dcngettext(), gensub(), lshift(), mktime(),
+         or(), patsplit(), rshift(), strftime(), strtonum(), systime() and xor() functions.
+
+       · Localizable strings.
+
+       · Adding new built-in functions dynamically with the extension() function.
+
+       The AWK book does not define the return value of the  close()  function.   Gawk's  close()  returns  the  value  from
+       fclose(3),  or  pclose(3),  when  closing an output file or pipe, respectively.  It returns the process's exit status
+       when closing an input pipe.  The return value is -1 if the named file, pipe or co-process was not opened with a redi‐
+       rection.
+
+       When gawk is invoked with the --traditional option, if the fs argument to the -F option is “t”, then FS is set to the
+       tab character.  Note that typing gawk -F\t ...  simply causes the shell to quote the “t,” and does not pass  “\t”  to
+       the  -F  option.   Since this is a rather ugly special case, it is not the default behavior.  This behavior also does
+       not occur if --posix has been specified.  To really get a tab character as the field separator, it  is  best  to  use
+       single quotes: gawk -F'\t' ....
+
+ENVIRONMENT VARIABLES
+       The  AWKPATH  environment  variable  can be used to provide a list of directories that gawk searches when looking for
+       files named via the -f and --file options.
+
+       For socket communication,  two  special  environment  variables  can  be  used  to  control  the  number  of  retries
+       (GAWK_SOCK_RETRIES), and the interval between retries (GAWK_MSEC_SLEEP).  The interval is in milliseconds. On systems
+       that do not support usleep(3), the value is rounded up to an integral number of seconds.
+
+       If POSIXLY_CORRECT exists in the environment, then gawk behaves exactly as if --posix had been specified on the  com‐
+       mand line.  If --lint has been specified, gawk issues a warning message to this effect.
+
+EXIT STATUS
+       If the exit statement is used with a value, then gawk exits with the numeric value given to it.
+
+       Otherwise,  if  there  were  no  problems during execution, gawk exits with the value of the C constant EXIT_SUCCESS.
+       This is usually zero.
+
+       If an error occurs, gawk exits with the value of the C constant EXIT_FAILURE.  This is usually one.
+
+       If gawk exits because of a fatal error, the exit status is 2.  On non-POSIX systems, this  value  may  be  mapped  to
+       EXIT_FAILURE.
+
+VERSION INFORMATION
+       This man page documents gawk, version 4.0.
+
+AUTHORS
+       The original version of UNIX awk was designed and implemented by Alfred Aho, Peter Weinberger, and Brian Kernighan of
+       Bell Laboratories.  Brian Kernighan continues to maintain and enhance it.
+
+       Paul Rubin and Jay Fenlason, of the Free Software Foundation, wrote gawk, to be compatible with the original  version
+       of  awk distributed in Seventh Edition UNIX.  John Woods contributed a number of bug fixes.  David Trueman, with con‐
+       tributions from Arnold Robbins, made gawk compatible with the new version of UNIX awk.  Arnold Robbins is the current
+       maintainer.
+
+       The  initial  DOS  port was done by Conrad Kwok and Scott Garfinkle.  Scott Deifik maintains the port to MS-DOS using
+       DJGPP.  Eli Zaretskii maintains the port to MS-Windows using MinGW.  Pat Rankin did  the  port  to  VMS,  and  Michal
+       Jaegermann  did  the  port to the Atari ST.  The port to OS/2 was done by Kai Uwe Rommel, with contributions and help
+       from Darrel Hankerson.  Andreas Buening now maintains the OS/2 port.  The late Fred Fish  supplied  support  for  the
+       Amiga,  and  Martin  Brown  provided  the  BeOS  port.  Stephen Davies provided the original Tandem port, and Matthew
+       Woehlke provided changes for Tandem's POSIX-compliant systems.  Dave Pitts provided the port to z/OS.
+
+       See the README file in the gawk distribution for up-to-date information about maintainers and which  ports  are  cur‐
+       rently supported.
+
+BUG REPORTS
+       If you find a bug in gawk, please send electronic mail to bug-gawk@gnu.org.  Please include your operating system and
+       its revision, the version of gawk (from gawk --version), which C compiler you used to compile it, and a test  program
+       and data that are as small as possible for reproducing the problem.
+
+       Before sending a bug report, please do the following things.  First, verify that you have the latest version of gawk.
+       Many bugs (usually subtle ones) are fixed at each release, and if yours is out of date, the problem may already  have
+       been  solved.   Second,  please see if setting the environment variable LC_ALL to LC_ALL=C causes things to behave as
+       you expect. If so, it's a locale issue, and may or may not really be a bug.  Finally, please read this man  page  and
+       the reference manual carefully to be sure that what you think is a bug really is, instead of just a quirk in the lan‐
+       guage.
+
+       Whatever you do, do NOT post a bug report in comp.lang.awk.  While the gawk developers occasionally read  this  news‐
+       group,  posting  bug  reports  there  is  an  unreliable way to report bugs.  Instead, please use the electronic mail
+       addresses given above.
+
+       If you're using a GNU/Linux or BSD-based system, you may wish to submit a bug report to the vendor of your  distribu‐
+       tion.  That's fine, but please send a copy to the official email address as well, since there's no guarantee that the
+       bug report will be forwarded to the gawk maintainer.
+
+BUGS
+       The -F option is not necessary given the command line variable assignment feature; it remains only for backwards com‐
+       patibility.
+
+       Syntactically  invalid single character programs tend to overflow the parse stack, generating a rather unhelpful mes‐
+       sage.  Such programs are surprisingly difficult to diagnose in the completely general case, and the effort to  do  so
+       really is not worth it.
+
+SEE ALSO
+       egrep(1), getpid(2), getppid(2), getpgrp(2), getuid(2), geteuid(2), getgid(2), getegid(2), getgroups(2), usleep(3)
+
+       The  AWK  Programming  Language,  Alfred V. Aho, Brian W. Kernighan, Peter J. Weinberger, Addison-Wesley, 1988.  ISBN
+       0-201-07981-X.
+
+       GAWK: Effective AWK Programming, Edition 4.0, shipped with the gawk source.  The current version of this document  is
+       available online at http://www.gnu.org/software/gawk/manual.
+
+EXAMPLES
+       Print and sort the login names of all users:
+
+            BEGIN     { FS = ":" }
+                 { print $1 | "sort" }
+
+       Count lines in a file:
+
+                 { nlines++ }
+            END  { print nlines }
+
+       Precede each line by its number in the file:
+
+            { print FNR, $0 }
+
+       Concatenate and line number (a variation on a theme):
+
+            { print NR, $0 }
+
+       Run an external command for particular lines of data:
+
+            tail -f access_log |
+            awk '/myhome.html/ { system("nmap " $1 ">> logdir/myhome.html") }'
+
+ACKNOWLEDGEMENTS
+       Brian Kernighan of Bell Laboratories provided valuable assistance during testing and debugging.  We thank him.
+
+COPYING PERMISSIONS
+       Copyright  ©  1989,  1991,  1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2001, 2002, 2003, 2004, 2005, 2007, 2009,
+       2010, 2011 Free Software Foundation, Inc.
+
+       Permission is granted to make and distribute verbatim copies of this manual page provided the  copyright  notice  and
+       this permission notice are preserved on all copies.
+
+       Permission  is granted to copy and distribute modified versions of this manual page under the conditions for verbatim
+       copying, provided that the entire resulting derived work is distributed under the terms of a permission notice  iden‐
+       tical to this one.
+
+       Permission  is granted to copy and distribute translations of this manual page into another language, under the above
+       conditions for modified versions, except that this permission notice may be stated in a translation approved  by  the
+       Foundation.
+
+
+
+Free Software Foundation                                 Nov 10 2011                                                 GAWK(1)
+CAT(1)                                                  User Commands                                                 CAT(1)
+
+
+
+NAME
+       cat - concatenate files and print on the standard output
+
+SYNOPSIS
+       cat [OPTION]... [FILE]...
+
+DESCRIPTION
+       Concatenate FILE(s), or standard input, to standard output.
+
+       -A, --show-all
+              equivalent to -vET
+
+       -b, --number-nonblank
+              number nonempty output lines, overrides -n
+
+       -e     equivalent to -vE
+
+       -E, --show-ends
+              display $ at end of each line
+
+       -n, --number
+              number all output lines
+
+       -s, --squeeze-blank
+              suppress repeated empty output lines
+
+       -t     equivalent to -vT
+
+       -T, --show-tabs
+              display TAB characters as ^I
+
+       -u     (ignored)
+
+       -v, --show-nonprinting
+              use ^ and M- notation, except for LFD and TAB
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       With no FILE, or when FILE is -, read standard input.
+
+EXAMPLES
+       cat f - g
+              Output f's contents, then standard input, then g's contents.
+
+       cat    Copy standard input to standard output.
+
+AUTHOR
+       Written by Torbjorn Granlund and Richard M. Stallman.
+
+REPORTING BUGS
+       Report cat bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report cat translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       tac(1)
+
+       The  full  documentation  for  cat  is  maintained  as  a  Texinfo manual.  If the info and cat programs are properly
+       installed at your site, the command
+
+              info coreutils 'cat invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                   CAT(1)
+CMP(1)                                                  User Commands                                                 CMP(1)
+
+
+
+NAME
+       cmp - compare two files byte by byte
+
+SYNOPSIS
+       cmp [OPTION]... FILE1 [FILE2 [SKIP1 [SKIP2]]]
+
+DESCRIPTION
+       Compare two files byte by byte.
+
+       The optional SKIP1 and SKIP2 specify the number of bytes to skip at the beginning of each file (zero by default).
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -b, --print-bytes
+              print differing bytes
+
+       -i, --ignore-initial=SKIP
+              skip first SKIP bytes of both inputs
+
+       -i, --ignore-initial=SKIP1:SKIP2
+              skip first SKIP1 bytes of FILE1 and first SKIP2 bytes of FILE2
+
+       -l, --verbose
+              output byte numbers and differing byte values
+
+       -n, --bytes=LIMIT
+              compare at most LIMIT bytes
+
+       -s, --quiet, --silent
+              suppress all normal output
+
+       --help display this help and exit
+
+       -v, --version
+              output version information and exit
+
+       SKIP  values may be followed by the following multiplicative suffixes: kB 1000, K 1024, MB 1,000,000, M 1,048,576, GB
+       1,000,000,000, G 1,073,741,824, and so on for T, P, E, Z, Y.
+
+       If a FILE is `-' or missing, read standard input.  Exit status is 0 if inputs are the same,  1  if  different,  2  if
+       trouble.
+
+AUTHOR
+       Written by Torbjorn Granlund and David MacKenzie.
+
+REPORTING BUGS
+       Report bugs to: bug-diffutils@gnu.org
+       GNU diffutils home page: <http://www.gnu.org/software/diffutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+
+COPYRIGHT
+       Copyright   ©   2011   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       diff(1), diff3(1), sdiff(1)
+
+       The  full  documentation  for  cmp  is  maintained  as  a  Texinfo manual.  If the info and cmp programs are properly
+       installed at your site, the command
+
+              info cmp
+
+       should give you access to the complete manual.
+
+
+
+diffutils 3.3                                            March 2013                                                   CMP(1)
+COLRM(1)                                         BSD General Commands Manual                                        COLRM(1)
+
+NAME
+     colrm — remove columns from a file
+
+SYNOPSIS
+     colrm [start [stop]]
+
+DESCRIPTION
+     The colrm utility removes selected columns from the lines of a file.  A column is defined as a single character in a
+     line.  Input is read from the standard input.  Output is written to the standard output.
+
+     If only the start column is specified, columns numbered less than the start column will be written.  If both start and
+     stop columns are specified, columns numbered less than the start column or greater than the stop column will be writ‐
+     ten.  Column numbering starts with one, not zero.
+
+     Tab characters increment the column count to the next multiple of eight.  Backspace characters decrement the column
+     count by one.
+
+ENVIRONMENT
+     The LANG, LC_ALL and LC_CTYPE environment variables affect the execution of colrm as described in environ(7).
+
+EXIT STATUS
+     The colrm utility exits 0 on success, and >0 if an error occurs.
+
+SEE ALSO
+     awk(1), column(1), cut(1), paste(1)
+
+HISTORY
+     The colrm command appeared in 3.0BSD.
+
+BSD                                                    August 4, 2004                                                    BSD
+COMM(1)                                                 User Commands                                                COMM(1)
+
+
+
+NAME
+       comm - compare two sorted files line by line
+
+SYNOPSIS
+       comm [OPTION]... FILE1 FILE2
+
+DESCRIPTION
+       Compare sorted files FILE1 and FILE2 line by line.
+
+       With  no  options, produce three-column output.  Column one contains lines unique to FILE1, column two contains lines
+       unique to FILE2, and column three contains lines common to both files.
+
+       -1     suppress column 1 (lines unique to FILE1)
+
+       -2     suppress column 2 (lines unique to FILE2)
+
+       -3     suppress column 3 (lines that appear in both files)
+
+       --check-order
+              check that the input is correctly sorted, even if all input lines are pairable
+
+       --nocheck-order
+              do not check that the input is correctly sorted
+
+       --output-delimiter=STR
+              separate columns with STR
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       Note, comparisons honor the rules specified by 'LC_COLLATE'.
+
+EXAMPLES
+       comm -12 file1 file2
+              Print only lines present in both file1 and file2.
+
+       comm -3 file1 file2
+              Print lines in file1 not in file2, and vice versa.
+
+AUTHOR
+       Written by Richard M. Stallman and David MacKenzie.
+
+REPORTING BUGS
+       Report comm bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report comm translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright  ©  2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3   or   later
+       <http://gnu.org/licenses/gpl.html>.
+       This  is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted by
+       law.
+
+SEE ALSO
+       join(1), uniq(1)
+
+       The full documentation for comm is maintained as a Texinfo manual.  If  the  info  and  comm  programs  are  properly
+       installed at your site, the command
+
+              info coreutils 'comm invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                  COMM(1)
+CUT(1)                                                  User Commands                                                 CUT(1)
+
+
+
+NAME
+       cut - remove sections from each line of files
+
+SYNOPSIS
+       cut OPTION... [FILE]...
+
+DESCRIPTION
+       Print selected parts of lines from each FILE to standard output.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -b, --bytes=LIST
+              select only these bytes
+
+       -c, --characters=LIST
+              select only these characters
+
+       -d, --delimiter=DELIM
+              use DELIM instead of TAB for field delimiter
+
+       -f, --fields=LIST
+              select  only  these fields;  also print any line that contains no delimiter character, unless the -s option is
+              specified
+
+       -n     (ignored)
+
+       --complement
+              complement the set of selected bytes, characters or fields
+
+       -s, --only-delimited
+              do not print lines not containing delimiters
+
+       --output-delimiter=STRING
+              use STRING as the output delimiter the default is to use the input delimiter
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       Use one, and only one of -b, -c or -f.  Each LIST is made up of one  range,  or  many  ranges  separated  by  commas.
+       Selected input is written in the same order that it is read, and is written exactly once.  Each range is one of:
+
+       N      N'th byte, character or field, counted from 1
+
+       N-     from N'th byte, character or field, to end of line
+
+       N-M    from N'th to M'th (included) byte, character or field
+
+       -M     from first to M'th (included) byte, character or field
+
+       With no FILE, or when FILE is -, read standard input.
+
+AUTHOR
+       Written by David M. Ihnat, David MacKenzie, and Jim Meyering.
+
+REPORTING BUGS
+       Report cut bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report cut translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       The  full  documentation  for  cut  is  maintained  as  a  Texinfo manual.  If the info and cut programs are properly
+       installed at your site, the command
+
+              info coreutils 'cut invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                   CUT(1)
+DATE(1)                                                 User Commands                                                DATE(1)
+
+
+
+NAME
+       date - print or set the system date and time
+
+SYNOPSIS
+       date [OPTION]... [+FORMAT]
+       date [-u|--utc|--universal] [MMDDhhmm[[CC]YY][.ss]]
+
+DESCRIPTION
+       Display the current time in the given FORMAT, or set the system date.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -d, --date=STRING
+              display time described by STRING, not 'now'
+
+       -f, --file=DATEFILE
+              like --date once for each line of DATEFILE
+
+       -I[TIMESPEC], --iso-8601[=TIMESPEC]
+              output  date/time  in ISO 8601 format.  TIMESPEC='date' for date only (the default), 'hours', 'minutes', 'sec‐
+              onds', or 'ns' for date and time to the indicated precision.
+
+       -r, --reference=FILE
+              display the last modification time of FILE
+
+       -R, --rfc-2822
+              output date and time in RFC 2822 format.  Example: Mon, 07 Aug 2006 12:34:56 -0600
+
+       --rfc-3339=TIMESPEC
+              output date and time in RFC 3339 format.  TIMESPEC='date', 'seconds', or 'ns' for date and time to  the  indi‐
+              cated precision.  Date and time components are separated by a single space: 2006-08-07 12:34:56-06:00
+
+       -s, --set=STRING
+              set time described by STRING
+
+       -u, --utc, --universal
+              print or set Coordinated Universal Time
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       FORMAT controls the output.  Interpreted sequences are:
+
+       %%     a literal %
+
+       %a     locale's abbreviated weekday name (e.g., Sun)
+
+       %A     locale's full weekday name (e.g., Sunday)
+
+       %b     locale's abbreviated month name (e.g., Jan)
+
+       %B     locale's full month name (e.g., January)
+
+       %c     locale's date and time (e.g., Thu Mar  3 23:05:25 2005)
+
+       %C     century; like %Y, except omit last two digits (e.g., 20)
+
+       %d     day of month (e.g., 01)
+
+       %D     date; same as %m/%d/%y
+
+       %e     day of month, space padded; same as %_d
+
+       %F     full date; same as %Y-%m-%d
+
+       %g     last two digits of year of ISO week number (see %G)
+
+       %G     year of ISO week number (see %V); normally useful only with %V
+
+       %h     same as %b
+
+       %H     hour (00..23)
+
+       %I     hour (01..12)
+
+       %j     day of year (001..366)
+
+       %k     hour, space padded ( 0..23); same as %_H
+
+       %l     hour, space padded ( 1..12); same as %_I
+
+       %m     month (01..12)
+
+       %M     minute (00..59)
+
+       %n     a newline
+
+       %N     nanoseconds (000000000..999999999)
+
+       %p     locale's equivalent of either AM or PM; blank if not known
+
+       %P     like %p, but lower case
+
+       %r     locale's 12-hour clock time (e.g., 11:11:04 PM)
+
+       %R     24-hour hour and minute; same as %H:%M
+
+       %s     seconds since 1970-01-01 00:00:00 UTC
+
+       %S     second (00..60)
+
+       %t     a tab
+
+       %T     time; same as %H:%M:%S
+
+       %u     day of week (1..7); 1 is Monday
+
+       %U     week number of year, with Sunday as first day of week (00..53)
+
+       %V     ISO week number, with Monday as first day of week (01..53)
+
+       %w     day of week (0..6); 0 is Sunday
+
+       %W     week number of year, with Monday as first day of week (00..53)
+
+       %x     locale's date representation (e.g., 12/31/99)
+
+       %X     locale's time representation (e.g., 23:13:48)
+
+       %y     last two digits of year (00..99)
+
+       %Y     year
+
+       %z     +hhmm numeric time zone (e.g., -0400)
+
+       %:z    +hh:mm numeric time zone (e.g., -04:00)
+
+       %::z   +hh:mm:ss numeric time zone (e.g., -04:00:00)
+
+       %:::z  numeric time zone with : to necessary precision (e.g., -04, +05:30)
+
+       %Z     alphabetic time zone abbreviation (e.g., EDT)
+
+       By default, date pads numeric fields with zeroes.  The following optional flags may follow '%':
+
+       -      (hyphen) do not pad the field
+
+       _      (underscore) pad with spaces
+
+       0      (zero) pad with zeros
+
+       ^      use upper case if possible
+
+       #      use opposite case if possible
+
+       After  any  flags comes an optional field width, as a decimal number; then an optional modifier, which is either E to
+       use the locale's alternate representations if available, or O to use the locale's alternate numeric symbols if avail‐
+       able.
+
+EXAMPLES
+       Convert seconds since the epoch (1970-01-01 UTC) to a date
+
+              $ date --date='@2147483647'
+
+       Show the time on the west coast of the US (use tzselect(1) to find TZ)
+
+              $ TZ='America/Los_Angeles' date
+
+       Show the local time for 9AM next Friday on the west coast of the US
+
+              $ date --date='TZ="America/Los_Angeles" 09:00 next Fri'
+
+DATE STRING
+       The  --date=STRING  is  a  mostly free format human readable date string such as "Sun, 29 Feb 2004 16:21:42 -0800" or
+       "2004-02-29 16:21:42" or even "next Thursday".  A date string may contain items indicating  calendar  date,  time  of
+       day,  time  zone, day of week, relative time, relative date, and numbers.  An empty string indicates the beginning of
+       the day.  The date string format is more complex than is easily documented here but is fully described  in  the  info
+       documentation.
+
+AUTHOR
+       Written by David MacKenzie.
+
+REPORTING BUGS
+       Report date bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report date translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       The  full  documentation  for  date  is  maintained  as a Texinfo manual.  If the info and date programs are properly
+       installed at your site, the command
+
+              info coreutils 'date invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                  DATE(1)
+DATE(1)                                                 User Commands                                                DATE(1)
+
+
+
+NAME
+       date - print or set the system date and time
+
+SYNOPSIS
+       date [OPTION]... [+FORMAT]
+       date [-u|--utc|--universal] [MMDDhhmm[[CC]YY][.ss]]
+
+DESCRIPTION
+       Display the current time in the given FORMAT, or set the system date.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -d, --date=STRING
+              display time described by STRING, not 'now'
+
+       -f, --file=DATEFILE
+              like --date once for each line of DATEFILE
+
+       -I[TIMESPEC], --iso-8601[=TIMESPEC]
+              output  date/time  in ISO 8601 format.  TIMESPEC='date' for date only (the default), 'hours', 'minutes', 'sec‐
+              onds', or 'ns' for date and time to the indicated precision.
+
+       -r, --reference=FILE
+              display the last modification time of FILE
+
+       -R, --rfc-2822
+              output date and time in RFC 2822 format.  Example: Mon, 07 Aug 2006 12:34:56 -0600
+
+       --rfc-3339=TIMESPEC
+              output date and time in RFC 3339 format.  TIMESPEC='date', 'seconds', or 'ns' for date and time to  the  indi‐
+              cated precision.  Date and time components are separated by a single space: 2006-08-07 12:34:56-06:00
+
+       -s, --set=STRING
+              set time described by STRING
+
+       -u, --utc, --universal
+              print or set Coordinated Universal Time
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       FORMAT controls the output.  Interpreted sequences are:
+
+       %%     a literal %
+
+       %a     locale's abbreviated weekday name (e.g., Sun)
+
+       %A     locale's full weekday name (e.g., Sunday)
+
+       %b     locale's abbreviated month name (e.g., Jan)
+
+       %B     locale's full month name (e.g., January)
+
+       %c     locale's date and time (e.g., Thu Mar  3 23:05:25 2005)
+
+       %C     century; like %Y, except omit last two digits (e.g., 20)
+
+       %d     day of month (e.g., 01)
+
+       %D     date; same as %m/%d/%y
+
+       %e     day of month, space padded; same as %_d
+
+       %F     full date; same as %Y-%m-%d
+
+       %g     last two digits of year of ISO week number (see %G)
+
+       %G     year of ISO week number (see %V); normally useful only with %V
+
+       %h     same as %b
+
+       %H     hour (00..23)
+
+       %I     hour (01..12)
+
+       %j     day of year (001..366)
+
+       %k     hour, space padded ( 0..23); same as %_H
+
+       %l     hour, space padded ( 1..12); same as %_I
+
+       %m     month (01..12)
+
+       %M     minute (00..59)
+
+       %n     a newline
+
+       %N     nanoseconds (000000000..999999999)
+
+       %p     locale's equivalent of either AM or PM; blank if not known
+
+       %P     like %p, but lower case
+
+       %r     locale's 12-hour clock time (e.g., 11:11:04 PM)
+
+       %R     24-hour hour and minute; same as %H:%M
+
+       %s     seconds since 1970-01-01 00:00:00 UTC
+
+       %S     second (00..60)
+
+       %t     a tab
+
+       %T     time; same as %H:%M:%S
+
+       %u     day of week (1..7); 1 is Monday
+
+       %U     week number of year, with Sunday as first day of week (00..53)
+
+       %V     ISO week number, with Monday as first day of week (01..53)
+
+       %w     day of week (0..6); 0 is Sunday
+
+       %W     week number of year, with Monday as first day of week (00..53)
+
+       %x     locale's date representation (e.g., 12/31/99)
+
+       %X     locale's time representation (e.g., 23:13:48)
+
+       %y     last two digits of year (00..99)
+
+       %Y     year
+
+       %z     +hhmm numeric time zone (e.g., -0400)
+
+       %:z    +hh:mm numeric time zone (e.g., -04:00)
+
+       %::z   +hh:mm:ss numeric time zone (e.g., -04:00:00)
+
+       %:::z  numeric time zone with : to necessary precision (e.g., -04, +05:30)
+
+       %Z     alphabetic time zone abbreviation (e.g., EDT)
+
+       By default, date pads numeric fields with zeroes.  The following optional flags may follow '%':
+
+       -      (hyphen) do not pad the field
+
+       _      (underscore) pad with spaces
+
+       0      (zero) pad with zeros
+
+       ^      use upper case if possible
+
+       #      use opposite case if possible
+
+       After  any  flags comes an optional field width, as a decimal number; then an optional modifier, which is either E to
+       use the locale's alternate representations if available, or O to use the locale's alternate numeric symbols if avail‐
+       able.
+
+EXAMPLES
+       Convert seconds since the epoch (1970-01-01 UTC) to a date
+
+              $ date --date='@2147483647'
+
+       Show the time on the west coast of the US (use tzselect(1) to find TZ)
+
+              $ TZ='America/Los_Angeles' date
+
+       Show the local time for 9AM next Friday on the west coast of the US
+
+              $ date --date='TZ="America/Los_Angeles" 09:00 next Fri'
+
+DATE STRING
+       The  --date=STRING  is  a  mostly free format human readable date string such as "Sun, 29 Feb 2004 16:21:42 -0800" or
+       "2004-02-29 16:21:42" or even "next Thursday".  A date string may contain items indicating  calendar  date,  time  of
+       day,  time  zone, day of week, relative time, relative date, and numbers.  An empty string indicates the beginning of
+       the day.  The date string format is more complex than is easily documented here but is fully described  in  the  info
+       documentation.
+
+AUTHOR
+       Written by David MacKenzie.
+
+REPORTING BUGS
+       Report date bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report date translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       The  full  documentation  for  date  is  maintained  as a Texinfo manual.  If the info and date programs are properly
+       installed at your site, the command
+
+              info coreutils 'date invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                  DATE(1)
+DIFF(1)                                                 User Commands                                                DIFF(1)
+
+
+
+NAME
+       diff - compare files line by line
+
+SYNOPSIS
+       diff [OPTION]... FILES
+
+DESCRIPTION
+       Compare FILES line by line.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       --normal
+              output a normal diff (the default)
+
+       -q, --brief
+              report only when files differ
+
+       -s, --report-identical-files
+              report when two files are the same
+
+       -c, -C NUM, --context[=NUM]
+              output NUM (default 3) lines of copied context
+
+       -u, -U NUM, --unified[=NUM]
+              output NUM (default 3) lines of unified context
+
+       -e, --ed
+              output an ed script
+
+       -n, --rcs
+              output an RCS format diff
+
+       -y, --side-by-side
+              output in two columns
+
+       -W, --width=NUM
+              output at most NUM (default 130) print columns
+
+       --left-column
+              output only the left column of common lines
+
+       --suppress-common-lines
+              do not output common lines
+
+       -p, --show-c-function
+              show which C function each change is in
+
+       -F, --show-function-line=RE
+              show the most recent line matching RE
+
+       --label LABEL
+              use LABEL instead of file name (can be repeated)
+
+       -t, --expand-tabs
+              expand tabs to spaces in output
+
+       -T, --initial-tab
+              make tabs line up by prepending a tab
+
+       --tabsize=NUM
+              tab stops every NUM (default 8) print columns
+
+       --suppress-blank-empty
+              suppress space or tab before empty output lines
+
+       -l, --paginate
+              pass output through `pr' to paginate it
+
+       -r, --recursive
+              recursively compare any subdirectories found
+
+       -N, --new-file
+              treat absent files as empty
+
+       --unidirectional-new-file
+              treat absent first files as empty
+
+       --ignore-file-name-case
+              ignore case when comparing file names
+
+       --no-ignore-file-name-case
+              consider case when comparing file names
+
+       -x, --exclude=PAT
+              exclude files that match PAT
+
+       -X, --exclude-from=FILE
+              exclude files that match any pattern in FILE
+
+       -S, --starting-file=FILE
+              start with FILE when comparing directories
+
+       --from-file=FILE1
+              compare FILE1 to all operands; FILE1 can be a directory
+
+       --to-file=FILE2
+              compare all operands to FILE2; FILE2 can be a directory
+
+       -i, --ignore-case
+              ignore case differences in file contents
+
+       -E, --ignore-tab-expansion
+              ignore changes due to tab expansion
+
+       -Z, --ignore-trailing-space
+              ignore white space at line end
+
+       -b, --ignore-space-change
+              ignore changes in the amount of white space
+
+       -w, --ignore-all-space
+              ignore all white space
+
+       -B, --ignore-blank-lines
+              ignore changes whose lines are all blank
+
+       -I, --ignore-matching-lines=RE
+              ignore changes whose lines all match RE
+
+       -a, --text
+              treat all files as text
+
+       --strip-trailing-cr
+              strip trailing carriage return on input
+
+       -D, --ifdef=NAME
+              output merged file with `#ifdef NAME' diffs
+
+       --GTYPE-group-format=GFMT
+              format GTYPE input groups with GFMT
+
+       --line-format=LFMT
+              format all input lines with LFMT
+
+       --LTYPE-line-format=LFMT
+              format LTYPE input lines with LFMT
+
+              These format options provide fine-grained control over the output
+
+              of diff, generalizing -D/--ifdef.
+
+       LTYPE is `old', `new', or `unchanged'.
+              GTYPE is LTYPE or `changed'.
+
+              GFMT (only) may contain:
+
+       %<     lines from FILE1
+
+       %>     lines from FILE2
+
+       %=     lines common to FILE1 and FILE2
+
+       %[-][WIDTH][.[PREC]]{doxX}LETTER
+              printf-style spec for LETTER
+
+              LETTERs are as follows for new group, lower case for old group:
+
+       F      first line number
+
+       L      last line number
+
+       N      number of lines = L-F+1
+
+       E      F-1
+
+       M      L+1
+
+       %(A=B?T:E)
+              if A equals B then T else E
+
+              LFMT (only) may contain:
+
+       %L     contents of line
+
+       %l     contents of line, excluding any trailing newline
+
+       %[-][WIDTH][.[PREC]]{doxX}n
+              printf-style spec for input line number
+
+              Both GFMT and LFMT may contain:
+
+       %%     %
+
+       %c'C'  the single character C
+
+       %c'\OOO'
+              the character with octal code OOO
+
+       C      the character C (other characters represent themselves)
+
+       -d, --minimal
+              try hard to find a smaller set of changes
+
+       --horizon-lines=NUM
+              keep NUM lines of the common prefix and suffix
+
+       --speed-large-files
+              assume large files and many scattered small changes
+
+       --help display this help and exit
+
+       -v, --version
+              output version information and exit
+
+       FILES  are  `FILE1  FILE2'  or  `DIR1 DIR2' or `DIR FILE...' or `FILE... DIR'.  If --from-file or --to-file is given,
+       there are no restrictions on FILE(s).  If a FILE is `-', read standard input.  Exit status is 0  if  inputs  are  the
+       same, 1 if different, 2 if trouble.
+
+AUTHOR
+       Written by Paul Eggert, Mike Haertel, David Hayes, Richard Stallman, and Len Tower.
+
+REPORTING BUGS
+       Report bugs to: bug-diffutils@gnu.org
+       GNU diffutils home page: <http://www.gnu.org/software/diffutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+
+COPYRIGHT
+       Copyright   ©   2011   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       wdiff(1), cmp(1), diff3(1), sdiff(1), patch(1)
+
+       The  full  documentation  for  diff  is  maintained  as a Texinfo manual.  If the info and diff programs are properly
+       installed at your site, the command
+
+              info diff
+
+       should give you access to the complete manual.
+
+
+
+diffutils 3.3                                            March 2013                                                  DIFF(1)
+ENV(1)                                                  User Commands                                                 ENV(1)
+
+
+
+NAME
+       env - run a program in a modified environment
+
+SYNOPSIS
+       env [OPTION]... [-] [NAME=VALUE]... [COMMAND [ARG]...]
+
+DESCRIPTION
+       Set each NAME to VALUE in the environment and run COMMAND.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -i, --ignore-environment
+              start with an empty environment
+
+       -0, --null
+              end each output line with 0 byte rather than newline
+
+       -u, --unset=NAME
+              remove variable from the environment
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       A mere - implies -i.  If no COMMAND, print the resulting environment.
+
+AUTHOR
+       Written by Richard Mlynarik and David MacKenzie.
+
+REPORTING BUGS
+       Report env bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report env translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       The  full  documentation  for  env  is  maintained  as  a  Texinfo manual.  If the info and env programs are properly
+       installed at your site, the command
+
+              info coreutils 'env invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                   ENV(1)
+GREP(1)                                            General Commands Manual                                           GREP(1)
+
+
+
+NAME
+       grep, egrep, fgrep, rgrep - print lines matching a pattern
+
+SYNOPSIS
+       grep [OPTIONS] PATTERN [FILE...]
+       grep [OPTIONS] [-e PATTERN | -f FILE] [FILE...]
+
+DESCRIPTION
+       grep  searches  the  named  input  FILEs (or standard input if no files are named, or if a single hyphen-minus (-) is
+       given as file name) for lines containing a match to the given PATTERN.  By default, grep prints the matching lines.
+
+       In addition, three variant programs egrep, fgrep and rgrep are available.  egrep is the same as  grep -E.   fgrep  is
+       the same as grep -F.  rgrep is the same as grep -r.  Direct invocation as either egrep or fgrep is deprecated, but is
+       provided to allow historical applications that rely on them to run unmodified.
+
+OPTIONS
+   Generic Program Information
+       --help Print a usage message briefly summarizing these command-line options and the bug-reporting address, then exit.
+
+       -V, --version
+              Print the version number of grep to the standard output stream.  This version number should be included in all
+              bug reports (see below).
+
+   Matcher Selection
+       -E, --extended-regexp
+              Interpret PATTERN as an extended regular expression (ERE, see below).  (-E is specified by POSIX.)
+
+       -F, --fixed-strings
+              Interpret  PATTERN  as  a list of fixed strings, separated by newlines, any of which is to be matched.  (-F is
+              specified by POSIX.)
+
+       -G, --basic-regexp
+              Interpret PATTERN as a basic regular expression (BRE, see below).  This is the default.
+
+       -P, --perl-regexp
+              Interpret PATTERN as a Perl regular expression (PCRE, see below).  This is highly experimental and grep -P may
+              warn of unimplemented features.
+
+   Matching Control
+       -e PATTERN, --regexp=PATTERN
+              Use  PATTERN  as  the  pattern.  This can be used to specify multiple search patterns, or to protect a pattern
+              beginning with a hyphen (-).  (-e is specified by POSIX.)
+
+       -f FILE, --file=FILE
+              Obtain patterns from FILE, one per line.  The  empty  file  contains  zero  patterns,  and  therefore  matches
+              nothing.  (-f is specified by POSIX.)
+
+       -i, --ignore-case
+              Ignore case distinctions in both the PATTERN and the input files.  (-i is specified by POSIX.)
+
+       -v, --invert-match
+              Invert the sense of matching, to select non-matching lines.  (-v is specified by POSIX.)
+
+       -w, --word-regexp
+              Select  only  those  lines  containing matches that form whole words.  The test is that the matching substring
+              must either be at the beginning of the line, or preceded by a non-word constituent character.   Similarly,  it
+              must  be  either  at  the  end  of the line or followed by a non-word constituent character.  Word-constituent
+              characters are letters, digits, and the underscore.
+
+       -x, --line-regexp
+              Select only those matches that exactly match the whole line.  (-x is specified by POSIX.)
+
+       -y     Obsolete synonym for -i.
+
+   General Output Control
+       -c, --count
+              Suppress normal output; instead print  a  count  of  matching  lines  for  each  input  file.   With  the  -v,
+              --invert-match option (see below), count non-matching lines.  (-c is specified by POSIX.)
+
+       --color[=WHEN], --colour[=WHEN]
+              Surround  the  matched  (non-empty)  strings,  matching  lines,  context lines, file names, line numbers, byte
+              offsets, and separators (for fields and groups of context lines) with escape  sequences  to  display  them  in
+              color  on  the  terminal.   The  colors  are  defined by the environment variable GREP_COLORS.  The deprecated
+              environment variable GREP_COLOR is still supported, but its setting does not have priority.   WHEN  is  never,
+              always, or auto.
+
+       -L, --files-without-match
+              Suppress  normal  output;  instead  print the name of each input file from which no output would normally have
+              been printed.  The scanning will stop on the first match.
+
+       -l, --files-with-matches
+              Suppress normal output; instead print the name of each input file from which output would normally  have  been
+              printed.  The scanning will stop on the first match.  (-l is specified by POSIX.)
+
+       -m NUM, --max-count=NUM
+              Stop  reading  a  file  after NUM matching lines.  If the input is standard input from a regular file, and NUM
+              matching lines are output, grep ensures that the standard input is positioned to just after the last  matching
+              line  before exiting, regardless of the presence of trailing context lines.  This enables a calling process to
+              resume a search.  When grep stops after NUM matching lines, it outputs any trailing context lines.   When  the
+              -c  or  --count  option  is  also  used,  grep  does  not  output  a  count  greater than NUM.  When the -v or
+              --invert-match option is also used, grep stops after outputting NUM non-matching lines.
+
+       -o, --only-matching
+              Print only the matched (non-empty) parts of a matching line, with each such part on a separate output line.
+
+       -q, --quiet, --silent
+              Quiet; do not write anything to standard output.  Exit immediately with zero status if  any  match  is  found,
+              even if an error was detected.  Also see the -s or --no-messages option.  (-q is specified by POSIX.)
+
+       -s, --no-messages
+              Suppress error messages about nonexistent or unreadable files.  Portability note: unlike GNU grep, 7th Edition
+              Unix grep did not conform to POSIX, because it lacked -q and its -s option behaved like GNU grep's -q  option.
+              USG-style  grep  also  lacked -q but its -s option behaved like GNU grep.  Portable shell scripts should avoid
+              both -q and -s and should redirect standard and error output  to  /dev/null  instead.   (-s  is  specified  by
+              POSIX.)
+
+   Output Line Prefix Control
+       -b, --byte-offset
+              Print  the  0-based  byte offset within the input file before each line of output.  If -o (--only-matching) is
+              specified, print the offset of the matching part itself.
+
+       -H, --with-filename
+              Print the file name for each match.  This is the default when there is more than one file to search.
+
+       -h, --no-filename
+              Suppress the prefixing of file names on output.  This is the default when there is  only  one  file  (or  only
+              standard input) to search.
+
+       --label=LABEL
+              Display  input actually coming from standard input as input coming from file LABEL.  This is especially useful
+              when implementing tools like zgrep, e.g., gzip -cd foo.gz | grep --label=foo -H something.  See  also  the  -H
+              option.
+
+       -n, --line-number
+              Prefix each line of output with the 1-based line number within its input file.  (-n is specified by POSIX.)
+
+       -T, --initial-tab
+              Make  sure  that  the first character of actual line content lies on a tab stop, so that the alignment of tabs
+              looks normal.  This is useful with options that prefix their output to the actual content: -H,-n, and -b.   In
+              order  to  improve  the probability that lines from a single file will all start at the same column, this also
+              causes the line number and byte offset (if present) to be printed in a minimum size field width.
+
+       -u, --unix-byte-offsets
+              Report Unix-style byte offsets.  This switch causes grep to report byte offsets as if the file  were  a  Unix-
+              style  text  file, i.e., with CR characters stripped off.  This will produce results identical to running grep
+              on a Unix machine.  This option has no effect unless -b option is also used; it has  no  effect  on  platforms
+              other than MS-DOS and MS-Windows.
+
+       -Z, --null
+              Output  a zero byte (the ASCII NUL character) instead of the character that normally follows a file name.  For
+              example, grep -lZ outputs a zero byte after each file name instead of the usual newline.   This  option  makes
+              the  output unambiguous, even in the presence of file names containing unusual characters like newlines.  This
+              option can be used with commands like find -print0, perl -0, sort -z, and xargs -0 to process  arbitrary  file
+              names, even those that contain newline characters.
+
+   Context Line Control
+       -A NUM, --after-context=NUM
+              Print  NUM  lines  of  trailing context after matching lines.  Places a line containing a group separator (--)
+              between contiguous groups of matches.  With the -o or --only-matching option, this has no effect and a warning
+              is given.
+
+       -B NUM, --before-context=NUM
+              Print  NUM  lines  of  leading context before matching lines.  Places a line containing a group separator (--)
+              between contiguous groups of matches.  With the -o or --only-matching option, this has no effect and a warning
+              is given.
+
+       -C NUM, -NUM, --context=NUM
+              Print  NUM lines of output context.  Places a line containing a group separator (--) between contiguous groups
+              of matches.  With the -o or --only-matching option, this has no effect and a warning is given.
+
+   File and Directory Selection
+       -a, --text
+              Process a binary file as if it were text; this is equivalent to the --binary-files=text option.
+
+       --binary-files=TYPE
+              If the first few bytes of a file indicate that the file contains binary data, assume that the file is of  type
+              TYPE.   By  default,  TYPE is binary, and grep normally outputs either a one-line message saying that a binary
+              file matches, or no message if there is no match.  If TYPE is without-match, grep assumes that a  binary  file
+              does  not  match; this is equivalent to the -I option.  If TYPE is text, grep processes a binary file as if it
+              were text; this is equivalent to the  -a  option.   Warning:  grep  --binary-files=text  might  output  binary
+              garbage,  which  can have nasty side effects if the output is a terminal and if the terminal driver interprets
+              some of it as commands.
+
+       -D ACTION, --devices=ACTION
+              If an input file is a device, FIFO or socket, use ACTION to process it.  By default,  ACTION  is  read,  which
+              means  that  devices  are  read  just as if they were ordinary files.  If ACTION is skip, devices are silently
+              skipped.
+
+       -d ACTION, --directories=ACTION
+              If an input file is a directory, use ACTION to process it.  By default, ACTION is read, i.e., read directories
+              just  as  if  they  were ordinary files.  If ACTION is skip, silently skip directories.  If ACTION is recurse,
+              read all files under each directory, recursively, following symbolic links only if they  are  on  the  command
+              line.  This is equivalent to the -r option.
+
+       --exclude=GLOB
+              Skip  files  whose base name matches GLOB (using wildcard matching).  A file-name glob can use *, ?, and [...]
+              as wildcards, and \ to quote a wildcard or backslash character literally.
+
+       --exclude-from=FILE
+              Skip files whose base name matches any of the file-name globs read  from  FILE  (using  wildcard  matching  as
+              described under --exclude).
+
+       --exclude-dir=DIR
+              Exclude directories matching the pattern DIR from recursive searches.
+
+       -I     Process   a   binary   file   as   if   it   did  not  contain  matching  data;  this  is  equivalent  to  the
+              --binary-files=without-match option.
+
+       --include=GLOB
+              Search only files whose base name matches GLOB (using wildcard matching as described under --exclude).
+
+       -r, --recursive
+              Read all files under each directory, recursively, following symbolic links only if they  are  on  the  command
+              line.  This is equivalent to the -d recurse option.
+
+       -R, --dereference-recursive
+              Read all files under each directory, recursively.  Follow all symbolic links, unlike -r.
+
+   Other Options
+       --line-buffered
+              Use line buffering on output.  This can cause a performance penalty.
+
+       --mmap If  possible,  use the mmap(2) system call to read input, instead of the default read(2) system call.  In some
+              situations, --mmap yields better performance.  However, --mmap can cause undefined  behavior  (including  core
+              dumps) if an input file shrinks while grep is operating, or if an I/O error occurs.
+
+       -U, --binary
+              Treat  the  file(s) as binary.  By default, under MS-DOS and MS-Windows, grep guesses the file type by looking
+              at the contents of the first 32KB read from the file.  If grep decides the file is a text file, it strips  the
+              CR  characters  from  the  original  file  contents (to make regular expressions with ^ and $ work correctly).
+              Specifying -U overrules this guesswork, causing all files to be read and  passed  to  the  matching  mechanism
+              verbatim;  if  the  file is a text file with CR/LF pairs at the end of each line, this will cause some regular
+              expressions to fail.  This option has no effect on platforms other than MS-DOS and MS-Windows.
+
+       -z, --null-data
+              Treat the input as a set of lines, each terminated by a zero byte (the  ASCII  NUL  character)  instead  of  a
+              newline.   Like  the  -Z  or  --null  option,  this  option  can be used with commands like sort -z to process
+              arbitrary file names.
+
+REGULAR EXPRESSIONS
+       A regular expression is a pattern that describes a set of strings.  Regular expressions are  constructed  analogously
+       to arithmetic expressions, by using various operators to combine smaller expressions.
+
+       grep  understands  three  different versions of regular expression syntax: “basic” (BRE), “extended” (ERE) and “perl”
+       (PRCE). In GNU grep, there is no difference in available functionality between basic and extended syntaxes.  In other
+       implementations,  basic regular expressions are less powerful.  The following description applies to extended regular
+       expressions; differences for basic regular expressions are summarized  afterwards.   Perl  regular  expressions  give
+       additional  functionality, and are documented in pcresyntax(3) and pcrepattern(3), but only work if pcre is available
+       in the system.
+
+       The fundamental building blocks are the  regular  expressions  that  match  a  single  character.   Most  characters,
+       including  all  letters  and  digits, are regular expressions that match themselves.  Any meta-character with special
+       meaning may be quoted by preceding it with a backslash.
+
+       The period . matches any single character.
+
+   Character Classes and Bracket Expressions
+       A bracket expression is a list of characters enclosed by [ and ].  It matches any single character in that  list;  if
+       the  first  character  of  the  list  is the caret ^ then it matches any character not in the list.  For example, the
+       regular expression [0123456789] matches any single digit.
+
+       Within a bracket expression, a range expression consists of two characters separated by a  hyphen.   It  matches  any
+       single  character  that  sorts  between  the  two  characters,  inclusive,  using the locale's collating sequence and
+       character set.  For example, in the default C locale, [a-d] is equivalent to [abcd].  Many locales sort characters in
+       dictionary  order,  and  in  these  locales  [a-d]  is  typically not equivalent to [abcd]; it might be equivalent to
+       [aBbCcDd], for example.  To obtain the traditional interpretation of bracket expressions, you can use the C locale by
+       setting the LC_ALL environment variable to the value C.
+
+       Finally,  certain named classes of characters are predefined within bracket expressions, as follows.  Their names are
+       self explanatory,  and  they  are  [:alnum:],  [:alpha:],  [:cntrl:],  [:digit:],  [:graph:],  [:lower:],  [:print:],
+       [:punct:],  [:space:],  [:upper:], and [:xdigit:].  For example, [[:alnum:]] means the character class of numbers and
+       letters in the current locale. In the C locale and ASCII character set encoding, this is  the  same  as  [0-9A-Za-z].
+       (Note  that the brackets in these class names are part of the symbolic names, and must be included in addition to the
+       brackets delimiting the bracket  expression.)   Most  meta-characters  lose  their  special  meaning  inside  bracket
+       expressions.  To include a literal ] place it first in the list.  Similarly, to include a literal ^ place it anywhere
+       but first.  Finally, to include a literal - place it last.
+
+   Anchoring
+       The caret ^ and the dollar sign $ are meta-characters that respectively match the empty string at the  beginning  and
+       end of a line.
+
+   The Backslash Character and Special Expressions
+       The  symbols \< and \> respectively match the empty string at the beginning and end of a word.  The symbol \b matches
+       the empty string at the edge of a word, and \B matches the empty string provided it's not at the edge of a word.  The
+       symbol \w is a synonym for [_[:alnum:]] and \W is a synonym for [^_[:alnum:]].
+
+   Repetition
+       A regular expression may be followed by one of several repetition operators:
+       ?      The preceding item is optional and matched at most once.
+       *      The preceding item will be matched zero or more times.
+       +      The preceding item will be matched one or more times.
+       {n}    The preceding item is matched exactly n times.
+       {n,}   The preceding item is matched n or more times.
+       {,m}   The preceding item is matched at most m times.  This is a GNU extension.
+       {n,m}  The preceding item is matched at least n times, but not more than m times.
+
+   Concatenation
+       Two  regular  expressions  may  be  concatenated;  the  resulting  regular  expression  matches  any string formed by
+       concatenating two substrings that respectively match the concatenated expressions.
+
+   Alternation
+       Two regular expressions may be joined by the infix operator |; the resulting regular expression  matches  any  string
+       matching either alternate expression.
+
+   Precedence
+       Repetition  takes precedence over concatenation, which in turn takes precedence over alternation.  A whole expression
+       may be enclosed in parentheses to override these precedence rules and form a subexpression.
+
+   Back References and Subexpressions
+       The back-reference \n, where n is a single digit, matches the substring previously matched by the  nth  parenthesized
+       subexpression of the regular expression.
+
+   Basic vs Extended Regular Expressions
+       In  basic  regular  expressions  the meta-characters ?, +, {, |, (, and ) lose their special meaning; instead use the
+       backslashed versions \?, \+, \{, \|, \(, and \).
+
+       Traditional egrep did not support the { meta-character,  and  some  egrep  implementations  support  \{  instead,  so
+       portable scripts should avoid { in grep -E patterns and should use [{] to match a literal {.
+
+       GNU  grep -E  attempts  to support traditional usage by assuming that { is not special if it would be the start of an
+       invalid interval specification.  For example, the command grep -E '{1'  searches  for  the  two-character  string  {1
+       instead  of  reporting  a  syntax  error  in the regular expression.  POSIX allows this behavior as an extension, but
+       portable scripts should avoid it.
+
+ENVIRONMENT VARIABLES
+       The behavior of grep is affected by the following environment variables.
+
+       The locale for category LC_foo is specified by examining the three environment variables  LC_ALL,  LC_foo,  LANG,  in
+       that  order.   The first of these variables that is set specifies the locale.  For example, if LC_ALL is not set, but
+       LC_MESSAGES is set to pt_BR, then the Brazilian Portuguese locale is used for the LC_MESSAGES category.  The C locale
+       is  used  if  none of these environment variables are set, if the locale catalog is not installed, or if grep was not
+       compiled with national language support (NLS).
+
+       GREP_OPTIONS
+              This variable specifies default options to be placed in front  of  any  explicit  options.   For  example,  if
+              GREP_OPTIONS  is  '--binary-files=without-match  --directories=skip',  grep  behaves  as  if  the  two options
+              --binary-files=without-match and --directories=skip had been specified before any  explicit  options.   Option
+              specifications  are  separated  by  whitespace.   A backslash escapes the next character, so it can be used to
+              specify an option containing whitespace or a backslash.
+
+       GREP_COLOR
+              This variable specifies the color used to highlight matched (non-empty) text.  It is deprecated  in  favor  of
+              GREP_COLORS,  but  still supported.  The mt, ms, and mc capabilities of GREP_COLORS have priority over it.  It
+              can only specify the color used to highlight the matching non-empty text in any matching line (a selected line
+              when  the  -v  command-line option is omitted, or a context line when -v is specified).  The default is 01;31,
+              which means a bold red foreground text on the terminal's default background.
+
+       GREP_COLORS
+              Specifies the colors and other attributes used to highlight various parts of  the  output.   Its  value  is  a
+              colon-separated  list  of capabilities that defaults to ms=01;31:mc=01;31:sl=:cx=:fn=35:ln=32:bn=32:se=36 with
+              the rv and ne boolean capabilities omitted (i.e., false).  Supported capabilities are as follows.
+
+              sl=    SGR substring for whole selected lines (i.e.,  matching  lines  when  the  -v  command-line  option  is
+                     omitted,  or non-matching lines when -v is specified).  If however the boolean rv capability and the -v
+                     command-line option are both specified, it applies to context matching lines instead.  The  default  is
+                     empty (i.e., the terminal's default color pair).
+
+              cx=    SGR  substring  for  whole  context  lines (i.e., non-matching lines when the -v command-line option is
+                     omitted, or matching lines when -v is specified).  If however the boolean  rv  capability  and  the  -v
+                     command-line option are both specified, it applies to selected non-matching lines instead.  The default
+                     is empty (i.e., the terminal's default color pair).
+
+              rv     Boolean value that reverses (swaps) the meanings of the sl= and cx= capabilities when the  -v  command-
+                     line option is specified.  The default is false (i.e., the capability is omitted).
+
+              mt=01;31
+                     SGR  substring  for  matching  non-empty  text  in any matching line (i.e., a selected line when the -v
+                     command-line option is omitted, or a context line when -v is specified).  Setting this is equivalent to
+                     setting both ms= and mc= at once to the same value.  The default is a bold red text foreground over the
+                     current line background.
+
+              ms=01;31
+                     SGR substring for matching non-empty text in a selected line.  (This is only used when the -v  command-
+                     line  option  is  omitted.)   The  effect of the sl= (or cx= if rv) capability remains active when this
+                     kicks in.  The default is a bold red text foreground over the current line background.
+
+              mc=01;31
+                     SGR substring for matching non-empty text in a context line.  (This is only used when the  -v  command-
+                     line  option  is  specified.)  The effect of the cx= (or sl= if rv) capability remains active when this
+                     kicks in.  The default is a bold red text foreground over the current line background.
+
+              fn=35  SGR substring for file names prefixing any content line.  The default is a magenta text foreground over
+                     the terminal's default background.
+
+              ln=32  SGR substring for line numbers prefixing any content line.  The default is a green text foreground over
+                     the terminal's default background.
+
+              bn=32  SGR substring for byte offsets prefixing any content line.  The default is a green text foreground over
+                     the terminal's default background.
+
+              se=36  SGR  substring  for separators that are inserted between selected line fields (:), between context line
+                     fields, (-), and between groups of adjacent lines when nonzero context is specified (--).  The  default
+                     is a cyan text foreground over the terminal's default background.
+
+              ne     Boolean  value that prevents clearing to the end of line using Erase in Line (EL) to Right (\33[K) each
+                     time a colorized item ends.  This is needed on terminals on which EL is not supported.  It is otherwise
+                     useful  on  terminals  for which the back_color_erase (bce) boolean terminfo capability does not apply,
+                     when the chosen highlight colors do not affect the background, or when EL is too  slow  or  causes  too
+                     much flicker.  The default is false (i.e., the capability is omitted).
+
+              Note  that boolean capabilities have no =...  part.  They are omitted (i.e., false) by default and become true
+              when specified.
+
+              See the Select Graphic Rendition (SGR) section in the documentation of the text  terminal  that  is  used  for
+              permitted  values  and  their meaning as character attributes.  These substring values are integers in decimal
+              representation and can be concatenated with semicolons.  grep takes care  of  assembling  the  result  into  a
+              complete  SGR  sequence  (\33[...m).   Common values to concatenate include 1 for bold, 4 for underline, 5 for
+              blink, 7 for inverse, 39 for default foreground color, 30 to 37 for foreground colors, 90 to 97  for  16-color
+              mode  foreground colors, 38;5;0 to 38;5;255 for 88-color and 256-color modes foreground colors, 49 for default
+              background color, 40 to 47 for background colors, 100 to 107 for 16-color mode background colors,  and  48;5;0
+              to 48;5;255 for 88-color and 256-color modes background colors.
+
+       LC_ALL, LC_COLLATE, LANG
+              These  variables  specify the locale for the LC_COLLATE category, which determines the collating sequence used
+              to interpret range expressions like [a-z].
+
+       LC_ALL, LC_CTYPE, LANG
+              These variables specify the locale for the LC_CTYPE category, which determines the type of  characters,  e.g.,
+              which characters are whitespace.
+
+       LC_ALL, LC_MESSAGES, LANG
+              These  variables specify the locale for the LC_MESSAGES category, which determines the language that grep uses
+              for messages.  The default C locale uses American English messages.
+
+       POSIXLY_CORRECT
+              If set, grep behaves as POSIX requires; otherwise, grep behaves more like other GNU programs.  POSIX  requires
+              that  options  that  follow file names must be treated as file names; by default, such options are permuted to
+              the front of the operand list and are treated as options.  Also, POSIX requires that unrecognized  options  be
+              diagnosed  as  “illegal”,  but  since  they  are not really against the law the default is to diagnose them as
+              “invalid”.  POSIXLY_CORRECT also disables _N_GNU_nonoption_argv_flags_, described below.
+
+       _N_GNU_nonoption_argv_flags_
+              (Here N is grep's numeric process ID.)  If the ith character of this environment variable's value is 1, do not
+              consider the ith operand of grep to be an option, even if it appears to be one.  A shell can put this variable
+              in the environment for each command it runs, specifying which operands are the results of file  name  wildcard
+              expansion  and  therefore  should  not  be treated as options.  This behavior is available only with the GNU C
+              library, and only when POSIXLY_CORRECT is not set.
+
+EXIT STATUS
+       The exit status is 0 if selected lines are found, and 1 if not found.  If an error occurred the  exit  status  is  2.
+       (Note: POSIX error handling code should check for '2' or greater.)
+
+COPYRIGHT
+       Copyright 1998-2000, 2002, 2005-2014 Free Software Foundation, Inc.
+
+       This  is free software; see the source for copying conditions.  There is NO warranty; not even for MERCHANTABILITY or
+       FITNESS FOR A PARTICULAR PURPOSE.
+
+BUGS
+   Reporting Bugs
+       Email     bug     reports     to     <bug-grep@gnu.org>,     a     mailing     list     whose     web     page     is
+       <http://lists.gnu.org/mailman/listinfo/bug-grep>.      grep's     Savannah     bug     tracker    is    located    at
+       <http://savannah.gnu.org/bugs/?group=grep>.
+
+   Known Bugs
+       Large repetition counts in the {n,m} construct may cause grep to use lots of  memory.   In  addition,  certain  other
+       obscure regular expressions require exponential time and space, and may cause grep to run out of memory.
+
+       Back-references are very slow, and may require exponential time.
+
+SEE ALSO
+   Regular Manual Pages
+       awk(1),  cmp(1),  diff(1), find(1), gzip(1), perl(1), sed(1), sort(1), xargs(1), zgrep(1), mmap(2), read(2), pcre(3),
+       pcresyntax(3), pcrepattern(3), terminfo(5), glob(7), regex(7).
+
+   POSIX Programmer's Manual Page
+       grep(1p).
+
+   TeXinfo Documentation
+       The  full   documentation   for   grep   is   maintained   as   a   TeXinfo   manual,   which   you   can   read   at
+       http://www.gnu.org/software/grep/manual/.   If  the  info  and grep programs are properly installed at your site, the
+       command
+
+              info grep
+
+       should give you access to the complete manual.
+
+NOTES
+       This man page is maintained only fitfully; the full documentation is often more up-to-date.
+
+       GNU's not Unix, but Unix is a beast; its plural form is Unixen.
+
+
+
+User Commands                                           GNU grep 2.16                                                GREP(1)
+HEAD(1)                                                 User Commands                                                HEAD(1)
+
+
+
+NAME
+       head - output the first part of files
+
+SYNOPSIS
+       head [OPTION]... [FILE]...
+
+DESCRIPTION
+       Print the first 10 lines of each FILE to standard output.  With more than one FILE, precede each with a header giving
+       the file name.  With no FILE, or when FILE is -, read standard input.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -c, --bytes=[-]K
+              print the first K bytes of each file; with the leading '-', print all but the last K bytes of each file
+
+       -n, --lines=[-]K
+              print the first K lines instead of the first 10; with the leading '-', print all but the last K lines of  each
+              file
+
+       -q, --quiet, --silent
+              never print headers giving file names
+
+       -v, --verbose
+              always print headers giving file names
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       K  may  have  a  multiplier  suffix:  b  512,  kB  1000,  K  1024,  MB  1000*1000,  M 1024*1024, GB 1000*1000*1000, G
+       1024*1024*1024, and so on for T, P, E, Z, Y.
+
+AUTHOR
+       Written by David MacKenzie and Jim Meyering.
+
+REPORTING BUGS
+       Report head bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report head translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright  ©  2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3   or   later
+       <http://gnu.org/licenses/gpl.html>.
+       This  is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted by
+       law.
+
+SEE ALSO
+       The full documentation for head is maintained as a Texinfo manual.  If  the  info  and  head  programs  are  properly
+       installed at your site, the command
+
+              info coreutils 'head invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                  HEAD(1)
+PASTE(1)                                                User Commands                                               PASTE(1)
+
+
+
+NAME
+       paste - merge lines of files
+
+SYNOPSIS
+       paste [OPTION]... [FILE]...
+
+DESCRIPTION
+       Write lines consisting of the sequentially corresponding lines from each FILE, separated by TABs, to standard output.
+       With no FILE, or when FILE is -, read standard input.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -d, --delimiters=LIST
+              reuse characters from LIST instead of TABs
+
+       -s, --serial
+              paste one file at a time instead of in parallel
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+AUTHOR
+       Written by David M. Ihnat and David MacKenzie.
+
+REPORTING BUGS
+       Report paste bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report paste translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright  ©  2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3   or   later
+       <http://gnu.org/licenses/gpl.html>.
+       This  is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted by
+       law.
+
+SEE ALSO
+       The full documentation for paste is maintained as a Texinfo manual.  If the info  and  paste  programs  are  properly
+       installed at your site, the command
+
+              info coreutils 'paste invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                 PASTE(1)
+REV(1)                                                  User Commands                                                 REV(1)
+
+NAME
+     rev — reverse lines of a file or files
+
+SYNOPSIS
+     rev [-V] [-h] [file ...]
+
+DESCRIPTION
+     The rev utility copies the specified files to standard output, reversing the order of characters in every line.  If no
+     files are specified, standard input is read.
+
+     -V, --version
+             Output version information and exit.
+
+     -h, --help
+             Output help and exit.
+
+AVAILABILITY
+     The rev command is part of the util-linux package and is available from ftp://ftp.kernel.org/pub/linux/utils/util-
+     linux/.
+
+util-linux                                              April 2011                                                util-linux
+SED(1)                                                  User Commands                                                 SED(1)
+
+
+
+NAME
+       sed - stream editor for filtering and transforming text
+
+SYNOPSIS
+       sed [OPTION]... {script-only-if-no-other-script} [input-file]...
+
+DESCRIPTION
+       Sed  is a stream editor.  A stream editor is used to perform basic text transformations on an input stream (a file or
+       input from a pipeline).  While in some ways similar to an editor which permits scripted edits (such as ed), sed works
+       by  making  only  one  pass over the input(s), and is consequently more efficient.  But it is sed's ability to filter
+       text in a pipeline which particularly distinguishes it from other types of editors.
+
+       -n, --quiet, --silent
+
+              suppress automatic printing of pattern space
+
+       -e script, --expression=script
+
+              add the script to the commands to be executed
+
+       -f script-file, --file=script-file
+
+              add the contents of script-file to the commands to be executed
+
+       --follow-symlinks
+
+              follow symlinks when processing in place
+
+       -i[SUFFIX], --in-place[=SUFFIX]
+
+              edit files in place (makes backup if SUFFIX supplied)
+
+       -l N, --line-length=N
+
+              specify the desired line-wrap length for the `l' command
+
+       --posix
+
+              disable all GNU extensions.
+
+       -r, --regexp-extended
+
+              use extended regular expressions in the script.
+
+       -s, --separate
+
+              consider files as separate rather than as a single continuous long stream.
+
+       -u, --unbuffered
+
+              load minimal amounts of data from the input files and flush the output buffers more often
+
+       -z, --null-data
+
+              separate lines by NUL characters
+
+       --help
+              display this help and exit
+
+       --version
+              output version information and exit
+
+       If no -e, --expression, -f, or --file option is given, then the first non-option argument is taken as the sed  script
+       to  interpret.   All remaining arguments are names of input files; if no input files are specified, then the standard
+       input is read.
+
+       GNU sed home page: <http://www.gnu.org/software/sed/>.  General help using  GNU  software:  <http://www.gnu.org/geth‐
+       elp/>.   E-mail bug reports to: <bug-sed@gnu.org>.  Be sure to include the word ``sed'' somewhere in the ``Subject:''
+       field.
+
+COMMAND SYNOPSIS
+       This is just a brief synopsis of sed commands to serve as a reminder to those who already know sed; other  documenta‐
+       tion (such as the texinfo document) must be consulted for fuller descriptions.
+
+   Zero-address ``commands''
+       : label
+              Label for b and t commands.
+
+       #comment
+              The comment extends until the next newline (or the end of a -e script fragment).
+
+       }      The closing bracket of a { } block.
+
+   Zero- or One- address commands
+       =      Print the current line number.
+
+       a \
+
+       text   Append text, which has each embedded newline preceded by a backslash.
+
+       i \
+
+       text   Insert text, which has each embedded newline preceded by a backslash.
+
+       q [exit-code]
+              Immediately  quit  the sed script without processing any more input, except that if auto-print is not disabled
+              the current pattern space will be printed.  The exit code argument is a GNU extension.
+
+       Q [exit-code]
+              Immediately quit the sed script without processing any more input.  This is a GNU extension.
+
+       r filename
+              Append text read from filename.
+
+       R filename
+              Append a line read from filename.  Each invocation of the command reads a line from the file.  This is  a  GNU
+              extension.
+
+   Commands which accept address ranges
+       {      Begin a block of commands (end with a }).
+
+       b label
+              Branch to label; if label is omitted, branch to end of script.
+
+       c \
+
+       text   Replace the selected lines with text, which has each embedded newline preceded by a backslash.
+
+       d      Delete pattern space.  Start next cycle.
+
+       D      If  pattern  space  contains  no newline, start a normal new cycle as if the d command was issued.  Otherwise,
+              delete text in the pattern space up to the first newline, and restart cycle with the resultant pattern  space,
+              without reading a new line of input.
+
+       h H    Copy/append pattern space to hold space.
+
+       g G    Copy/append hold space to pattern space.
+
+       l      List out the current line in a ``visually unambiguous'' form.
+
+       l width
+              List  out the current line in a ``visually unambiguous'' form, breaking it at width characters.  This is a GNU
+              extension.
+
+       n N    Read/append the next line of input into the pattern space.
+
+       p      Print the current pattern space.
+
+       P      Print up to the first embedded newline of the current pattern space.
+
+       s/regexp/replacement/
+              Attempt to match regexp against the pattern space.  If successful, replace that portion matched with  replace‐
+              ment.  The replacement may contain the special character & to refer to that portion of the pattern space which
+              matched, and the special escapes \1 through \9 to refer to the corresponding matching sub-expressions  in  the
+              regexp.
+
+       t label
+              If a s/// has done a successful substitution since the last input line was read and since the last t or T com‐
+              mand, then branch to label; if label is omitted, branch to end of script.
+
+       T label
+              If no s/// has done a successful substitution since the last input line was read and since the  last  t  or  T
+              command, then branch to label; if label is omitted, branch to end of script.  This is a GNU extension.
+
+       w filename
+              Write the current pattern space to filename.
+
+       W filename
+              Write the first line of the current pattern space to filename.  This is a GNU extension.
+
+       x      Exchange the contents of the hold and pattern spaces.
+
+       y/source/dest/
+              Transliterate  the  characters  in  the pattern space which appear in source to the corresponding character in
+              dest.
+
+Addresses
+       Sed commands can be given with no addresses, in which case the command will be executed for all input lines; with one
+       address,  in  which  case  the  command  will  only be executed for input lines which match that address; or with two
+       addresses, in which case the command will be executed for all input lines which match the inclusive  range  of  lines
+       starting from the first address and continuing to the second address.  Three things to note about address ranges: the
+       syntax is addr1,addr2 (i.e., the addresses are separated by a comma); the line which addr1  matched  will  always  be
+       accepted,  even  if  addr2  selects an earlier line; and if addr2 is a regexp, it will not be tested against the line
+       that addr1 matched.
+
+       After the address (or address-range), and before the command, a !  may be inserted, which specifies that the  command
+       shall only be executed if the address (or address-range) does not match.
+
+       The following address types are supported:
+
+       number Match  only  the  specified  line  number (which increments cumulatively across files, unless the -s option is
+              specified on the command line).
+
+       first~step
+              Match every step'th line starting with line first.  For example, ``sed -n 1~2p'' will print all  the  odd-num‐
+              bered  lines  in  the input stream, and the address 2~5 will match every fifth line, starting with the second.
+              first can be zero; in this case, sed operates as if it were equal to step.  (This is an extension.)
+
+       $      Match the last line.
+
+       /regexp/
+              Match lines matching the regular expression regexp.
+
+       \cregexpc
+              Match lines matching the regular expression regexp.  The c may be any character.
+
+       GNU sed also supports some special 2-address forms:
+
+       0,addr2
+              Start out in "matched first address" state, until addr2 is found.  This is similar to 1,addr2, except that  if
+              addr2  matches  the  very  first  line  of input the 0,addr2 form will be at the end of its range, whereas the
+              1,addr2 form will still be at the beginning of its range.  This works only when addr2 is a regular expression.
+
+       addr1,+N
+              Will match addr1 and the N lines following addr1.
+
+       addr1,~N
+              Will match addr1 and the lines following addr1 until the next line whose input line number is a multiple of N.
+
+REGULAR EXPRESSIONS
+       POSIX.2 BREs should be supported, but they aren't completely because of performance problems.  The \n sequence  in  a
+       regular expression matches the newline character, and similarly for \a, \t, and other sequences.
+
+BUGS
+       E-mail  bug  reports  to  bug-sed@gnu.org.   Also, please include the output of ``sed --version'' in the body of your
+       report if at all possible.
+
+AUTHOR
+       Written by Jay Fenlason, Tom Lord, Ken Pizzini, and Paolo Bonzini.   GNU  sed  home  page:  <http://www.gnu.org/soft‐
+       ware/sed/>.   General  help  using  GNU  software:  <http://www.gnu.org/gethelp/>.   E-mail  bug  reports  to:  <bug-
+       sed@gnu.org>.  Be sure to include the word ``sed'' somewhere in the ``Subject:'' field.
+
+COPYRIGHT
+       Copyright  ©  2012   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3   or   later
+       <http://gnu.org/licenses/gpl.html>.
+       This  is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted by
+       law.
+
+SEE ALSO
+       awk(1), ed(1), grep(1), tr(1), perlre(1), sed.info, any of various books on sed, the sed FAQ (http://sed.sf.net/grab‐
+       bag/tutorials/sedfaq.txt), http://sed.sf.net/grabbag/.
+
+       The full documentation for sed is maintained as a Texinfo manual.  If the info and sed programs are properly
+       installed at your site, the command
+
+              info sed
+
+       should give you access to the complete manual.
+
+
+
+sed 4.2.2                                               December 2012                                                 SED(1)
+SORT(1)                                                 User Commands                                                SORT(1)
+
+
+
+NAME
+       sort - sort lines of text files
+
+SYNOPSIS
+       sort [OPTION]... [FILE]...
+       sort [OPTION]... --files0-from=F
+
+DESCRIPTION
+       Write sorted concatenation of all FILE(s) to standard output.
+
+       Mandatory arguments to long options are mandatory for short options too.  Ordering options:
+
+       -b, --ignore-leading-blanks
+              ignore leading blanks
+
+       -d, --dictionary-order
+              consider only blanks and alphanumeric characters
+
+       -f, --ignore-case
+              fold lower case to upper case characters
+
+       -g, --general-numeric-sort
+              compare according to general numerical value
+
+       -i, --ignore-nonprinting
+              consider only printable characters
+
+       -M, --month-sort
+              compare (unknown) < 'JAN' < ... < 'DEC'
+
+       -h, --human-numeric-sort
+              compare human readable numbers (e.g., 2K 1G)
+
+       -n, --numeric-sort
+              compare according to string numerical value
+
+       -R, --random-sort
+              sort by random hash of keys
+
+       --random-source=FILE
+              get random bytes from FILE
+
+       -r, --reverse
+              reverse the result of comparisons
+
+       --sort=WORD
+              sort according to WORD: general-numeric -g, human-numeric -h, month -M, numeric -n, random -R, version -V
+
+       -V, --version-sort
+              natural sort of (version) numbers within text
+
+       Other options:
+
+       --batch-size=NMERGE
+              merge at most NMERGE inputs at once; for more use temp files
+
+       -c, --check, --check=diagnose-first
+              check for sorted input; do not sort
+
+       -C, --check=quiet, --check=silent
+              like -c, but do not report first bad line
+
+       --compress-program=PROG
+              compress temporaries with PROG; decompress them with PROG -d
+
+       --debug
+              annotate the part of the line used to sort, and warn about questionable usage to stderr
+
+       --files0-from=F
+              read input from the files specified by NUL-terminated names in file F; If F is - then read names from standard
+              input
+
+       -k, --key=KEYDEF
+              sort via a key; KEYDEF gives location and type
+
+       -m, --merge
+              merge already sorted files; do not sort
+
+       -o, --output=FILE
+              write result to FILE instead of standard output
+
+       -s, --stable
+              stabilize sort by disabling last-resort comparison
+
+       -S, --buffer-size=SIZE
+              use SIZE for main memory buffer
+
+       -t, --field-separator=SEP
+              use SEP instead of non-blank to blank transition
+
+       -T, --temporary-directory=DIR
+              use DIR for temporaries, not $TMPDIR or /tmp; multiple options specify multiple directories
+
+       --parallel=N
+              change the number of sorts run concurrently to N
+
+       -u, --unique
+              with -c, check for strict ordering; without -c, output only the first of an equal run
+
+       -z, --zero-terminated
+              end lines with 0 byte, not newline
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       KEYDEF is F[.C][OPTS][,F[.C][OPTS]] for start and stop position, where F is a field number and C a character position
+       in  the  field;  both  are  origin  1,  and the stop position defaults to the line's end.  If neither -t nor -b is in
+       effect, characters in a field are counted from the beginning of the preceding whitespace.  OPTS is one or  more  sin‐
+       gle-letter  ordering options [bdfgiMhnRrV], which override global ordering options for that key.  If no key is given,
+       use the entire line as the key.
+
+       SIZE may be followed by the following multiplicative suffixes: % 1% of memory, b 1, K 1024 (default), and so  on  for
+       M, G, T, P, E, Z, Y.
+
+       With no FILE, or when FILE is -, read standard input.
+
+       *** WARNING *** The locale specified by the environment affects sort order.  Set LC_ALL=C to get the traditional sort
+       order that uses native byte values.
+
+AUTHOR
+       Written by Mike Haertel and Paul Eggert.
+
+REPORTING BUGS
+       Report sort bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report sort translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright  ©  2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3   or   later
+       <http://gnu.org/licenses/gpl.html>.
+       This  is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted by
+       law.
+
+SEE ALSO
+       uniq(1)
+
+       The full documentation for sort is maintained as a Texinfo manual.  If  the  info  and  sort  programs  are  properly
+       installed at your site, the command
+
+              info coreutils 'sort invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                  SORT(1)
+SPLIT(1)                                                User Commands                                               SPLIT(1)
+
+
+
+NAME
+       split - split a file into pieces
+
+SYNOPSIS
+       split [OPTION]... [INPUT [PREFIX]]
+
+DESCRIPTION
+       Output  fixed-size pieces of INPUT to PREFIXaa, PREFIXab, ...; default size is 1000 lines, and default PREFIX is 'x'.
+       With no INPUT, or when INPUT is -, read standard input.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -a, --suffix-length=N
+              generate suffixes of length N (default 2)
+
+       --additional-suffix=SUFFIX
+              append an additional SUFFIX to file names.
+
+       -b, --bytes=SIZE
+              put SIZE bytes per output file
+
+       -C, --line-bytes=SIZE
+              put at most SIZE bytes of lines per output file
+
+       -d, --numeric-suffixes[=FROM]
+              use numeric suffixes instead of alphabetic.  FROM changes the start value (default 0).
+
+       -e, --elide-empty-files
+              do not generate empty output files with '-n'
+
+       --filter=COMMAND
+              write to shell COMMAND; file name is $FILE
+
+       -l, --lines=NUMBER
+              put NUMBER lines per output file
+
+       -n, --number=CHUNKS
+              generate CHUNKS output files.  See below
+
+       -u, --unbuffered
+              immediately copy input to output with '-n r/...'
+
+       --verbose
+              print a diagnostic just before each output file is opened
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       SIZE is an integer and optional unit (example: 10M is 10*1024*1024).  Units are K, M, G, T, P, E,  Z,  Y  (powers  of
+       1024) or KB, MB, ... (powers of 1000).
+
+       CHUNKS may be: N       split into N files based on size of input K/N     output Kth of N to stdout l/N     split into
+       N files without splitting lines l/K/N   output Kth of N to stdout without splitting lines r/N     like  'l'  but  use
+       round robin distribution r/K/N   likewise but only output Kth of N to stdout
+
+AUTHOR
+       Written by Torbjorn Granlund and Richard M. Stallman.
+
+REPORTING BUGS
+       Report split bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report split translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       The  full  documentation  for  split  is maintained as a Texinfo manual.  If the info and split programs are properly
+       installed at your site, the command
+
+              info coreutils 'split invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                 SPLIT(1)
+TAC(1)                                                  User Commands                                                 TAC(1)
+
+
+
+NAME
+       tac - concatenate and print files in reverse
+
+SYNOPSIS
+       tac [OPTION]... [FILE]...
+
+DESCRIPTION
+       Write each FILE to standard output, last line first.  With no FILE, or when FILE is -, read standard input.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -b, --before
+              attach the separator before instead of after
+
+       -r, --regex
+              interpret the separator as a regular expression
+
+       -s, --separator=STRING
+              use STRING as the separator instead of newline
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+AUTHOR
+       Written by Jay Lepreau and David MacKenzie.
+
+REPORTING BUGS
+       Report tac bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report tac translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       rev(1)
+
+       The  full  documentation  for  tac  is  maintained  as  a  Texinfo manual.  If the info and tac programs are properly
+       installed at your site, the command
+
+              info coreutils 'tac invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                   TAC(1)
+TAIL(1)                                                 User Commands                                                TAIL(1)
+
+
+
+NAME
+       tail - output the last part of files
+
+SYNOPSIS
+       tail [OPTION]... [FILE]...
+
+DESCRIPTION
+       Print  the last 10 lines of each FILE to standard output.  With more than one FILE, precede each with a header giving
+       the file name.  With no FILE, or when FILE is -, read standard input.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -c, --bytes=K
+              output the last K bytes; alternatively, use -c +K to output bytes starting with the Kth of each file
+
+       -f, --follow[={name|descriptor}]
+              output appended data as the file grows; -f, --follow, and --follow=descriptor are equivalent
+
+       -F     same as --follow=name --retry
+
+       -n, --lines=K
+              output the last K lines, instead of the last 10; or use -n +K to output lines starting with the Kth
+
+       --max-unchanged-stats=N
+              with --follow=name, reopen a FILE which has not changed size after N (default 5) iterations to see if  it  has
+              been  unlinked  or renamed (this is the usual case of rotated log files).  With inotify, this option is rarely
+              useful.
+
+       --pid=PID
+              with -f, terminate after process ID, PID dies
+
+       -q, --quiet, --silent
+              never output headers giving file names
+
+       --retry
+              keep trying to open a file even when it is or becomes inaccessible; useful when following by name, i.e.,  with
+              --follow=name
+
+       -s, --sleep-interval=N
+              with  -f, sleep for approximately N seconds (default 1.0) between iterations.  With inotify and --pid=P, check
+              process P at least once every N seconds.
+
+       -v, --verbose
+              always output headers giving file names
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       If the first character of K (the number of bytes or lines) is a '+', print beginning with the Kth item from the start
+       of each file, otherwise, print the last K items in the file.  K may have a multiplier suffix: b 512, kB 1000, K 1024,
+       MB 1000*1000, M 1024*1024, GB 1000*1000*1000, G 1024*1024*1024, and so on for T, P, E, Z, Y.
+
+       With --follow (-f), tail defaults to following the file descriptor, which means  that  even  if  a  tail'ed  file  is
+       renamed,  tail  will continue to track its end.  This default behavior is not desirable when you really want to track
+       the actual name of the file, not the file descriptor (e.g., log rotation).  Use --follow=name  in  that  case.   That
+       causes tail to track the named file in a way that accommodates renaming, removal and creation.
+
+AUTHOR
+       Written by Paul Rubin, David MacKenzie, Ian Lance Taylor, and Jim Meyering.
+
+REPORTING BUGS
+       Report tail bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report tail translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       The  full  documentation  for  tail  is  maintained  as a Texinfo manual.  If the info and tail programs are properly
+       installed at your site, the command
+
+              info coreutils 'tail invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                  TAIL(1)
+# Learn Basic Shell Command
+- env, set
+- cat
+- grep, sed, awk
+- sort, head
+GAWK(1)                                               Utility Commands                                               GAWK(1)
+
+
+
+NAME
+       gawk - pattern scanning and processing language
+
+SYNOPSIS
+       gawk [ POSIX or GNU style options ] -f program-file [ -- ] file ...
+       gawk [ POSIX or GNU style options ] [ -- ] program-text file ...
+
+       pgawk [ POSIX or GNU style options ] -f program-file [ -- ] file ...
+       pgawk [ POSIX or GNU style options ] [ -- ] program-text file ...
+
+       dgawk [ POSIX or GNU style options ] -f program-file [ -- ] file ...
+
+DESCRIPTION
+       Gawk  is the GNU Project's implementation of the AWK programming language.  It conforms to the definition of the lan‐
+       guage in the POSIX 1003.1 Standard.  This version in turn is based on the description in  The  AWK  Programming  Lan‐
+       guage, by Aho, Kernighan, and Weinberger.  Gawk provides the additional features found in the current version of UNIX
+       awk and a number of GNU-specific extensions.
+
+       The command line consists of options to gawk itself, the AWK program text (if not  supplied  via  the  -f  or  --file
+       options), and values to be made available in the ARGC and ARGV pre-defined AWK variables.
+
+       Pgawk  is the profiling version of gawk.  It is identical in every way to gawk, except that programs run more slowly,
+       and it automatically produces an execution profile in the file awkprof.out when  done.   See  the  --profile  option,
+       below.
+
+       Dgawk  is an awk debugger. Instead of running the program directly, it loads the AWK source code and then prompts for
+       debugging commands.  Unlike gawk and pgawk, dgawk only processes AWK program source provided with the -f option.  The
+       debugger is documented in GAWK: Effective AWK Programming.
+
+OPTION FORMAT
+       Gawk  options  may  be  either  traditional POSIX-style one letter options, or GNU-style long options.  POSIX options
+       start with a single “-”, while long options start with “--”.  Long options are provided for  both  GNU-specific  fea‐
+       tures and for POSIX-mandated features.
+
+       Gawk-  specific options are typically used in long-option form.  Arguments to long options are either joined with the
+       option by an = sign, with no intervening spaces, or they may be provided in the next  command  line  argument.   Long
+       options may be abbreviated, as long as the abbreviation remains unique.
+
+       Additionally,  each long option has a corresponding short option, so that the option's functionality may be used from
+       within #!  executable scripts.
+
+OPTIONS
+       Gawk accepts the following options.  Standard options are listed first, followed  by  options  for  gawk  extensions,
+       listed alphabetically by short option.
+
+       -f program-file
+       --file program-file
+              Read the AWK program source from the file program-file, instead of from the first command line argument.  Mul‐
+              tiple -f (or --file) options may be used.
+
+       -F fs
+       --field-separator fs
+              Use fs for the input field separator (the value of the FS predefined variable).
+
+       -v var=val
+       --assign var=val
+              Assign the value val to the variable var, before execution of the program begins.  Such  variable  values  are
+              available to the BEGIN block of an AWK program.
+
+       -b
+       --characters-as-bytes
+              Treat all input data as single-byte characters. In other words, don't pay any attention to the locale informa‐
+              tion when attempting to process strings as multibyte characters.  The --posix option overrides this one.
+
+       -c
+       --traditional
+              Run in compatibility mode.  In compatibility mode, gawk behaves identically to UNIX awk; none of the  GNU-spe‐
+              cific extensions are recognized.  See GNU EXTENSIONS, below, for more information.
+
+       -C
+       --copyright
+              Print the short version of the GNU copyright information message on the standard output and exit successfully.
+
+       -d[file]
+       --dump-variables[=file]
+              Print  a  sorted list of global variables, their types and final values to file.  If no file is provided, gawk
+              uses a file named awkvars.out in the current directory.
+              Having a list of all the global variables is a good way to look for typographical  errors  in  your  programs.
+              You  would  also  use this option if you have a large program with a lot of functions, and you want to be sure
+              that your functions don't inadvertently use global variables that you meant to be local.  (This is a  particu‐
+              larly easy mistake to make with simple variable names like i, j, and so on.)
+
+       -e program-text
+       --source program-text
+              Use  program-text  as  AWK  program source code.  This option allows the easy intermixing of library functions
+              (used via the -f and --file options) with source code entered on the command line.  It is  intended  primarily
+              for medium to large AWK programs used in shell scripts.
+
+       -E file
+       --exec file
+              Similar  to -f, however, this is option is the last one processed.  This should be used with #!  scripts, par‐
+              ticularly for CGI applications, to avoid passing in options or source code (!) on the command line from a URL.
+              This option disables command-line variable assignments.
+
+       -g
+       --gen-pot
+              Scan  and  parse  the  AWK program, and generate a GNU .pot (Portable Object Template) format file on standard
+              output with entries for all localizable strings in the program.  The program itself is not executed.  See  the
+              GNU gettext distribution for more information on .pot files.
+
+       -h
+       --help Print  a  relatively short summary of the available options on the standard output.  (Per the GNU Coding Stan‐
+              dards, these options cause an immediate, successful exit.)
+
+       -L [value]
+       --lint[=value]
+              Provide warnings about constructs that are dubious or non-portable to  other  AWK  implementations.   With  an
+              optional  argument  of  fatal,  lint warnings become fatal errors.  This may be drastic, but its use will cer‐
+              tainly encourage the development of cleaner AWK programs.  With an optional argument of invalid, only warnings
+              about things that are actually invalid are issued. (This is not fully implemented yet.)
+
+       -n
+       --non-decimal-data
+              Recognize octal and hexadecimal values in input data.  Use this option with great caution!
+
+       -N
+       --use-lc-numeric
+              This  forces  gawk  to  use  the locale's decimal point character when parsing input data.  Although the POSIX
+              standard requires this behavior, and gawk does so when --posix is in effect, the default is to  follow  tradi‐
+              tional  behavior  and  use  a period as the decimal point, even in locales where the period is not the decimal
+              point character.  This option overrides the default behavior, without the full  draconian  strictness  of  the
+              --posix option.
+
+       -O
+       --optimize
+              Enable  optimizations  upon  the internal representation of the program.  Currently, this includes just simple
+              constant-folding. The gawk maintainer hopes to add additional optimizations over time.
+
+       -p[prof_file]
+       --profile[=prof_file]
+              Send profiling data to prof_file.  The default is awkprof.out.  When run with gawk,  the  profile  is  just  a
+              “pretty  printed”  version of the program.  When run with pgawk, the profile contains execution counts of each
+              statement in the program in the left margin and function call counts for each user-defined function.
+
+       -P
+       --posix
+              This turns on compatibility mode, with the following additional restrictions:
+
+              · \x escape sequences are not recognized.
+
+              · Only space and tab act as field separators when FS is set to a single space, newline does not.
+
+              · You cannot continue lines after ?  and :.
+
+              · The synonym func for the keyword function is not recognized.
+
+              · The operators ** and **= cannot be used in place of ^ and ^=.
+
+              · The fflush() function is not available.
+
+       -r
+       --re-interval
+              Enable the use of interval expressions in  regular  expression  matching  (see  Regular  Expressions,  below).
+              Interval  expressions were not traditionally available in the AWK language.  The POSIX standard added them, to
+              make awk and egrep consistent with each other.  They are enabled by default, but this option remains  for  use
+              with --traditional.
+
+       -R
+       --command file
+              Dgawk only.  Read stored debugger commands from file.
+
+       -S
+       --sandbox
+              Runs gawk in sandbox mode, disabling the system() function, input redirection with getline, output redirection
+              with print and printf, and loading dynamic extensions.  Command execution (through  pipelines)  is  also  dis‐
+              abled.  This effectively blocks a script from accessing local resources (except for the files specified on the
+              command line).
+
+       -t
+       --lint-old
+              Provide warnings about constructs that are not portable to the original version of Unix awk.
+
+       -V
+       --version
+              Print version information for this particular copy of gawk on the standard output.  This is useful mainly  for
+              knowing  if  the  current copy of gawk on your system is up to date with respect to whatever the Free Software
+              Foundation is distributing.  This is also useful when reporting bugs.  (Per the GNU  Coding  Standards,  these
+              options cause an immediate, successful exit.)
+
+       --     Signal the end of options. This is useful to allow further arguments to the AWK program itself to start with a
+              “-”.  This provides consistency with the argument parsing convention used by most other POSIX programs.
+
+       In compatibility mode, any other options are flagged as invalid, but are otherwise ignored.  In normal operation,  as
+       long  as  program text has been supplied, unknown options are passed on to the AWK program in the ARGV array for pro‐
+       cessing.  This is particularly useful for running AWK programs via the “#!” executable interpreter mechanism.
+
+AWK PROGRAM EXECUTION
+       An AWK program consists of a sequence of pattern-action statements and optional function definitions.
+
+              @include "filename" pattern   { action statements }
+              function name(parameter list) { statements }
+
+       Gawk first reads the program source from the program-file(s) if specified, from arguments to --source,  or  from  the
+       first non-option argument on the command line.  The -f and --source options may be used multiple times on the command
+       line.  Gawk reads the program text as if all the program-files and command line source texts  had  been  concatenated
+       together.   This  is  useful  for building libraries of AWK functions, without having to include them in each new AWK
+       program that uses them.  It also provides the ability to mix library functions with command line programs.
+
+       In addition, lines beginning with @include may be used to include  other  source  files  into  your  program,  making
+       library use even easier.
+
+       The  environment  variable AWKPATH specifies a search path to use when finding source files named with the -f option.
+       If this variable does not exist, the default path is  ".:/usr/local/share/awk".   (The  actual  directory  may  vary,
+       depending upon how gawk was built and installed.)  If a file name given to the -f option contains a “/” character, no
+       path search is performed.
+
+       Gawk executes AWK programs in the following order.  First, all variable assignments specified via the -v  option  are
+       performed.   Next,  gawk  compiles  the  program  into  an  internal form.  Then, gawk executes the code in the BEGIN
+       block(s) (if any), and then proceeds to read each file named in the ARGV array (up to ARGV[ARGC]).  If there  are  no
+       files named on the command line, gawk reads the standard input.
+
+       If a filename on the command line has the form var=val it is treated as a variable assignment.  The variable var will
+       be assigned the value val.  (This happens after any BEGIN block(s) have been run.)  Command line variable  assignment
+       is  most useful for dynamically assigning values to the variables AWK uses to control how input is broken into fields
+       and records.  It is also useful for controlling state if multiple passes are needed over a single data file.
+
+       If the value of a particular element of ARGV is empty (""), gawk skips over it.
+
+       For each input file, if a BEGINFILE rule exists, gawk executes the associated code before processing the contents  of
+       the file. Similarly, gawk executes the code associated with ENDFILE after processing the file.
+
+       For  each record in the input, gawk tests to see if it matches any pattern in the AWK program.  For each pattern that
+       the record matches, the associated action is executed.  The patterns are tested in the order they occur in  the  pro‐
+       gram.
+
+       Finally, after all the input is exhausted, gawk executes the code in the END block(s) (if any).
+
+   Command Line Directories
+       According  to  POSIX,  files named on the awk command line must be text files.  The behavior is ``undefined'' if they
+       are not.  Most versions of awk treat a directory on the command line as a fatal error.
+
+       Starting with version 4.0 of gawk, a directory on the command line produces a warning, but is otherwise skipped.   If
+       either  of  the  --posix  or --traditional options is given, then gawk reverts to treating directories on the command
+       line as a fatal error.
+
+VARIABLES, RECORDS AND FIELDS
+       AWK variables are dynamic; they come into existence when they are first used.  Their values are either floating-point
+       numbers or strings, or both, depending upon how they are used.  AWK also has one dimensional arrays; arrays with mul‐
+       tiple dimensions may be simulated.  Several pre-defined variables are set as a program runs; these are  described  as
+       needed and summarized below.
+
+   Records
+       Normally, records are separated by newline characters.  You can control how records are separated by assigning values
+       to the built-in variable RS.  If RS is any single character, that character separates records.  Otherwise,  RS  is  a
+       regular  expression.   Text in the input that matches this regular expression separates the record.  However, in com‐
+       patibility mode, only the first character of its string value is used for separating records.  If RS is  set  to  the
+       null  string,  then  records  are separated by blank lines.  When RS is set to the null string, the newline character
+       always acts as a field separator, in addition to whatever value FS may have.
+
+   Fields
+       As each input record is read, gawk splits the record into fields, using the value of the FS  variable  as  the  field
+       separator.  If FS is a single character, fields are separated by that character.  If FS is the null string, then each
+       individual character becomes a separate field.  Otherwise, FS is expected to be a full regular  expression.   In  the
+       special case that FS is a single space, fields are separated by runs of spaces and/or tabs and/or newlines.  (But see
+       the section POSIX COMPATIBILITY, below).  NOTE: The value of IGNORECASE (see below) also affects how fields are split
+       when FS is a regular expression, and how records are separated when RS is a regular expression.
+
+       If  the FIELDWIDTHS variable is set to a space separated list of numbers, each field is expected to have fixed width,
+       and gawk splits up the record using the specified widths.  The value of FS is ignored.  Assigning a new value  to  FS
+       or FPAT overrides the use of FIELDWIDTHS.
+
+       Similarly,  if  the FPAT variable is set to a string representing a regular expression, each field is made up of text
+       that matches that regular expression. In this case, the regular expression describes the fields  themselves,  instead
+       of the text that separates the fields.  Assigning a new value to FS or FIELDWIDTHS overrides the use of FPAT.
+
+       Each field in the input record may be referenced by its position, $1, $2, and so on.  $0 is the whole record.  Fields
+       need not be referenced by constants:
+
+              n = 5
+              print $n
+
+       prints the fifth field in the input record.
+
+       The variable NF is set to the total number of fields in the input record.
+
+       References to non-existent fields (i.e. fields after $NF) produce the null-string.  However, assigning to a non-exis‐
+       tent  field  (e.g.,  $(NF+2)  =  5) increases the value of NF, creates any intervening fields with the null string as
+       their value, and causes the value of $0 to be recomputed, with the fields being separated by the value of OFS.   Ref‐
+       erences  to  negative  numbered fields cause a fatal error.  Decrementing NF causes the values of fields past the new
+       value to be lost, and the value of $0 to be recomputed, with the fields being separated by the value of OFS.
+
+       Assigning a value to an existing field causes the whole record to be  rebuilt  when  $0  is  referenced.   Similarly,
+       assigning a value to $0 causes the record to be resplit, creating new values for the fields.
+
+   Built-in Variables
+       Gawk's built-in variables are:
+
+       ARGC        The number of command line arguments (does not include options to gawk, or the program source).
+
+       ARGIND      The index in ARGV of the current file being processed.
+
+       ARGV        Array of command line arguments.  The array is indexed from 0 to ARGC - 1.  Dynamically changing the con‐
+                   tents of ARGV can control the files used for data.
+
+       BINMODE     On non-POSIX systems, specifies use of “binary” mode for all file I/O.  Numeric values of  1,  2,  or  3,
+                   specify that input files, output files, or all files, respectively, should use binary I/O.  String values
+                   of "r", or "w" specify that input files, or output files, respectively, should use  binary  I/O.   String
+                   values  of  "rw" or "wr" specify that all files should use binary I/O.  Any other string value is treated
+                   as "rw", but generates a warning message.
+
+       CONVFMT     The conversion format for numbers, "%.6g", by default.
+
+       ENVIRON     An array containing the values of the current environment.  The array is indexed by the environment vari‐
+                   ables,  each  element  being  the  value  of that variable (e.g., ENVIRON["HOME"] might be /home/arnold).
+                   Changing this array does not affect the environment seen by programs which gawk spawns via redirection or
+                   the system() function.
+
+       ERRNO       If  a  system error occurs either doing a redirection for getline, during a read for getline, or during a
+                   close(), then ERRNO will contain a string describing the error.  The value is subject to  translation  in
+                   non-English locales.
+
+       FIELDWIDTHS A whitespace separated list of field widths.  When set, gawk parses the input into fields of fixed width,
+                   instead of using the value of the FS variable as the field separator.  See Fields, above.
+
+       FILENAME    The name of the current input file.  If no files are specified on the command line, the value of FILENAME
+                   is “-”.  However, FILENAME is undefined inside the BEGIN block (unless set by getline).
+
+       FNR         The input record number in the current input file.
+
+       FPAT        A  regular expression describing the contents of the fields in a record.  When set, gawk parses the input
+                   into fields, where the fields match the regular expression, instead of using the value of the FS variable
+                   as the field separator.  See Fields, above.
+
+       FS          The input field separator, a space by default.  See Fields, above.
+
+       IGNORECASE  Controls  the case-sensitivity of all regular expression and string operations.  If IGNORECASE has a non-
+                   zero value, then string comparisons and pattern matching in rules, field  splitting  with  FS  and  FPAT,
+                   record  separating with RS, regular expression matching with ~ and !~, and the gensub(), gsub(), index(),
+                   match(), patsplit(), split(), and sub() built-in functions all ignore case when doing regular  expression
+                   operations.   NOTE:  Array subscripting is not affected.  However, the asort() and asorti() functions are
+                   affected.
+                   Thus, if IGNORECASE is not equal to zero, /aB/ matches all of the strings "ab", "aB", "Ab", and "AB".  As
+                   with  all  AWK  variables,  the initial value of IGNORECASE is zero, so all regular expression and string
+                   operations are normally case-sensitive.
+
+       LINT        Provides dynamic control of the --lint option from within an AWK program.  When true,  gawk  prints  lint
+                   warnings.  When  false,  it does not.  When assigned the string value "fatal", lint warnings become fatal
+                   errors, exactly like --lint=fatal.  Any other true value just prints warnings.
+
+       NF          The number of fields in the current input record.
+
+       NR          The total number of input records seen so far.
+
+       OFMT        The output format for numbers, "%.6g", by default.
+
+       OFS         The output field separator, a space by default.
+
+       ORS         The output record separator, by default a newline.
+
+       PROCINFO    The elements of this array provide access to information about the running AWK program.  On some systems,
+                   there  may be elements in the array, "group1" through "groupn" for some n, which is the number of supple‐
+                   mentary groups that the process has.  Use the in operator to test for these elements.  The following ele‐
+                   ments are guaranteed to be available:
+
+                   PROCINFO["egid"]    the value of the getegid(2) system call.
+
+                   PROCINFO["strftime"]
+                                       The default time format string for strftime().
+
+                   PROCINFO["euid"]    the value of the geteuid(2) system call.
+
+                   PROCINFO["FS"]      "FS"  if field splitting with FS is in effect, "FPAT" if field splitting with FPAT is
+                                       in effect, or "FIELDWIDTHS" if field splitting with FIELDWIDTHS is in effect.
+
+                   PROCINFO["gid"]     the value of the getgid(2) system call.
+
+                   PROCINFO["pgrpid"]  the process group ID of the current process.
+
+                   PROCINFO["pid"]     the process ID of the current process.
+
+                   PROCINFO["ppid"]    the parent process ID of the current process.
+
+                   PROCINFO["uid"]     the value of the getuid(2) system call.
+
+                   PROCINFO["sorted_in"]
+                                       If this element exists in PROCINFO, then its value controls the order in which  array
+                                       elements   are   traversed  in  for  loops.   Supported  values  are  "@ind_str_asc",
+                                       "@ind_num_asc",  "@val_type_asc",  "@val_str_asc",  "@val_num_asc",  "@ind_str_desc",
+                                       "@ind_num_desc", "@val_type_desc", "@val_str_desc", "@val_num_desc", and "@unsorted".
+                                       The value can also be the name of any comparison function defined as follows:
+
+                          function cmp_func(i1, v1, i2, v2)
+
+                   where i1 and i2 are the indices, and v1 and v2 are the corresponding values of  the  two  elements  being
+                   compared.   It  should  return a number less than, equal to, or greater than 0, depending on how the ele‐
+                   ments of the array are to be ordered.
+
+                   PROCINFO["version"]
+                          the version of gawk.
+
+       RS          The input record separator, by default a newline.
+
+       RT          The record terminator.  Gawk sets RT to the input text that matched the character or  regular  expression
+                   specified by RS.
+
+       RSTART      The index of the first character matched by match(); 0 if no match.  (This implies that character indices
+                   start at one.)
+
+       RLENGTH     The length of the string matched by match(); -1 if no match.
+
+       SUBSEP      The character used to separate multiple subscripts in array elements, by default "\034".
+
+       TEXTDOMAIN  The text domain of the AWK program; used to find the localized translations for the program's strings.
+
+   Arrays
+       Arrays are subscripted with an expression between square brackets ([ and ]).  If the expression is an expression list
+       (expr,  expr ...)  then the array subscript is a string consisting of the concatenation of the (string) value of each
+       expression, separated by the value of the SUBSEP variable.  This facility is used to  simulate  multiply  dimensioned
+       arrays.  For example:
+
+              i = "A"; j = "B"; k = "C"
+              x[i, j, k] = "hello, world\n"
+
+       assigns  the string "hello, world\n" to the element of the array x which is indexed by the string "A\034B\034C".  All
+       arrays in AWK are associative, i.e. indexed by string values.
+
+       The special operator in may be used to test if an array has an index consisting of a particular value:
+
+              if (val in array)
+                   print array[val]
+
+       If the array has multiple subscripts, use (i, j) in array.
+
+       The in construct may also be used in a for loop to iterate over all the elements of an array.
+
+       An element may be deleted from an array using the delete statement.  The delete statement may also be used to  delete
+       the entire contents of an array, just by specifying the array name without a subscript.
+
+       gawk  supports  true multidimensional arrays. It does not require that such arrays be ``rectangular'' as in C or C++.
+       For example:
+              a[1] = 5
+              a[2][1] = 6
+              a[2][2] = 7
+
+   Variable Typing And Conversion
+       Variables and fields may be (floating point) numbers, or strings, or both.  How the value of  a  variable  is  inter‐
+       preted  depends  upon  its  context.   If  used in a numeric expression, it will be treated as a number; if used as a
+       string it will be treated as a string.
+
+       To force a variable to be treated as a number, add 0 to it; to force it to be treated as  a  string,  concatenate  it
+       with the null string.
+
+       When  a  string must be converted to a number, the conversion is accomplished using strtod(3).  A number is converted
+       to a string by using the value of CONVFMT as a format string for sprintf(3), with the numeric value of  the  variable
+       as the argument.  However, even though all numbers in AWK are floating-point, integral values are always converted as
+       integers.  Thus, given
+
+              CONVFMT = "%2.2f"
+              a = 12
+              b = a ""
+
+       the variable b has a string value of "12" and not "12.00".
+
+       NOTE: When operating in POSIX mode (such as with the --posix command line option), beware that  locale  settings  may
+       interfere with the way decimal numbers are treated: the decimal separator of the numbers you are feeding to gawk must
+       conform to what your locale would expect, be it a comma (,) or a period (.).
+
+       Gawk performs comparisons as follows: If two variables are numeric, they are compared numerically.  If one  value  is
+       numeric  and  the  other  has  a string value that is a “numeric string,” then comparisons are also done numerically.
+       Otherwise, the numeric value is converted to a string and a string comparison is performed.   Two  strings  are  com‐
+       pared, of course, as strings.
+
+       Note  that  string constants, such as "57", are not numeric strings, they are string constants.  The idea of “numeric
+       string” only applies to fields, getline input, FILENAME, ARGV elements, ENVIRON elements and the elements of an array
+       created  by  split() or patsplit() that are numeric strings.  The basic idea is that user input, and only user input,
+       that looks numeric, should be treated that way.
+
+       Uninitialized variables have the numeric value 0 and the string value "" (the null, or empty, string).
+
+   Octal and Hexadecimal Constants
+       You may use C-style octal and hexadecimal constants in your AWK program source code.  For example,  the  octal  value
+       011 is equal to decimal 9, and the hexadecimal value 0x11 is equal to decimal 17.
+
+   String Constants
+       String  constants  in AWK are sequences of characters enclosed between double quotes (like "value").  Within strings,
+       certain escape sequences are recognized, as in C.  These are:
+
+       \\   A literal backslash.
+
+       \a   The “alert” character; usually the ASCII BEL character.
+
+       \b   backspace.
+
+       \f   form-feed.
+
+       \n   newline.
+
+       \r   carriage return.
+
+       \t   horizontal tab.
+
+       \v   vertical tab.
+
+       \xhex digits
+            The character represented by the string of hexadecimal digits following the \x.  As in  ANSI  C,  all  following
+            hexadecimal  digits  are  considered  part of the escape sequence.  (This feature should tell us something about
+            language design by committee.)  E.g., "\x1B" is the ASCII ESC (escape) character.
+
+       \ddd The character represented by the 1-, 2-, or 3-digit sequence of octal digits.  E.g., "\033"  is  the  ASCII  ESC
+            (escape) character.
+
+       \c   The literal character c.
+
+       The  escape  sequences may also be used inside constant regular expressions (e.g., /[ \t\f\n\r\v]/ matches whitespace
+       characters).
+
+       In compatibility mode, the characters represented by octal and hexadecimal escape  sequences  are  treated  literally
+       when used in regular expression constants.  Thus, /a\52b/ is equivalent to /a\*b/.
+
+PATTERNS AND ACTIONS
+       AWK  is a line-oriented language.  The pattern comes first, and then the action.  Action statements are enclosed in {
+       and }.  Either the pattern may be missing, or the action may be missing, but, of course, not both.  If the pattern is
+       missing, the action is executed for every single record of input.  A missing action is equivalent to
+
+              { print }
+
+       which prints the entire record.
+
+       Comments  begin  with  the  # character, and continue until the end of the line.  Blank lines may be used to separate
+       statements.  Normally, a statement ends with a newline, however, this is not the case for lines ending in a comma, {,
+       ?,  :,  &&,  or  ||.   Lines ending in do or else also have their statements automatically continued on the following
+       line.  In other cases, a line can be continued by ending it with a “\”, in which case the newline is ignored.
+
+       Multiple statements may be put on one line by separating them with a “;”.  This applies to both the statements within
+       the action part of a pattern-action pair (the usual case), and to the pattern-action statements themselves.
+
+   Patterns
+       AWK patterns may be one of the following:
+
+              BEGIN
+              END
+              BEGINFILE
+              ENDFILE
+              /regular expression/
+              relational expression
+              pattern && pattern
+              pattern || pattern
+              pattern ? pattern : pattern
+              (pattern)
+              ! pattern
+              pattern1, pattern2
+
+       BEGIN  and  END  are  two  special kinds of patterns which are not tested against the input.  The action parts of all
+       BEGIN patterns are merged as if all the statements had been written in a  single  BEGIN  block.   They  are  executed
+       before  any  of  the  input  is  read.   Similarly, all the END blocks are merged, and executed when all the input is
+       exhausted (or when an exit statement is executed).  BEGIN and END patterns cannot be combined with other patterns  in
+       pattern expressions.  BEGIN and END patterns cannot have missing action parts.
+
+       BEGINFILE  and  ENDFILE  are additional special patterns whose bodies are executed before reading the first record of
+       each command line input file and after reading the last record of each file.  Inside the BEGINFILE rule, the value of
+       ERRNO  will  be the empty string if the file could be opened successfully.  Otherwise, there is some problem with the
+       file and the code should use nextfile to skip it. If that is not done, gawk produces its usual fatal error for  files
+       that cannot be opened.
+
+       For  /regular expression/ patterns, the associated statement is executed for each input record that matches the regu‐
+       lar expression.  Regular expressions are the same as those in egrep(1), and are summarized below.
+
+       A relational expression may use any of the operators defined below in the section on actions.  These  generally  test
+       whether certain fields match certain regular expressions.
+
+       The &&, ||, and !  operators are logical AND, logical OR, and logical NOT, respectively, as in C.  They do short-cir‐
+       cuit evaluation, also as in C, and are used for combining more primitive pattern expressions.  As in most  languages,
+       parentheses may be used to change the order of evaluation.
+
+       The  ?:  operator  is like the same operator in C.  If the first pattern is true then the pattern used for testing is
+       the second pattern, otherwise it is the third.  Only one of the second and third patterns is evaluated.
+
+       The pattern1, pattern2 form of an expression is called a range pattern.  It matches all input records starting with a
+       record  that  matches  pattern1, and continuing until a record that matches pattern2, inclusive.  It does not combine
+       with any other sort of pattern expression.
+
+   Regular Expressions
+       Regular expressions are the extended kind found in egrep.  They are composed of characters as follows:
+
+       c          matches the non-metacharacter c.
+
+       \c         matches the literal character c.
+
+       .          matches any character including newline.
+
+       ^          matches the beginning of a string.
+
+       $          matches the end of a string.
+
+       [abc...]   character list, matches any of the characters abc....
+
+       [^abc...]  negated character list, matches any character except abc....
+
+       r1|r2      alternation: matches either r1 or r2.
+
+       r1r2       concatenation: matches r1, and then r2.
+
+       r+         matches one or more r's.
+
+       r*         matches zero or more r's.
+
+       r?         matches zero or one r's.
+
+       (r)        grouping: matches r.
+
+       r{n}
+       r{n,}
+       r{n,m}     One or two numbers inside braces denote an interval expression.  If there is one number in the braces, the
+                  preceding  regular  expression r is repeated n times.  If there are two numbers separated by a comma, r is
+                  repeated n to m times.  If there is one number followed by a comma, then r is repeated at least n times.
+
+       \y         matches the empty string at either the beginning or the end of a word.
+
+       \B         matches the empty string within a word.
+
+       \<         matches the empty string at the beginning of a word.
+
+       \>         matches the empty string at the end of a word.
+
+       \s         matches any whitespace character.
+
+       \S         matches any nonwhitespace character.
+
+       \w         matches any word-constituent character (letter, digit, or underscore).
+
+       \W         matches any character that is not word-constituent.
+
+       \`         matches the empty string at the beginning of a buffer (string).
+
+       \'         matches the empty string at the end of a buffer.
+
+       The escape sequences that are valid in string constants (see below) are also valid in regular expressions.
+
+       Character classes are a feature introduced in the POSIX standard.  A  character  class  is  a  special  notation  for
+       describing  lists  of  characters that have a specific attribute, but where the actual characters themselves can vary
+       from country to country and/or from character set to character set.  For example, the notion of what is an alphabetic
+       character differs in the USA and in France.
+
+       A  character  class is only valid in a regular expression inside the brackets of a character list.  Character classes
+       consist of [:, a keyword denoting the class, and :].  The character classes defined by the POSIX standard are:
+
+       [:alnum:]  Alphanumeric characters.
+
+       [:alpha:]  Alphabetic characters.
+
+       [:blank:]  Space or tab characters.
+
+       [:cntrl:]  Control characters.
+
+       [:digit:]  Numeric characters.
+
+       [:graph:]  Characters that are both printable and visible.  (A space is printable, but not visible,  while  an  a  is
+                  both.)
+
+       [:lower:]  Lowercase alphabetic characters.
+
+       [:print:]  Printable characters (characters that are not control characters.)
+
+       [:punct:]  Punctuation characters (characters that are not letter, digits, control characters, or space characters).
+
+       [:space:]  Space characters (such as space, tab, and formfeed, to name a few).
+
+       [:upper:]  Uppercase alphabetic characters.
+
+       [:xdigit:] Characters that are hexadecimal digits.
+
+       For  example, before the POSIX standard, to match alphanumeric characters, you would have had to write /[A-Za-z0-9]/.
+       If your character set had other alphabetic characters in it, this would not match them, and  if  your  character  set
+       collated differently from ASCII, this might not even match the ASCII alphanumeric characters.  With the POSIX charac‐
+       ter classes, you can write /[[:alnum:]]/, and this matches the alphabetic and numeric characters  in  your  character
+       set, no matter what it is.
+
+       Two  additional  special sequences can appear in character lists.  These apply to non-ASCII character sets, which can
+       have single symbols (called collating elements) that are represented with more than one character, as well as several
+       characters  that  are  equivalent  for  collating,  or sorting, purposes.  (E.g., in French, a plain “e” and a grave-
+       accented “`” are equivalent.)
+
+       Collating Symbols
+              A collating symbol is a multi-character collating element enclosed in [.  and .].  For example,  if  ch  is  a
+              collating element, then [[.ch.]]  is a regular expression that matches this collating element, while [ch] is a
+              regular expression that matches either c or h.
+
+       Equivalence Classes
+              An equivalence class is a locale-specific name for a list of characters that  are  equivalent.   The  name  is
+              enclosed  in [= and =].  For example, the name e might be used to represent all of “e,” “´,” and “`.”  In this
+              case, [[=e=]] is a regular expression that matches any of e, ´, or `.
+
+       These features are very valuable in non-English speaking locales.  The library functions that gawk uses  for  regular
+       expression  matching  currently  only  recognize  POSIX character classes; they do not recognize collating symbols or
+       equivalence classes.
+
+       The \y, \B, \<, \>, \s, \S, \w, \W, \`, and \' operators are specific to gawk; they are extensions based  on  facili‐
+       ties in the GNU regular expression libraries.
+
+       The various command line options control how gawk interprets characters in regular expressions.
+
+       No options
+              In  the default case, gawk provide all the facilities of POSIX regular expressions and the GNU regular expres‐
+              sion operators described above.
+
+       --posix
+              Only POSIX regular expressions are supported, the GNU operators are not special.  (E.g., \w matches a  literal
+              w).
+
+       --traditional
+              Traditional Unix awk regular expressions are matched.  The GNU operators are not special, and interval expres‐
+              sions are not available.  Characters described by octal and hexadecimal escape sequences  are  treated  liter‐
+              ally, even if they represent regular expression metacharacters.
+
+       --re-interval
+              Allow interval expressions in regular expressions, even if --traditional has been provided.
+
+   Actions
+       Action  statements  are enclosed in braces, { and }.  Action statements consist of the usual assignment, conditional,
+       and looping statements found in most languages.  The  operators,  control  statements,  and  input/output  statements
+       available are patterned after those in C.
+
+   Operators
+       The operators in AWK, in order of decreasing precedence, are
+
+       (...)       Grouping
+
+       $           Field reference.
+
+       ++ --       Increment and decrement, both prefix and postfix.
+
+       ^           Exponentiation (** may also be used, and **= for the assignment operator).
+
+       + - !       Unary plus, unary minus, and logical negation.
+
+       * / %       Multiplication, division, and modulus.
+
+       + -         Addition and subtraction.
+
+       space       String concatenation.
+
+       |   |&      Piped I/O for getline, print, and printf.
+
+       < > <= >= != ==
+                   The regular relational operators.
+
+       ~ !~        Regular  expression  match, negated match.  NOTE: Do not use a constant regular expression (/foo/) on the
+                   left-hand side of a ~ or !~.  Only use one on the right-hand side.  The expression /foo/ ~  exp  has  the
+                   same meaning as (($0 ~ /foo/) ~ exp).  This is usually not what was intended.
+
+       in          Array membership.
+
+       &&          Logical AND.
+
+       ||          Logical OR.
+
+       ?:          The  C  conditional expression.  This has the form expr1 ? expr2 : expr3.  If expr1 is true, the value of
+                   the expression is expr2, otherwise it is expr3.  Only one of expr2 and expr3 is evaluated.
+
+       = += -= *= /= %= ^=
+                   Assignment.  Both absolute assignment (var = value) and operator-assignment (the other  forms)  are  sup‐
+                   ported.
+
+   Control Statements
+       The control statements are as follows:
+
+              if (condition) statement [ else statement ]
+              while (condition) statement
+              do statement while (condition)
+              for (expr1; expr2; expr3) statement
+              for (var in array) statement
+              break
+              continue
+              delete array[index]
+              delete array
+              exit [ expression ]
+              { statements }
+              switch (expression) {
+              case value|regex : statement
+              ...
+              [ default: statement ]
+              }
+
+   I/O Statements
+       The input/output statements are as follows:
+
+       close(file [, how])   Close file, pipe or co-process.  The optional how should only be used when closing one end of a
+                             two-way pipe to a co-process.  It must be a string value, either "to" or "from".
+
+       getline               Set $0 from next input record; set NF, NR, FNR.
+
+       getline <file         Set $0 from next record of file; set NF.
+
+       getline var           Set var from next input record; set NR, FNR.
+
+       getline var <file     Set var from next record of file.
+
+       command | getline [var]
+                             Run command piping the output either into $0 or var, as above.
+
+       command |& getline [var]
+                             Run command as a co-process piping the output either into $0 or var,  as  above.   Co-processes
+                             are  a  gawk extension.  (command can also be a socket.  See the subsection Special File Names,
+                             below.)
+
+       next                  Stop processing the current input record.  The next input record is read and processing  starts
+                             over  with  the first pattern in the AWK program.  If the end of the input data is reached, the
+                             END block(s), if any, are executed.
+
+       nextfile              Stop processing the current input file.  The next input record read comes from the  next  input
+                             file.   FILENAME and ARGIND are updated, FNR is reset to 1, and processing starts over with the
+                             first pattern in the AWK program. If the end of the input data is reached, the END block(s), if
+                             any, are executed.
+
+       print                 Print the current record.  The output record is terminated with the value of the ORS variable.
+
+       print expr-list       Print  expressions.  Each expression is separated by the value of the OFS variable.  The output
+                             record is terminated with the value of the ORS variable.
+
+       print expr-list >file Print expressions on file.  Each expression is separated by the value of the OFS variable.  The
+                             output record is terminated with the value of the ORS variable.
+
+       printf fmt, expr-list Format and print.  See The printf Statement, below.
+
+       printf fmt, expr-list >file
+                             Format and print on file.
+
+       system(cmd-line)      Execute  the  command cmd-line, and return the exit status.  (This may not be available on non-
+                             POSIX systems.)
+
+       fflush([file])        Flush any buffers associated with the open output file or pipe file.  If file is missing,  then
+                             flush standard output.  If file is the null string, then flush all open output files and pipes.
+
+       Additional output redirections are allowed for print and printf.
+
+       print ... >> file
+              Appends output to the file.
+
+       print ... | command
+              Writes on a pipe.
+
+       print ... |& command
+              Sends data to a co-process or socket.  (See also the subsection Special File Names, below.)
+
+       The  getline  command  returns  1  on success, 0 on end of file, and -1 on an error.  Upon an error, ERRNO contains a
+       string describing the problem.
+
+       NOTE: Failure in opening a two-way socket will result in a non-fatal error being returned to the calling function. If
+       using a pipe, co-process, or socket to getline, or from print or printf within a loop, you must use close() to create
+       new instances of the command or socket.  AWK does not automatically close pipes, sockets, or co-processes  when  they
+       return EOF.
+
+   The printf Statement
+       The  AWK versions of the printf statement and sprintf() function (see below) accept the following conversion specifi‐
+       cation formats:
+
+       %c      A single character.  If the argument used for %c is numeric, it is treated as a character and printed.   Oth‐
+               erwise, the argument is assumed to be a string, and the only first character of that string is printed.
+
+       %d, %i  A decimal number (the integer part).
+
+       %e, %E  A floating point number of the form [-]d.dddddde[+-]dd.  The %E format uses E instead of e.
+
+       %f, %F  A  floating  point  number  of the form [-]ddd.dddddd.  If the system library supports it, %F is available as
+               well. This is like %f, but uses capital letters for special “not a number” and “infinity” values.  If  %F  is
+               not available, gawk uses %f.
+
+       %g, %G  Use  %e  or %f conversion, whichever is shorter, with nonsignificant zeros suppressed.  The %G format uses %E
+               instead of %e.
+
+       %o      An unsigned octal number (also an integer).
+
+       %u      An unsigned decimal number (again, an integer).
+
+       %s      A character string.
+
+       %x, %X  An unsigned hexadecimal number (an integer).  The %X format uses ABCDEF instead of abcdef.
+
+       %%      A single % character; no argument is converted.
+
+       Optional, additional parameters may lie between the % and the control letter:
+
+       count$ Use the count'th argument at this point in the formatting.  This is  called  a  positional  specifier  and  is
+              intended  primarily  for use in translated versions of format strings, not in the original text of an AWK pro‐
+              gram.  It is a gawk extension.
+
+       -      The expression should be left-justified within its field.
+
+       space  For numeric conversions, prefix positive values with a space, and negative values with a minus sign.
+
+       +      The plus sign, used before the width modifier (see below), says to always supply a sign  for  numeric  conver‐
+              sions, even if the data to be formatted is positive.  The + overrides the space modifier.
+
+       #      Use an “alternate form” for certain control letters.  For %o, supply a leading zero.  For %x, and %X, supply a
+              leading 0x or 0X for a nonzero result.  For %e, %E, %f and %F, the result always  contains  a  decimal  point.
+              For %g, and %G, trailing zeros are not removed from the result.
+
+       0      A leading 0 (zero) acts as a flag, that indicates output should be padded with zeroes instead of spaces.  This
+              applies only to the numeric output formats.  This flag only has an effect when the field width is  wider  than
+              the value to be printed.
+
+       width  The  field  should be padded to this width.  The field is normally padded with spaces.  If the 0 flag has been
+              used, it is padded with zeroes.
+
+       .prec  A number that specifies the precision to use when printing.  For the %e, %E, %f and %F, formats,  this  speci‐
+              fies  the number of digits you want printed to the right of the decimal point.  For the %g, and %G formats, it
+              specifies the maximum number of significant digits.  For the %d, %i, %o, %u, %x, and %X formats, it  specifies
+              the  minimum number of digits to print.  For %s, it specifies the maximum number of characters from the string
+              that should be printed.
+
+       The dynamic width and prec capabilities of the ANSI C printf() routines are supported.  A * in place  of  either  the
+       width or prec specifications causes their values to be taken from the argument list to printf or sprintf().  To use a
+       positional specifier with a dynamic width or precision, supply the count$ after the *  in  the  format  string.   For
+       example, "%3$*2$.*1$s".
+
+   Special File Names
+       When  doing I/O redirection from either print or printf into a file, or via getline from a file, gawk recognizes cer‐
+       tain special filenames internally.  These filenames allow access to open file descriptors inherited from gawk's  par‐
+       ent  process  (usually  the  shell).   These file names may also be used on the command line to name data files.  The
+       filenames are:
+
+       /dev/stdin  The standard input.
+
+       /dev/stdout The standard output.
+
+       /dev/stderr The standard error output.
+
+       /dev/fd/n   The file associated with the open file descriptor n.
+
+       These are particularly useful for error messages.  For example:
+
+              print "You blew it!" > "/dev/stderr"
+
+       whereas you would otherwise have to use
+
+              print "You blew it!" | "cat 1>&2"
+
+       The following special filenames may be used with the |& co-process operator for creating TCP/IP network connections:
+
+       /inet/tcp/lport/rhost/rport
+       /inet4/tcp/lport/rhost/rport
+       /inet6/tcp/lport/rhost/rport
+              Files for a TCP/IP connection on local port lport to remote host rhost on remote port rport.  Use a port of  0
+              to  have  the system pick a port.  Use /inet4 to force an IPv4 connection, and /inet6 to force an IPv6 connec‐
+              tion.  Plain /inet uses the system default (most likely IPv4).
+
+       /inet/udp/lport/rhost/rport
+       /inet4/udp/lport/rhost/rport
+       /inet6/udp/lport/rhost/rport
+              Similar, but use UDP/IP instead of TCP/IP.
+
+   Numeric Functions
+       AWK has the following built-in arithmetic functions:
+
+       atan2(y, x)   Return the arctangent of y/x in radians.
+
+       cos(expr)     Return the cosine of expr, which is in radians.
+
+       exp(expr)     The exponential function.
+
+       int(expr)     Truncate to integer.
+
+       log(expr)     The natural logarithm function.
+
+       rand()        Return a random number N, between 0 and 1, such that 0 ≤ N < 1.
+
+       sin(expr)     Return the sine of expr, which is in radians.
+
+       sqrt(expr)    The square root function.
+
+       srand([expr]) Use expr as the new seed for the random number generator.  If no expr is provided, use the time of day.
+                     The return value is the previous seed for the random number generator.
+
+   String Functions
+       Gawk has the following built-in string functions:
+
+       asort(s [, d [, how] ]) Return  the  number  of  elements in the source array s.  Sort the contents of s using gawk's
+                               normal rules for comparing values, and replace the  indices  of  the  sorted  values  s  with
+                               sequential  integers  starting with 1. If the optional destination array d is specified, then
+                               first duplicate s into d, and then sort  d,  leaving  the  indices  of  the  source  array  s
+                               unchanged.  The  optional  string  how controls the direction and the comparison mode.  Valid
+                               values for how are any of the strings valid for PROCINFO["sorted_in"].  It can  also  be  the
+                               name of a user-defined comparison function as described in PROCINFO["sorted_in"].
+
+       asorti(s [, d [, how] ])
+                               Return  the  number  of  elements in the source array s.  The behavior is the same as that of
+                               asort(), except that the array indices are used for sorting,  not  the  array  values.   When
+                               done,  the  array  is  indexed numerically, and the values are those of the original indices.
+                               The original values are lost; thus provide a second array if you wish to preserve the  origi‐
+                               nal.  The purpose of the optional string how is the same as described in asort() above.
+
+       gensub(r, s, h [, t])   Search  the target string t for matches of the regular expression r.  If h is a string begin‐
+                               ning with g or G, then replace all matches of r with s.  Otherwise, h is a number  indicating
+                               which  match  of r to replace.  If t is not supplied, use $0 instead.  Within the replacement
+                               text s, the sequence \n, where n is a digit from 1 to 9, may be used  to  indicate  just  the
+                               text  that  matched  the  n'th  parenthesized  subexpression.  The sequence \0 represents the
+                               entire matched text, as does the character &.  Unlike sub() and gsub(), the  modified  string
+                               is returned as the result of the function, and the original target string is not changed.
+
+       gsub(r, s [, t])        For  each  substring matching the regular expression r in the string t, substitute the string
+                               s, and return the number of substitutions.  If t is not  supplied,  use  $0.   An  &  in  the
+                               replacement  text  is replaced with the text that was actually matched.  Use \& to get a lit‐
+                               eral &.  (This must be typed as "\\&"; see GAWK: Effective AWK Programming for a fuller  dis‐
+                               cussion  of  the  rules for &'s and backslashes in the replacement text of sub(), gsub(), and
+                               gensub().)
+
+       index(s, t)             Return the index of the string t in the string s, or 0 if t is not  present.   (This  implies
+                               that character indices start at one.)
+
+       length([s])             Return  the length of the string s, or the length of $0 if s is not supplied.  As a non-stan‐
+                               dard extension, with an array argument, length() returns the number of elements in the array.
+
+       match(s, r [, a])       Return the position in s where the regular expression r occurs, or 0 if r is not present, and
+                               set  the values of RSTART and RLENGTH.  Note that the argument order is the same as for the ~
+                               operator: str ~ re.  If array a is provided, a is cleared and then elements 1 through  n  are
+                               filled  with the portions of s that match the corresponding parenthesized subexpression in r.
+                               The 0'th element of a contains the portion of s matched by the entire regular  expression  r.
+                               Subscripts  a[n,  "start"],  and  a[n, "length"] provide the starting index in the string and
+                               length respectively, of each matching substring.
+
+       patsplit(s, a [, r [, seps] ])
+                               Split the string s into the array a and the separators array seps on the  regular  expression
+                               r,  and  return  the  number of fields.  Element values are the portions of s that matched r.
+                               The value of seps[i] is the separator that appeared in front of a[i+1].   If  r  is  omitted,
+                               FPAT  is  used  instead.  The arrays a and seps are cleared first.  Splitting behaves identi‐
+                               cally to field splitting with FPAT, described above.
+
+       split(s, a [, r [, seps] ])
+                               Split the string s into the array a and the separators array seps on the  regular  expression
+                               r,  and  return the number of fields.  If r is omitted, FS is used instead.  The arrays a and
+                               seps are cleared first.  seps[i] is the field separator matched by r between a[i] and a[i+1].
+                               If  r  is  a  single  space,  then  leading whitespace in s goes into the extra array element
+                               seps[0] and trailing whitespace goes into the extra array element seps[n],  where  n  is  the
+                               return  value  of  split(s,  a,  r, seps).  Splitting behaves identically to field splitting,
+                               described above.
+
+       sprintf(fmt, expr-list) Prints expr-list according to fmt, and returns the resulting string.
+
+       strtonum(str)           Examine str, and return its numeric value.  If  str  begins  with  a  leading  0,  strtonum()
+                               assumes  that  str  is  an  octal  number.  If str begins with a leading 0x or 0X, strtonum()
+                               assumes that str is a hexadecimal number.  Otherwise, decimal is assumed.
+
+       sub(r, s [, t])         Just like gsub(), but replace only the first matching substring.
+
+       substr(s, i [, n])      Return the at most n-character substring of s starting at i.  If n is omitted, use  the  rest
+                               of s.
+
+       tolower(str)            Return a copy of the string str, with all the uppercase characters in str translated to their
+                               corresponding lowercase counterparts.  Non-alphabetic characters are left unchanged.
+
+       toupper(str)            Return a copy of the string str, with all the lowercase characters in str translated to their
+                               corresponding uppercase counterparts.  Non-alphabetic characters are left unchanged.
+
+       Gawk  is  multibyte  aware.  This means that index(), length(), substr() and match() all work in terms of characters,
+       not bytes.
+
+   Time Functions
+       Since one of the primary uses of AWK programs is processing log files that contain time stamp information, gawk  pro‐
+       vides the following functions for obtaining time stamps and formatting them.
+
+       mktime(datespec)
+                 Turn  datespec  into  a  time  stamp of the same form as returned by systime(), and return the result.  The
+                 datespec is a string of the form YYYY MM DD HH MM SS[ DST].  The contents of the string are  six  or  seven
+                 numbers  representing  respectively the full year including century, the month from 1 to 12, the day of the
+                 month from 1 to 31, the hour of the day from 0 to 23, the minute from 0 to 59, the second from 0 to 60, and
+                 an optional daylight saving flag.  The values of these numbers need not be within the ranges specified; for
+                 example, an hour of -1 means 1 hour before midnight.  The origin-zero Gregorian calendar is  assumed,  with
+                 year 0 preceding year 1 and year -1 preceding year 0.  The time is assumed to be in the local timezone.  If
+                 the daylight saving flag is positive, the time is assumed to be daylight saving time; if zero, the time  is
+                 assumed to be standard time; and if negative (the default), mktime() attempts to determine whether daylight
+                 saving time is in effect for the specified time.  If datespec does not contain enough elements  or  if  the
+                 resulting time is out of range, mktime() returns -1.
+
+       strftime([format [, timestamp[, utc-flag]]])
+                 Format  timestamp according to the specification in format.  If utc-flag is present and is non-zero or non-
+                 null, the result is in UTC, otherwise the result is in local time.  The timestamp should  be  of  the  same
+                 form  as  returned  by  systime().  If timestamp is missing, the current time of day is used.  If format is
+                 missing, a default format equivalent to the output of date(1) is used.  The default format is available  in
+                 PROCINFO["strftime"].   See  the specification for the strftime() function in ANSI C for the format conver‐
+                 sions that are guaranteed to be available.
+
+       systime() Return the current time of day as the number of seconds since the Epoch (1970-01-01 00:00:00 UTC  on  POSIX
+                 systems).
+
+   Bit Manipulations Functions
+       Gawk supplies the following bit manipulation functions.  They work by converting double-precision floating point val‐
+       ues to uintmax_t integers, doing the operation, and then converting the result back to floating point.  The functions
+       are:
+
+       and(v1, v2)         Return the bitwise AND of the values provided by v1 and v2.
+
+       compl(val)          Return the bitwise complement of val.
+
+       lshift(val, count)  Return the value of val, shifted left by count bits.
+
+       or(v1, v2)          Return the bitwise OR of the values provided by v1 and v2.
+
+       rshift(val, count)  Return the value of val, shifted right by count bits.
+
+       xor(v1, v2)         Return the bitwise XOR of the values provided by v1 and v2.
+
+   Type Function
+       The following function is for use with multidimensional arrays.
+
+       isarray(x)
+              Return true if x is an array, false otherwise.
+
+   Internationalization Functions
+       The  following  functions  may  be  used  from within your AWK program for translating strings at run-time.  For full
+       details, see GAWK: Effective AWK Programming.
+
+       bindtextdomain(directory [, domain])
+              Specify the directory where gawk looks for the .mo files, in case they will not or cannot  be  placed  in  the
+              ``standard'' locations (e.g., during testing).  It returns the directory where domain is ``bound.''
+              The  default  domain  is the value of TEXTDOMAIN.  If directory is the null string (""), then bindtextdomain()
+              returns the current binding for the given domain.
+
+       dcgettext(string [, domain [, category]])
+              Return the translation of string in text domain domain for locale category category.  The  default  value  for
+              domain is the current value of TEXTDOMAIN.  The default value for category is "LC_MESSAGES".
+              If  you supply a value for category, it must be a string equal to one of the known locale categories described
+              in GAWK: Effective AWK Programming.  You must also supply a text domain.  Use TEXTDOMAIN if you  want  to  use
+              the current domain.
+
+       dcngettext(string1 , string2 , number [, domain [, category]])
+              Return  the  plural  form  used for number of the translation of string1 and string2 in text domain domain for
+              locale category category.  The default value for domain is the current value of TEXTDOMAIN.  The default value
+              for category is "LC_MESSAGES".
+              If  you supply a value for category, it must be a string equal to one of the known locale categories described
+              in GAWK: Effective AWK Programming.  You must also supply a text domain.  Use TEXTDOMAIN if you  want  to  use
+              the current domain.
+
+USER-DEFINED FUNCTIONS
+       Functions in AWK are defined as follows:
+
+              function name(parameter list) { statements }
+
+       Functions are executed when they are called from within expressions in either patterns or actions.  Actual parameters
+       supplied in the function call are used to instantiate the formal parameters declared in  the  function.   Arrays  are
+       passed by reference, other variables are passed by value.
+
+       Since  functions  were  not  originally part of the AWK language, the provision for local variables is rather clumsy:
+       They are declared as extra parameters in the parameter list.  The convention is to separate local variables from real
+       parameters by extra spaces in the parameter list.  For example:
+
+              function  f(p, q,     a, b)   # a and b are local
+              {
+                   ...
+              }
+
+              /abc/     { ... ; f(1, 2) ; ... }
+
+       The  left parenthesis in a function call is required to immediately follow the function name, without any intervening
+       whitespace.  This avoids a syntactic ambiguity with the concatenation operator.  This restriction does not  apply  to
+       the built-in functions listed above.
+
+       Functions  may  call each other and may be recursive.  Function parameters used as local variables are initialized to
+       the null string and the number zero upon function invocation.
+
+       Use return expr to return a value from a function.  The return value is undefined if no value is provided, or if  the
+       function returns by “falling off” the end.
+
+       As a gawk extension, functions may be called indirectly. To do this, assign the name of the function to be called, as
+       a string, to a variable.  Then use the variable as if it were the name of a function, prefixed with an @  sign,  like
+       so:
+              function  myfunc()
+              {
+                   print "myfunc called"
+                   ...
+              }
+
+              {    ...
+                   the_func = "myfunc"
+                   @the_func()    # call through the_func to myfunc
+                   ...
+              }
+
+       If  --lint  has  been  provided, gawk warns about calls to undefined functions at parse time, instead of at run time.
+       Calling an undefined function at run time is a fatal error.
+
+       The word func may be used in place of function.
+
+DYNAMICALLY LOADING NEW FUNCTIONS
+       You can dynamically add new built-in functions to the running gawk interpreter.  The  full  details  are  beyond  the
+       scope of this manual page; see GAWK: Effective AWK Programming for the details.
+
+       extension(object, function)
+               Dynamically  link the shared object file named by object, and invoke function in that object, to perform ini‐
+               tialization.  These should both be provided as strings.  Return the value returned by function.
+
+       Using this feature at the C level is not pretty, but it is unlikely to go away. Additional mechanisms may be added at
+       some point.
+
+SIGNALS
+       pgawk accepts two signals.  SIGUSR1 causes it to dump a profile and function call stack to the profile file, which is
+       either awkprof.out, or whatever file was named with the --profile option.  It then continues to run.   SIGHUP  causes
+       pgawk to dump the profile and function call stack and then exit.
+
+INTERNATIONALIZATION
+       String  constants are sequences of characters enclosed in double quotes.  In non-English speaking environments, it is
+       possible to mark strings in the AWK program as requiring translation to the local natural language. Such strings  are
+       marked in the AWK program with a leading underscore (“_”).  For example,
+
+              gawk 'BEGIN { print "hello, world" }'
+
+       always prints hello, world.  But,
+
+              gawk 'BEGIN { print _"hello, world" }'
+
+       might print bonjour, monde in France.
+
+       There are several steps involved in producing and running a localizable AWK program.
+
+       1.  Add  a BEGIN action to assign a value to the TEXTDOMAIN variable to set the text domain to a name associated with
+           your program:
+
+           BEGIN { TEXTDOMAIN = "myprog" }
+
+       This allows gawk to find the .mo file associated with your program.  Without this step, gawk uses the  messages  text
+       domain, which likely does not contain translations for your program.
+
+       2.  Mark all strings that should be translated with leading underscores.
+
+       3.  If necessary, use the dcgettext() and/or bindtextdomain() functions in your program, as appropriate.
+
+       4.  Run gawk --gen-pot -f myprog.awk > myprog.pot to generate a .po file for your program.
+
+       5.  Provide appropriate translations, and build and install the corresponding .mo files.
+
+       The internationalization features are described in full detail in GAWK: Effective AWK Programming.
+
+POSIX COMPATIBILITY
+       A primary goal for gawk is compatibility with the POSIX standard, as well as with the latest version of UNIX awk.  To
+       this end, gawk incorporates the following user visible features which are not described in the AWK book, but are part
+       of the Bell Laboratories version of awk, and are in the POSIX standard.
+
+       The  book  indicates  that  command  line variable assignment happens when awk would otherwise open the argument as a
+       file, which is after the BEGIN block is executed.  However, in  earlier  implementations,  when  such  an  assignment
+       appeared  before  any  file  names, the assignment would happen before the BEGIN block was run.  Applications came to
+       depend on this “feature.”  When awk was changed to match its documentation, the -v  option  for  assigning  variables
+       before  program  execution  was added to accommodate applications that depended upon the old behavior.  (This feature
+       was agreed upon by both the Bell Laboratories and the GNU developers.)
+
+       When processing arguments, gawk uses the special option “--” to signal the end of arguments.  In compatibility  mode,
+       it warns about but otherwise ignores undefined options.  In normal operation, such arguments are passed on to the AWK
+       program for it to process.
+
+       The AWK book does not define the return value of srand().  The POSIX standard has it return the seed it was using, to
+       allow keeping track of random number sequences.  Therefore srand() in gawk also returns its current seed.
+
+       Other  new  features  are:  The  use  of multiple -f options (from MKS awk); the ENVIRON array; the \a, and \v escape
+       sequences (done originally in gawk and fed back into the Bell Laboratories  version);  the  tolower()  and  toupper()
+       built-in  functions  (from  the  Bell Laboratories version); and the ANSI C conversion specifications in printf (done
+       first in the Bell Laboratories version).
+
+HISTORICAL FEATURES
+       There is one feature of historical AWK implementations that gawk supports: It is possible to call the length() built-
+       in function not only with no argument, but even without parentheses!  Thus,
+
+              a = length     # Holy Algol 60, Batman!
+
+       is the same as either of
+
+              a = length()
+              a = length($0)
+
+       Using  this  feature  is poor practice, and gawk issues a warning about its use if --lint is specified on the command
+       line.
+
+GNU EXTENSIONS
+       Gawk has a number of extensions to POSIX awk.  They are described in this section.  All the extensions described here
+       can be disabled by invoking gawk with the --traditional or --posix options.
+
+       The following features of gawk are not available in POSIX awk.
+
+       · No  path  search is performed for files named via the -f option.  Therefore the AWKPATH environment variable is not
+         special.
+
+       · There is no facility for doing file inclusion (gawk's @include mechanism).
+
+       · The \x escape sequence.  (Disabled with --posix.)
+
+       · The fflush() function.  (Disabled with --posix.)
+
+       · The ability to continue lines after ?  and :.  (Disabled with --posix.)
+
+       · Octal and hexadecimal constants in AWK programs.
+
+       · The ARGIND, BINMODE, ERRNO, LINT, RT and TEXTDOMAIN variables are not special.
+
+       · The IGNORECASE variable and its side-effects are not available.
+
+       · The FIELDWIDTHS variable and fixed-width field splitting.
+
+       · The FPAT variable and field splitting based on field values.
+
+       · The PROCINFO array is not available.
+
+       · The use of RS as a regular expression.
+
+       · The special file names available for I/O redirection are not recognized.
+
+       · The |& operator for creating co-processes.
+
+       · The BEGINFILE and ENDFILE special patterns are not available.
+
+       · The ability to split out individual characters using the null string as the value of FS, and as the third  argument
+         to split().
+
+       · An optional fourth argument to split() to receive the separator texts.
+
+       · The optional second argument to the close() function.
+
+       · The optional third argument to the match() function.
+
+       · The ability to use positional specifiers with printf and sprintf().
+
+       · The ability to pass an array to length().
+
+       · The use of delete array to delete the entire contents of an array.
+
+       · The use of nextfile to abandon processing of the current input file.
+
+       · The  and(),  asort(), asorti(), bindtextdomain(), compl(), dcgettext(), dcngettext(), gensub(), lshift(), mktime(),
+         or(), patsplit(), rshift(), strftime(), strtonum(), systime() and xor() functions.
+
+       · Localizable strings.
+
+       · Adding new built-in functions dynamically with the extension() function.
+
+       The AWK book does not define the return value of the  close()  function.   Gawk's  close()  returns  the  value  from
+       fclose(3),  or  pclose(3),  when  closing an output file or pipe, respectively.  It returns the process's exit status
+       when closing an input pipe.  The return value is -1 if the named file, pipe or co-process was not opened with a redi‐
+       rection.
+
+       When gawk is invoked with the --traditional option, if the fs argument to the -F option is “t”, then FS is set to the
+       tab character.  Note that typing gawk -F\t ...  simply causes the shell to quote the “t,” and does not pass  “\t”  to
+       the  -F  option.   Since this is a rather ugly special case, it is not the default behavior.  This behavior also does
+       not occur if --posix has been specified.  To really get a tab character as the field separator, it  is  best  to  use
+       single quotes: gawk -F'\t' ....
+
+ENVIRONMENT VARIABLES
+       The  AWKPATH  environment  variable  can be used to provide a list of directories that gawk searches when looking for
+       files named via the -f and --file options.
+
+       For socket communication,  two  special  environment  variables  can  be  used  to  control  the  number  of  retries
+       (GAWK_SOCK_RETRIES), and the interval between retries (GAWK_MSEC_SLEEP).  The interval is in milliseconds. On systems
+       that do not support usleep(3), the value is rounded up to an integral number of seconds.
+
+       If POSIXLY_CORRECT exists in the environment, then gawk behaves exactly as if --posix had been specified on the  com‐
+       mand line.  If --lint has been specified, gawk issues a warning message to this effect.
+
+EXIT STATUS
+       If the exit statement is used with a value, then gawk exits with the numeric value given to it.
+
+       Otherwise,  if  there  were  no  problems during execution, gawk exits with the value of the C constant EXIT_SUCCESS.
+       This is usually zero.
+
+       If an error occurs, gawk exits with the value of the C constant EXIT_FAILURE.  This is usually one.
+
+       If gawk exits because of a fatal error, the exit status is 2.  On non-POSIX systems, this  value  may  be  mapped  to
+       EXIT_FAILURE.
+
+VERSION INFORMATION
+       This man page documents gawk, version 4.0.
+
+AUTHORS
+       The original version of UNIX awk was designed and implemented by Alfred Aho, Peter Weinberger, and Brian Kernighan of
+       Bell Laboratories.  Brian Kernighan continues to maintain and enhance it.
+
+       Paul Rubin and Jay Fenlason, of the Free Software Foundation, wrote gawk, to be compatible with the original  version
+       of  awk distributed in Seventh Edition UNIX.  John Woods contributed a number of bug fixes.  David Trueman, with con‐
+       tributions from Arnold Robbins, made gawk compatible with the new version of UNIX awk.  Arnold Robbins is the current
+       maintainer.
+
+       The  initial  DOS  port was done by Conrad Kwok and Scott Garfinkle.  Scott Deifik maintains the port to MS-DOS using
+       DJGPP.  Eli Zaretskii maintains the port to MS-Windows using MinGW.  Pat Rankin did  the  port  to  VMS,  and  Michal
+       Jaegermann  did  the  port to the Atari ST.  The port to OS/2 was done by Kai Uwe Rommel, with contributions and help
+       from Darrel Hankerson.  Andreas Buening now maintains the OS/2 port.  The late Fred Fish  supplied  support  for  the
+       Amiga,  and  Martin  Brown  provided  the  BeOS  port.  Stephen Davies provided the original Tandem port, and Matthew
+       Woehlke provided changes for Tandem's POSIX-compliant systems.  Dave Pitts provided the port to z/OS.
+
+       See the README file in the gawk distribution for up-to-date information about maintainers and which  ports  are  cur‐
+       rently supported.
+
+BUG REPORTS
+       If you find a bug in gawk, please send electronic mail to bug-gawk@gnu.org.  Please include your operating system and
+       its revision, the version of gawk (from gawk --version), which C compiler you used to compile it, and a test  program
+       and data that are as small as possible for reproducing the problem.
+
+       Before sending a bug report, please do the following things.  First, verify that you have the latest version of gawk.
+       Many bugs (usually subtle ones) are fixed at each release, and if yours is out of date, the problem may already  have
+       been  solved.   Second,  please see if setting the environment variable LC_ALL to LC_ALL=C causes things to behave as
+       you expect. If so, it's a locale issue, and may or may not really be a bug.  Finally, please read this man  page  and
+       the reference manual carefully to be sure that what you think is a bug really is, instead of just a quirk in the lan‐
+       guage.
+
+       Whatever you do, do NOT post a bug report in comp.lang.awk.  While the gawk developers occasionally read  this  news‐
+       group,  posting  bug  reports  there  is  an  unreliable way to report bugs.  Instead, please use the electronic mail
+       addresses given above.
+
+       If you're using a GNU/Linux or BSD-based system, you may wish to submit a bug report to the vendor of your  distribu‐
+       tion.  That's fine, but please send a copy to the official email address as well, since there's no guarantee that the
+       bug report will be forwarded to the gawk maintainer.
+
+BUGS
+       The -F option is not necessary given the command line variable assignment feature; it remains only for backwards com‐
+       patibility.
+
+       Syntactically  invalid single character programs tend to overflow the parse stack, generating a rather unhelpful mes‐
+       sage.  Such programs are surprisingly difficult to diagnose in the completely general case, and the effort to  do  so
+       really is not worth it.
+
+SEE ALSO
+       egrep(1), getpid(2), getppid(2), getpgrp(2), getuid(2), geteuid(2), getgid(2), getegid(2), getgroups(2), usleep(3)
+
+       The  AWK  Programming  Language,  Alfred V. Aho, Brian W. Kernighan, Peter J. Weinberger, Addison-Wesley, 1988.  ISBN
+       0-201-07981-X.
+
+       GAWK: Effective AWK Programming, Edition 4.0, shipped with the gawk source.  The current version of this document  is
+       available online at http://www.gnu.org/software/gawk/manual.
+
+EXAMPLES
+       Print and sort the login names of all users:
+
+            BEGIN     { FS = ":" }
+                 { print $1 | "sort" }
+
+       Count lines in a file:
+
+                 { nlines++ }
+            END  { print nlines }
+
+       Precede each line by its number in the file:
+
+            { print FNR, $0 }
+
+       Concatenate and line number (a variation on a theme):
+
+            { print NR, $0 }
+
+       Run an external command for particular lines of data:
+
+            tail -f access_log |
+            awk '/myhome.html/ { system("nmap " $1 ">> logdir/myhome.html") }'
+
+ACKNOWLEDGEMENTS
+       Brian Kernighan of Bell Laboratories provided valuable assistance during testing and debugging.  We thank him.
+
+COPYING PERMISSIONS
+       Copyright  ©  1989,  1991,  1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2001, 2002, 2003, 2004, 2005, 2007, 2009,
+       2010, 2011 Free Software Foundation, Inc.
+
+       Permission is granted to make and distribute verbatim copies of this manual page provided the  copyright  notice  and
+       this permission notice are preserved on all copies.
+
+       Permission  is granted to copy and distribute modified versions of this manual page under the conditions for verbatim
+       copying, provided that the entire resulting derived work is distributed under the terms of a permission notice  iden‐
+       tical to this one.
+
+       Permission  is granted to copy and distribute translations of this manual page into another language, under the above
+       conditions for modified versions, except that this permission notice may be stated in a translation approved  by  the
+       Foundation.
+
+
+
+Free Software Foundation                                 Nov 10 2011                                                 GAWK(1)
+CAT(1)                                                  User Commands                                                 CAT(1)
+
+
+
+NAME
+       cat - concatenate files and print on the standard output
+
+SYNOPSIS
+       cat [OPTION]... [FILE]...
+
+DESCRIPTION
+       Concatenate FILE(s), or standard input, to standard output.
+
+       -A, --show-all
+              equivalent to -vET
+
+       -b, --number-nonblank
+              number nonempty output lines, overrides -n
+
+       -e     equivalent to -vE
+
+       -E, --show-ends
+              display $ at end of each line
+
+       -n, --number
+              number all output lines
+
+       -s, --squeeze-blank
+              suppress repeated empty output lines
+
+       -t     equivalent to -vT
+
+       -T, --show-tabs
+              display TAB characters as ^I
+
+       -u     (ignored)
+
+       -v, --show-nonprinting
+              use ^ and M- notation, except for LFD and TAB
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       With no FILE, or when FILE is -, read standard input.
+
+EXAMPLES
+       cat f - g
+              Output f's contents, then standard input, then g's contents.
+
+       cat    Copy standard input to standard output.
+
+AUTHOR
+       Written by Torbjorn Granlund and Richard M. Stallman.
+
+REPORTING BUGS
+       Report cat bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report cat translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       tac(1)
+
+       The  full  documentation  for  cat  is  maintained  as  a  Texinfo manual.  If the info and cat programs are properly
+       installed at your site, the command
+
+              info coreutils 'cat invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                   CAT(1)
+CMP(1)                                                  User Commands                                                 CMP(1)
+
+
+
+NAME
+       cmp - compare two files byte by byte
+
+SYNOPSIS
+       cmp [OPTION]... FILE1 [FILE2 [SKIP1 [SKIP2]]]
+
+DESCRIPTION
+       Compare two files byte by byte.
+
+       The optional SKIP1 and SKIP2 specify the number of bytes to skip at the beginning of each file (zero by default).
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -b, --print-bytes
+              print differing bytes
+
+       -i, --ignore-initial=SKIP
+              skip first SKIP bytes of both inputs
+
+       -i, --ignore-initial=SKIP1:SKIP2
+              skip first SKIP1 bytes of FILE1 and first SKIP2 bytes of FILE2
+
+       -l, --verbose
+              output byte numbers and differing byte values
+
+       -n, --bytes=LIMIT
+              compare at most LIMIT bytes
+
+       -s, --quiet, --silent
+              suppress all normal output
+
+       --help display this help and exit
+
+       -v, --version
+              output version information and exit
+
+       SKIP  values may be followed by the following multiplicative suffixes: kB 1000, K 1024, MB 1,000,000, M 1,048,576, GB
+       1,000,000,000, G 1,073,741,824, and so on for T, P, E, Z, Y.
+
+       If a FILE is `-' or missing, read standard input.  Exit status is 0 if inputs are the same,  1  if  different,  2  if
+       trouble.
+
+AUTHOR
+       Written by Torbjorn Granlund and David MacKenzie.
+
+REPORTING BUGS
+       Report bugs to: bug-diffutils@gnu.org
+       GNU diffutils home page: <http://www.gnu.org/software/diffutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+
+COPYRIGHT
+       Copyright   ©   2011   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       diff(1), diff3(1), sdiff(1)
+
+       The  full  documentation  for  cmp  is  maintained  as  a  Texinfo manual.  If the info and cmp programs are properly
+       installed at your site, the command
+
+              info cmp
+
+       should give you access to the complete manual.
+
+
+
+diffutils 3.3                                            March 2013                                                   CMP(1)
+COLRM(1)                                         BSD General Commands Manual                                        COLRM(1)
+
+NAME
+     colrm — remove columns from a file
+
+SYNOPSIS
+     colrm [start [stop]]
+
+DESCRIPTION
+     The colrm utility removes selected columns from the lines of a file.  A column is defined as a single character in a
+     line.  Input is read from the standard input.  Output is written to the standard output.
+
+     If only the start column is specified, columns numbered less than the start column will be written.  If both start and
+     stop columns are specified, columns numbered less than the start column or greater than the stop column will be writ‐
+     ten.  Column numbering starts with one, not zero.
+
+     Tab characters increment the column count to the next multiple of eight.  Backspace characters decrement the column
+     count by one.
+
+ENVIRONMENT
+     The LANG, LC_ALL and LC_CTYPE environment variables affect the execution of colrm as described in environ(7).
+
+EXIT STATUS
+     The colrm utility exits 0 on success, and >0 if an error occurs.
+
+SEE ALSO
+     awk(1), column(1), cut(1), paste(1)
+
+HISTORY
+     The colrm command appeared in 3.0BSD.
+
+BSD                                                    August 4, 2004                                                    BSD
+COMM(1)                                                 User Commands                                                COMM(1)
+
+
+
+NAME
+       comm - compare two sorted files line by line
+
+SYNOPSIS
+       comm [OPTION]... FILE1 FILE2
+
+DESCRIPTION
+       Compare sorted files FILE1 and FILE2 line by line.
+
+       With  no  options, produce three-column output.  Column one contains lines unique to FILE1, column two contains lines
+       unique to FILE2, and column three contains lines common to both files.
+
+       -1     suppress column 1 (lines unique to FILE1)
+
+       -2     suppress column 2 (lines unique to FILE2)
+
+       -3     suppress column 3 (lines that appear in both files)
+
+       --check-order
+              check that the input is correctly sorted, even if all input lines are pairable
+
+       --nocheck-order
+              do not check that the input is correctly sorted
+
+       --output-delimiter=STR
+              separate columns with STR
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       Note, comparisons honor the rules specified by 'LC_COLLATE'.
+
+EXAMPLES
+       comm -12 file1 file2
+              Print only lines present in both file1 and file2.
+
+       comm -3 file1 file2
+              Print lines in file1 not in file2, and vice versa.
+
+AUTHOR
+       Written by Richard M. Stallman and David MacKenzie.
+
+REPORTING BUGS
+       Report comm bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report comm translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright  ©  2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3   or   later
+       <http://gnu.org/licenses/gpl.html>.
+       This  is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted by
+       law.
+
+SEE ALSO
+       join(1), uniq(1)
+
+       The full documentation for comm is maintained as a Texinfo manual.  If  the  info  and  comm  programs  are  properly
+       installed at your site, the command
+
+              info coreutils 'comm invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                  COMM(1)
+CUT(1)                                                  User Commands                                                 CUT(1)
+
+
+
+NAME
+       cut - remove sections from each line of files
+
+SYNOPSIS
+       cut OPTION... [FILE]...
+
+DESCRIPTION
+       Print selected parts of lines from each FILE to standard output.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -b, --bytes=LIST
+              select only these bytes
+
+       -c, --characters=LIST
+              select only these characters
+
+       -d, --delimiter=DELIM
+              use DELIM instead of TAB for field delimiter
+
+       -f, --fields=LIST
+              select  only  these fields;  also print any line that contains no delimiter character, unless the -s option is
+              specified
+
+       -n     (ignored)
+
+       --complement
+              complement the set of selected bytes, characters or fields
+
+       -s, --only-delimited
+              do not print lines not containing delimiters
+
+       --output-delimiter=STRING
+              use STRING as the output delimiter the default is to use the input delimiter
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       Use one, and only one of -b, -c or -f.  Each LIST is made up of one  range,  or  many  ranges  separated  by  commas.
+       Selected input is written in the same order that it is read, and is written exactly once.  Each range is one of:
+
+       N      N'th byte, character or field, counted from 1
+
+       N-     from N'th byte, character or field, to end of line
+
+       N-M    from N'th to M'th (included) byte, character or field
+
+       -M     from first to M'th (included) byte, character or field
+
+       With no FILE, or when FILE is -, read standard input.
+
+AUTHOR
+       Written by David M. Ihnat, David MacKenzie, and Jim Meyering.
+
+REPORTING BUGS
+       Report cut bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report cut translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       The  full  documentation  for  cut  is  maintained  as  a  Texinfo manual.  If the info and cut programs are properly
+       installed at your site, the command
+
+              info coreutils 'cut invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                   CUT(1)
+DATE(1)                                                 User Commands                                                DATE(1)
+
+
+
+NAME
+       date - print or set the system date and time
+
+SYNOPSIS
+       date [OPTION]... [+FORMAT]
+       date [-u|--utc|--universal] [MMDDhhmm[[CC]YY][.ss]]
+
+DESCRIPTION
+       Display the current time in the given FORMAT, or set the system date.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -d, --date=STRING
+              display time described by STRING, not 'now'
+
+       -f, --file=DATEFILE
+              like --date once for each line of DATEFILE
+
+       -I[TIMESPEC], --iso-8601[=TIMESPEC]
+              output  date/time  in ISO 8601 format.  TIMESPEC='date' for date only (the default), 'hours', 'minutes', 'sec‐
+              onds', or 'ns' for date and time to the indicated precision.
+
+       -r, --reference=FILE
+              display the last modification time of FILE
+
+       -R, --rfc-2822
+              output date and time in RFC 2822 format.  Example: Mon, 07 Aug 2006 12:34:56 -0600
+
+       --rfc-3339=TIMESPEC
+              output date and time in RFC 3339 format.  TIMESPEC='date', 'seconds', or 'ns' for date and time to  the  indi‐
+              cated precision.  Date and time components are separated by a single space: 2006-08-07 12:34:56-06:00
+
+       -s, --set=STRING
+              set time described by STRING
+
+       -u, --utc, --universal
+              print or set Coordinated Universal Time
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       FORMAT controls the output.  Interpreted sequences are:
+
+       %%     a literal %
+
+       %a     locale's abbreviated weekday name (e.g., Sun)
+
+       %A     locale's full weekday name (e.g., Sunday)
+
+       %b     locale's abbreviated month name (e.g., Jan)
+
+       %B     locale's full month name (e.g., January)
+
+       %c     locale's date and time (e.g., Thu Mar  3 23:05:25 2005)
+
+       %C     century; like %Y, except omit last two digits (e.g., 20)
+
+       %d     day of month (e.g., 01)
+
+       %D     date; same as %m/%d/%y
+
+       %e     day of month, space padded; same as %_d
+
+       %F     full date; same as %Y-%m-%d
+
+       %g     last two digits of year of ISO week number (see %G)
+
+       %G     year of ISO week number (see %V); normally useful only with %V
+
+       %h     same as %b
+
+       %H     hour (00..23)
+
+       %I     hour (01..12)
+
+       %j     day of year (001..366)
+
+       %k     hour, space padded ( 0..23); same as %_H
+
+       %l     hour, space padded ( 1..12); same as %_I
+
+       %m     month (01..12)
+
+       %M     minute (00..59)
+
+       %n     a newline
+
+       %N     nanoseconds (000000000..999999999)
+
+       %p     locale's equivalent of either AM or PM; blank if not known
+
+       %P     like %p, but lower case
+
+       %r     locale's 12-hour clock time (e.g., 11:11:04 PM)
+
+       %R     24-hour hour and minute; same as %H:%M
+
+       %s     seconds since 1970-01-01 00:00:00 UTC
+
+       %S     second (00..60)
+
+       %t     a tab
+
+       %T     time; same as %H:%M:%S
+
+       %u     day of week (1..7); 1 is Monday
+
+       %U     week number of year, with Sunday as first day of week (00..53)
+
+       %V     ISO week number, with Monday as first day of week (01..53)
+
+       %w     day of week (0..6); 0 is Sunday
+
+       %W     week number of year, with Monday as first day of week (00..53)
+
+       %x     locale's date representation (e.g., 12/31/99)
+
+       %X     locale's time representation (e.g., 23:13:48)
+
+       %y     last two digits of year (00..99)
+
+       %Y     year
+
+       %z     +hhmm numeric time zone (e.g., -0400)
+
+       %:z    +hh:mm numeric time zone (e.g., -04:00)
+
+       %::z   +hh:mm:ss numeric time zone (e.g., -04:00:00)
+
+       %:::z  numeric time zone with : to necessary precision (e.g., -04, +05:30)
+
+       %Z     alphabetic time zone abbreviation (e.g., EDT)
+
+       By default, date pads numeric fields with zeroes.  The following optional flags may follow '%':
+
+       -      (hyphen) do not pad the field
+
+       _      (underscore) pad with spaces
+
+       0      (zero) pad with zeros
+
+       ^      use upper case if possible
+
+       #      use opposite case if possible
+
+       After  any  flags comes an optional field width, as a decimal number; then an optional modifier, which is either E to
+       use the locale's alternate representations if available, or O to use the locale's alternate numeric symbols if avail‐
+       able.
+
+EXAMPLES
+       Convert seconds since the epoch (1970-01-01 UTC) to a date
+
+              $ date --date='@2147483647'
+
+       Show the time on the west coast of the US (use tzselect(1) to find TZ)
+
+              $ TZ='America/Los_Angeles' date
+
+       Show the local time for 9AM next Friday on the west coast of the US
+
+              $ date --date='TZ="America/Los_Angeles" 09:00 next Fri'
+
+DATE STRING
+       The  --date=STRING  is  a  mostly free format human readable date string such as "Sun, 29 Feb 2004 16:21:42 -0800" or
+       "2004-02-29 16:21:42" or even "next Thursday".  A date string may contain items indicating  calendar  date,  time  of
+       day,  time  zone, day of week, relative time, relative date, and numbers.  An empty string indicates the beginning of
+       the day.  The date string format is more complex than is easily documented here but is fully described  in  the  info
+       documentation.
+
+AUTHOR
+       Written by David MacKenzie.
+
+REPORTING BUGS
+       Report date bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report date translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       The  full  documentation  for  date  is  maintained  as a Texinfo manual.  If the info and date programs are properly
+       installed at your site, the command
+
+              info coreutils 'date invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                  DATE(1)
+DATE(1)                                                 User Commands                                                DATE(1)
+
+
+
+NAME
+       date - print or set the system date and time
+
+SYNOPSIS
+       date [OPTION]... [+FORMAT]
+       date [-u|--utc|--universal] [MMDDhhmm[[CC]YY][.ss]]
+
+DESCRIPTION
+       Display the current time in the given FORMAT, or set the system date.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -d, --date=STRING
+              display time described by STRING, not 'now'
+
+       -f, --file=DATEFILE
+              like --date once for each line of DATEFILE
+
+       -I[TIMESPEC], --iso-8601[=TIMESPEC]
+              output  date/time  in ISO 8601 format.  TIMESPEC='date' for date only (the default), 'hours', 'minutes', 'sec‐
+              onds', or 'ns' for date and time to the indicated precision.
+
+       -r, --reference=FILE
+              display the last modification time of FILE
+
+       -R, --rfc-2822
+              output date and time in RFC 2822 format.  Example: Mon, 07 Aug 2006 12:34:56 -0600
+
+       --rfc-3339=TIMESPEC
+              output date and time in RFC 3339 format.  TIMESPEC='date', 'seconds', or 'ns' for date and time to  the  indi‐
+              cated precision.  Date and time components are separated by a single space: 2006-08-07 12:34:56-06:00
+
+       -s, --set=STRING
+              set time described by STRING
+
+       -u, --utc, --universal
+              print or set Coordinated Universal Time
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       FORMAT controls the output.  Interpreted sequences are:
+
+       %%     a literal %
+
+       %a     locale's abbreviated weekday name (e.g., Sun)
+
+       %A     locale's full weekday name (e.g., Sunday)
+
+       %b     locale's abbreviated month name (e.g., Jan)
+
+       %B     locale's full month name (e.g., January)
+
+       %c     locale's date and time (e.g., Thu Mar  3 23:05:25 2005)
+
+       %C     century; like %Y, except omit last two digits (e.g., 20)
+
+       %d     day of month (e.g., 01)
+
+       %D     date; same as %m/%d/%y
+
+       %e     day of month, space padded; same as %_d
+
+       %F     full date; same as %Y-%m-%d
+
+       %g     last two digits of year of ISO week number (see %G)
+
+       %G     year of ISO week number (see %V); normally useful only with %V
+
+       %h     same as %b
+
+       %H     hour (00..23)
+
+       %I     hour (01..12)
+
+       %j     day of year (001..366)
+
+       %k     hour, space padded ( 0..23); same as %_H
+
+       %l     hour, space padded ( 1..12); same as %_I
+
+       %m     month (01..12)
+
+       %M     minute (00..59)
+
+       %n     a newline
+
+       %N     nanoseconds (000000000..999999999)
+
+       %p     locale's equivalent of either AM or PM; blank if not known
+
+       %P     like %p, but lower case
+
+       %r     locale's 12-hour clock time (e.g., 11:11:04 PM)
+
+       %R     24-hour hour and minute; same as %H:%M
+
+       %s     seconds since 1970-01-01 00:00:00 UTC
+
+       %S     second (00..60)
+
+       %t     a tab
+
+       %T     time; same as %H:%M:%S
+
+       %u     day of week (1..7); 1 is Monday
+
+       %U     week number of year, with Sunday as first day of week (00..53)
+
+       %V     ISO week number, with Monday as first day of week (01..53)
+
+       %w     day of week (0..6); 0 is Sunday
+
+       %W     week number of year, with Monday as first day of week (00..53)
+
+       %x     locale's date representation (e.g., 12/31/99)
+
+       %X     locale's time representation (e.g., 23:13:48)
+
+       %y     last two digits of year (00..99)
+
+       %Y     year
+
+       %z     +hhmm numeric time zone (e.g., -0400)
+
+       %:z    +hh:mm numeric time zone (e.g., -04:00)
+
+       %::z   +hh:mm:ss numeric time zone (e.g., -04:00:00)
+
+       %:::z  numeric time zone with : to necessary precision (e.g., -04, +05:30)
+
+       %Z     alphabetic time zone abbreviation (e.g., EDT)
+
+       By default, date pads numeric fields with zeroes.  The following optional flags may follow '%':
+
+       -      (hyphen) do not pad the field
+
+       _      (underscore) pad with spaces
+
+       0      (zero) pad with zeros
+
+       ^      use upper case if possible
+
+       #      use opposite case if possible
+
+       After  any  flags comes an optional field width, as a decimal number; then an optional modifier, which is either E to
+       use the locale's alternate representations if available, or O to use the locale's alternate numeric symbols if avail‐
+       able.
+
+EXAMPLES
+       Convert seconds since the epoch (1970-01-01 UTC) to a date
+
+              $ date --date='@2147483647'
+
+       Show the time on the west coast of the US (use tzselect(1) to find TZ)
+
+              $ TZ='America/Los_Angeles' date
+
+       Show the local time for 9AM next Friday on the west coast of the US
+
+              $ date --date='TZ="America/Los_Angeles" 09:00 next Fri'
+
+DATE STRING
+       The  --date=STRING  is  a  mostly free format human readable date string such as "Sun, 29 Feb 2004 16:21:42 -0800" or
+       "2004-02-29 16:21:42" or even "next Thursday".  A date string may contain items indicating  calendar  date,  time  of
+       day,  time  zone, day of week, relative time, relative date, and numbers.  An empty string indicates the beginning of
+       the day.  The date string format is more complex than is easily documented here but is fully described  in  the  info
+       documentation.
+
+AUTHOR
+       Written by David MacKenzie.
+
+REPORTING BUGS
+       Report date bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report date translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       The  full  documentation  for  date  is  maintained  as a Texinfo manual.  If the info and date programs are properly
+       installed at your site, the command
+
+              info coreutils 'date invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                  DATE(1)
+DIFF(1)                                                 User Commands                                                DIFF(1)
+
+
+
+NAME
+       diff - compare files line by line
+
+SYNOPSIS
+       diff [OPTION]... FILES
+
+DESCRIPTION
+       Compare FILES line by line.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       --normal
+              output a normal diff (the default)
+
+       -q, --brief
+              report only when files differ
+
+       -s, --report-identical-files
+              report when two files are the same
+
+       -c, -C NUM, --context[=NUM]
+              output NUM (default 3) lines of copied context
+
+       -u, -U NUM, --unified[=NUM]
+              output NUM (default 3) lines of unified context
+
+       -e, --ed
+              output an ed script
+
+       -n, --rcs
+              output an RCS format diff
+
+       -y, --side-by-side
+              output in two columns
+
+       -W, --width=NUM
+              output at most NUM (default 130) print columns
+
+       --left-column
+              output only the left column of common lines
+
+       --suppress-common-lines
+              do not output common lines
+
+       -p, --show-c-function
+              show which C function each change is in
+
+       -F, --show-function-line=RE
+              show the most recent line matching RE
+
+       --label LABEL
+              use LABEL instead of file name (can be repeated)
+
+       -t, --expand-tabs
+              expand tabs to spaces in output
+
+       -T, --initial-tab
+              make tabs line up by prepending a tab
+
+       --tabsize=NUM
+              tab stops every NUM (default 8) print columns
+
+       --suppress-blank-empty
+              suppress space or tab before empty output lines
+
+       -l, --paginate
+              pass output through `pr' to paginate it
+
+       -r, --recursive
+              recursively compare any subdirectories found
+
+       -N, --new-file
+              treat absent files as empty
+
+       --unidirectional-new-file
+              treat absent first files as empty
+
+       --ignore-file-name-case
+              ignore case when comparing file names
+
+       --no-ignore-file-name-case
+              consider case when comparing file names
+
+       -x, --exclude=PAT
+              exclude files that match PAT
+
+       -X, --exclude-from=FILE
+              exclude files that match any pattern in FILE
+
+       -S, --starting-file=FILE
+              start with FILE when comparing directories
+
+       --from-file=FILE1
+              compare FILE1 to all operands; FILE1 can be a directory
+
+       --to-file=FILE2
+              compare all operands to FILE2; FILE2 can be a directory
+
+       -i, --ignore-case
+              ignore case differences in file contents
+
+       -E, --ignore-tab-expansion
+              ignore changes due to tab expansion
+
+       -Z, --ignore-trailing-space
+              ignore white space at line end
+
+       -b, --ignore-space-change
+              ignore changes in the amount of white space
+
+       -w, --ignore-all-space
+              ignore all white space
+
+       -B, --ignore-blank-lines
+              ignore changes whose lines are all blank
+
+       -I, --ignore-matching-lines=RE
+              ignore changes whose lines all match RE
+
+       -a, --text
+              treat all files as text
+
+       --strip-trailing-cr
+              strip trailing carriage return on input
+
+       -D, --ifdef=NAME
+              output merged file with `#ifdef NAME' diffs
+
+       --GTYPE-group-format=GFMT
+              format GTYPE input groups with GFMT
+
+       --line-format=LFMT
+              format all input lines with LFMT
+
+       --LTYPE-line-format=LFMT
+              format LTYPE input lines with LFMT
+
+              These format options provide fine-grained control over the output
+
+              of diff, generalizing -D/--ifdef.
+
+       LTYPE is `old', `new', or `unchanged'.
+              GTYPE is LTYPE or `changed'.
+
+              GFMT (only) may contain:
+
+       %<     lines from FILE1
+
+       %>     lines from FILE2
+
+       %=     lines common to FILE1 and FILE2
+
+       %[-][WIDTH][.[PREC]]{doxX}LETTER
+              printf-style spec for LETTER
+
+              LETTERs are as follows for new group, lower case for old group:
+
+       F      first line number
+
+       L      last line number
+
+       N      number of lines = L-F+1
+
+       E      F-1
+
+       M      L+1
+
+       %(A=B?T:E)
+              if A equals B then T else E
+
+              LFMT (only) may contain:
+
+       %L     contents of line
+
+       %l     contents of line, excluding any trailing newline
+
+       %[-][WIDTH][.[PREC]]{doxX}n
+              printf-style spec for input line number
+
+              Both GFMT and LFMT may contain:
+
+       %%     %
+
+       %c'C'  the single character C
+
+       %c'\OOO'
+              the character with octal code OOO
+
+       C      the character C (other characters represent themselves)
+
+       -d, --minimal
+              try hard to find a smaller set of changes
+
+       --horizon-lines=NUM
+              keep NUM lines of the common prefix and suffix
+
+       --speed-large-files
+              assume large files and many scattered small changes
+
+       --help display this help and exit
+
+       -v, --version
+              output version information and exit
+
+       FILES  are  `FILE1  FILE2'  or  `DIR1 DIR2' or `DIR FILE...' or `FILE... DIR'.  If --from-file or --to-file is given,
+       there are no restrictions on FILE(s).  If a FILE is `-', read standard input.  Exit status is 0  if  inputs  are  the
+       same, 1 if different, 2 if trouble.
+
+AUTHOR
+       Written by Paul Eggert, Mike Haertel, David Hayes, Richard Stallman, and Len Tower.
+
+REPORTING BUGS
+       Report bugs to: bug-diffutils@gnu.org
+       GNU diffutils home page: <http://www.gnu.org/software/diffutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+
+COPYRIGHT
+       Copyright   ©   2011   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       wdiff(1), cmp(1), diff3(1), sdiff(1), patch(1)
+
+       The  full  documentation  for  diff  is  maintained  as a Texinfo manual.  If the info and diff programs are properly
+       installed at your site, the command
+
+              info diff
+
+       should give you access to the complete manual.
+
+
+
+diffutils 3.3                                            March 2013                                                  DIFF(1)
+ENV(1)                                                  User Commands                                                 ENV(1)
+
+
+
+NAME
+       env - run a program in a modified environment
+
+SYNOPSIS
+       env [OPTION]... [-] [NAME=VALUE]... [COMMAND [ARG]...]
+
+DESCRIPTION
+       Set each NAME to VALUE in the environment and run COMMAND.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -i, --ignore-environment
+              start with an empty environment
+
+       -0, --null
+              end each output line with 0 byte rather than newline
+
+       -u, --unset=NAME
+              remove variable from the environment
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       A mere - implies -i.  If no COMMAND, print the resulting environment.
+
+AUTHOR
+       Written by Richard Mlynarik and David MacKenzie.
+
+REPORTING BUGS
+       Report env bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report env translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       The  full  documentation  for  env  is  maintained  as  a  Texinfo manual.  If the info and env programs are properly
+       installed at your site, the command
+
+              info coreutils 'env invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                   ENV(1)
+GREP(1)                                            General Commands Manual                                           GREP(1)
+
+
+
+NAME
+       grep, egrep, fgrep, rgrep - print lines matching a pattern
+
+SYNOPSIS
+       grep [OPTIONS] PATTERN [FILE...]
+       grep [OPTIONS] [-e PATTERN | -f FILE] [FILE...]
+
+DESCRIPTION
+       grep  searches  the  named  input  FILEs (or standard input if no files are named, or if a single hyphen-minus (-) is
+       given as file name) for lines containing a match to the given PATTERN.  By default, grep prints the matching lines.
+
+       In addition, three variant programs egrep, fgrep and rgrep are available.  egrep is the same as  grep -E.   fgrep  is
+       the same as grep -F.  rgrep is the same as grep -r.  Direct invocation as either egrep or fgrep is deprecated, but is
+       provided to allow historical applications that rely on them to run unmodified.
+
+OPTIONS
+   Generic Program Information
+       --help Print a usage message briefly summarizing these command-line options and the bug-reporting address, then exit.
+
+       -V, --version
+              Print the version number of grep to the standard output stream.  This version number should be included in all
+              bug reports (see below).
+
+   Matcher Selection
+       -E, --extended-regexp
+              Interpret PATTERN as an extended regular expression (ERE, see below).  (-E is specified by POSIX.)
+
+       -F, --fixed-strings
+              Interpret  PATTERN  as  a list of fixed strings, separated by newlines, any of which is to be matched.  (-F is
+              specified by POSIX.)
+
+       -G, --basic-regexp
+              Interpret PATTERN as a basic regular expression (BRE, see below).  This is the default.
+
+       -P, --perl-regexp
+              Interpret PATTERN as a Perl regular expression (PCRE, see below).  This is highly experimental and grep -P may
+              warn of unimplemented features.
+
+   Matching Control
+       -e PATTERN, --regexp=PATTERN
+              Use  PATTERN  as  the  pattern.  This can be used to specify multiple search patterns, or to protect a pattern
+              beginning with a hyphen (-).  (-e is specified by POSIX.)
+
+       -f FILE, --file=FILE
+              Obtain patterns from FILE, one per line.  The  empty  file  contains  zero  patterns,  and  therefore  matches
+              nothing.  (-f is specified by POSIX.)
+
+       -i, --ignore-case
+              Ignore case distinctions in both the PATTERN and the input files.  (-i is specified by POSIX.)
+
+       -v, --invert-match
+              Invert the sense of matching, to select non-matching lines.  (-v is specified by POSIX.)
+
+       -w, --word-regexp
+              Select  only  those  lines  containing matches that form whole words.  The test is that the matching substring
+              must either be at the beginning of the line, or preceded by a non-word constituent character.   Similarly,  it
+              must  be  either  at  the  end  of the line or followed by a non-word constituent character.  Word-constituent
+              characters are letters, digits, and the underscore.
+
+       -x, --line-regexp
+              Select only those matches that exactly match the whole line.  (-x is specified by POSIX.)
+
+       -y     Obsolete synonym for -i.
+
+   General Output Control
+       -c, --count
+              Suppress normal output; instead print  a  count  of  matching  lines  for  each  input  file.   With  the  -v,
+              --invert-match option (see below), count non-matching lines.  (-c is specified by POSIX.)
+
+       --color[=WHEN], --colour[=WHEN]
+              Surround  the  matched  (non-empty)  strings,  matching  lines,  context lines, file names, line numbers, byte
+              offsets, and separators (for fields and groups of context lines) with escape  sequences  to  display  them  in
+              color  on  the  terminal.   The  colors  are  defined by the environment variable GREP_COLORS.  The deprecated
+              environment variable GREP_COLOR is still supported, but its setting does not have priority.   WHEN  is  never,
+              always, or auto.
+
+       -L, --files-without-match
+              Suppress  normal  output;  instead  print the name of each input file from which no output would normally have
+              been printed.  The scanning will stop on the first match.
+
+       -l, --files-with-matches
+              Suppress normal output; instead print the name of each input file from which output would normally  have  been
+              printed.  The scanning will stop on the first match.  (-l is specified by POSIX.)
+
+       -m NUM, --max-count=NUM
+              Stop  reading  a  file  after NUM matching lines.  If the input is standard input from a regular file, and NUM
+              matching lines are output, grep ensures that the standard input is positioned to just after the last  matching
+              line  before exiting, regardless of the presence of trailing context lines.  This enables a calling process to
+              resume a search.  When grep stops after NUM matching lines, it outputs any trailing context lines.   When  the
+              -c  or  --count  option  is  also  used,  grep  does  not  output  a  count  greater than NUM.  When the -v or
+              --invert-match option is also used, grep stops after outputting NUM non-matching lines.
+
+       -o, --only-matching
+              Print only the matched (non-empty) parts of a matching line, with each such part on a separate output line.
+
+       -q, --quiet, --silent
+              Quiet; do not write anything to standard output.  Exit immediately with zero status if  any  match  is  found,
+              even if an error was detected.  Also see the -s or --no-messages option.  (-q is specified by POSIX.)
+
+       -s, --no-messages
+              Suppress error messages about nonexistent or unreadable files.  Portability note: unlike GNU grep, 7th Edition
+              Unix grep did not conform to POSIX, because it lacked -q and its -s option behaved like GNU grep's -q  option.
+              USG-style  grep  also  lacked -q but its -s option behaved like GNU grep.  Portable shell scripts should avoid
+              both -q and -s and should redirect standard and error output  to  /dev/null  instead.   (-s  is  specified  by
+              POSIX.)
+
+   Output Line Prefix Control
+       -b, --byte-offset
+              Print  the  0-based  byte offset within the input file before each line of output.  If -o (--only-matching) is
+              specified, print the offset of the matching part itself.
+
+       -H, --with-filename
+              Print the file name for each match.  This is the default when there is more than one file to search.
+
+       -h, --no-filename
+              Suppress the prefixing of file names on output.  This is the default when there is  only  one  file  (or  only
+              standard input) to search.
+
+       --label=LABEL
+              Display  input actually coming from standard input as input coming from file LABEL.  This is especially useful
+              when implementing tools like zgrep, e.g., gzip -cd foo.gz | grep --label=foo -H something.  See  also  the  -H
+              option.
+
+       -n, --line-number
+              Prefix each line of output with the 1-based line number within its input file.  (-n is specified by POSIX.)
+
+       -T, --initial-tab
+              Make  sure  that  the first character of actual line content lies on a tab stop, so that the alignment of tabs
+              looks normal.  This is useful with options that prefix their output to the actual content: -H,-n, and -b.   In
+              order  to  improve  the probability that lines from a single file will all start at the same column, this also
+              causes the line number and byte offset (if present) to be printed in a minimum size field width.
+
+       -u, --unix-byte-offsets
+              Report Unix-style byte offsets.  This switch causes grep to report byte offsets as if the file  were  a  Unix-
+              style  text  file, i.e., with CR characters stripped off.  This will produce results identical to running grep
+              on a Unix machine.  This option has no effect unless -b option is also used; it has  no  effect  on  platforms
+              other than MS-DOS and MS-Windows.
+
+       -Z, --null
+              Output  a zero byte (the ASCII NUL character) instead of the character that normally follows a file name.  For
+              example, grep -lZ outputs a zero byte after each file name instead of the usual newline.   This  option  makes
+              the  output unambiguous, even in the presence of file names containing unusual characters like newlines.  This
+              option can be used with commands like find -print0, perl -0, sort -z, and xargs -0 to process  arbitrary  file
+              names, even those that contain newline characters.
+
+   Context Line Control
+       -A NUM, --after-context=NUM
+              Print  NUM  lines  of  trailing context after matching lines.  Places a line containing a group separator (--)
+              between contiguous groups of matches.  With the -o or --only-matching option, this has no effect and a warning
+              is given.
+
+       -B NUM, --before-context=NUM
+              Print  NUM  lines  of  leading context before matching lines.  Places a line containing a group separator (--)
+              between contiguous groups of matches.  With the -o or --only-matching option, this has no effect and a warning
+              is given.
+
+       -C NUM, -NUM, --context=NUM
+              Print  NUM lines of output context.  Places a line containing a group separator (--) between contiguous groups
+              of matches.  With the -o or --only-matching option, this has no effect and a warning is given.
+
+   File and Directory Selection
+       -a, --text
+              Process a binary file as if it were text; this is equivalent to the --binary-files=text option.
+
+       --binary-files=TYPE
+              If the first few bytes of a file indicate that the file contains binary data, assume that the file is of  type
+              TYPE.   By  default,  TYPE is binary, and grep normally outputs either a one-line message saying that a binary
+              file matches, or no message if there is no match.  If TYPE is without-match, grep assumes that a  binary  file
+              does  not  match; this is equivalent to the -I option.  If TYPE is text, grep processes a binary file as if it
+              were text; this is equivalent to the  -a  option.   Warning:  grep  --binary-files=text  might  output  binary
+              garbage,  which  can have nasty side effects if the output is a terminal and if the terminal driver interprets
+              some of it as commands.
+
+       -D ACTION, --devices=ACTION
+              If an input file is a device, FIFO or socket, use ACTION to process it.  By default,  ACTION  is  read,  which
+              means  that  devices  are  read  just as if they were ordinary files.  If ACTION is skip, devices are silently
+              skipped.
+
+       -d ACTION, --directories=ACTION
+              If an input file is a directory, use ACTION to process it.  By default, ACTION is read, i.e., read directories
+              just  as  if  they  were ordinary files.  If ACTION is skip, silently skip directories.  If ACTION is recurse,
+              read all files under each directory, recursively, following symbolic links only if they  are  on  the  command
+              line.  This is equivalent to the -r option.
+
+       --exclude=GLOB
+              Skip  files  whose base name matches GLOB (using wildcard matching).  A file-name glob can use *, ?, and [...]
+              as wildcards, and \ to quote a wildcard or backslash character literally.
+
+       --exclude-from=FILE
+              Skip files whose base name matches any of the file-name globs read  from  FILE  (using  wildcard  matching  as
+              described under --exclude).
+
+       --exclude-dir=DIR
+              Exclude directories matching the pattern DIR from recursive searches.
+
+       -I     Process   a   binary   file   as   if   it   did  not  contain  matching  data;  this  is  equivalent  to  the
+              --binary-files=without-match option.
+
+       --include=GLOB
+              Search only files whose base name matches GLOB (using wildcard matching as described under --exclude).
+
+       -r, --recursive
+              Read all files under each directory, recursively, following symbolic links only if they  are  on  the  command
+              line.  This is equivalent to the -d recurse option.
+
+       -R, --dereference-recursive
+              Read all files under each directory, recursively.  Follow all symbolic links, unlike -r.
+
+   Other Options
+       --line-buffered
+              Use line buffering on output.  This can cause a performance penalty.
+
+       --mmap If  possible,  use the mmap(2) system call to read input, instead of the default read(2) system call.  In some
+              situations, --mmap yields better performance.  However, --mmap can cause undefined  behavior  (including  core
+              dumps) if an input file shrinks while grep is operating, or if an I/O error occurs.
+
+       -U, --binary
+              Treat  the  file(s) as binary.  By default, under MS-DOS and MS-Windows, grep guesses the file type by looking
+              at the contents of the first 32KB read from the file.  If grep decides the file is a text file, it strips  the
+              CR  characters  from  the  original  file  contents (to make regular expressions with ^ and $ work correctly).
+              Specifying -U overrules this guesswork, causing all files to be read and  passed  to  the  matching  mechanism
+              verbatim;  if  the  file is a text file with CR/LF pairs at the end of each line, this will cause some regular
+              expressions to fail.  This option has no effect on platforms other than MS-DOS and MS-Windows.
+
+       -z, --null-data
+              Treat the input as a set of lines, each terminated by a zero byte (the  ASCII  NUL  character)  instead  of  a
+              newline.   Like  the  -Z  or  --null  option,  this  option  can be used with commands like sort -z to process
+              arbitrary file names.
+
+REGULAR EXPRESSIONS
+       A regular expression is a pattern that describes a set of strings.  Regular expressions are  constructed  analogously
+       to arithmetic expressions, by using various operators to combine smaller expressions.
+
+       grep  understands  three  different versions of regular expression syntax: “basic” (BRE), “extended” (ERE) and “perl”
+       (PRCE). In GNU grep, there is no difference in available functionality between basic and extended syntaxes.  In other
+       implementations,  basic regular expressions are less powerful.  The following description applies to extended regular
+       expressions; differences for basic regular expressions are summarized  afterwards.   Perl  regular  expressions  give
+       additional  functionality, and are documented in pcresyntax(3) and pcrepattern(3), but only work if pcre is available
+       in the system.
+
+       The fundamental building blocks are the  regular  expressions  that  match  a  single  character.   Most  characters,
+       including  all  letters  and  digits, are regular expressions that match themselves.  Any meta-character with special
+       meaning may be quoted by preceding it with a backslash.
+
+       The period . matches any single character.
+
+   Character Classes and Bracket Expressions
+       A bracket expression is a list of characters enclosed by [ and ].  It matches any single character in that  list;  if
+       the  first  character  of  the  list  is the caret ^ then it matches any character not in the list.  For example, the
+       regular expression [0123456789] matches any single digit.
+
+       Within a bracket expression, a range expression consists of two characters separated by a  hyphen.   It  matches  any
+       single  character  that  sorts  between  the  two  characters,  inclusive,  using the locale's collating sequence and
+       character set.  For example, in the default C locale, [a-d] is equivalent to [abcd].  Many locales sort characters in
+       dictionary  order,  and  in  these  locales  [a-d]  is  typically not equivalent to [abcd]; it might be equivalent to
+       [aBbCcDd], for example.  To obtain the traditional interpretation of bracket expressions, you can use the C locale by
+       setting the LC_ALL environment variable to the value C.
+
+       Finally,  certain named classes of characters are predefined within bracket expressions, as follows.  Their names are
+       self explanatory,  and  they  are  [:alnum:],  [:alpha:],  [:cntrl:],  [:digit:],  [:graph:],  [:lower:],  [:print:],
+       [:punct:],  [:space:],  [:upper:], and [:xdigit:].  For example, [[:alnum:]] means the character class of numbers and
+       letters in the current locale. In the C locale and ASCII character set encoding, this is  the  same  as  [0-9A-Za-z].
+       (Note  that the brackets in these class names are part of the symbolic names, and must be included in addition to the
+       brackets delimiting the bracket  expression.)   Most  meta-characters  lose  their  special  meaning  inside  bracket
+       expressions.  To include a literal ] place it first in the list.  Similarly, to include a literal ^ place it anywhere
+       but first.  Finally, to include a literal - place it last.
+
+   Anchoring
+       The caret ^ and the dollar sign $ are meta-characters that respectively match the empty string at the  beginning  and
+       end of a line.
+
+   The Backslash Character and Special Expressions
+       The  symbols \< and \> respectively match the empty string at the beginning and end of a word.  The symbol \b matches
+       the empty string at the edge of a word, and \B matches the empty string provided it's not at the edge of a word.  The
+       symbol \w is a synonym for [_[:alnum:]] and \W is a synonym for [^_[:alnum:]].
+
+   Repetition
+       A regular expression may be followed by one of several repetition operators:
+       ?      The preceding item is optional and matched at most once.
+       *      The preceding item will be matched zero or more times.
+       +      The preceding item will be matched one or more times.
+       {n}    The preceding item is matched exactly n times.
+       {n,}   The preceding item is matched n or more times.
+       {,m}   The preceding item is matched at most m times.  This is a GNU extension.
+       {n,m}  The preceding item is matched at least n times, but not more than m times.
+
+   Concatenation
+       Two  regular  expressions  may  be  concatenated;  the  resulting  regular  expression  matches  any string formed by
+       concatenating two substrings that respectively match the concatenated expressions.
+
+   Alternation
+       Two regular expressions may be joined by the infix operator |; the resulting regular expression  matches  any  string
+       matching either alternate expression.
+
+   Precedence
+       Repetition  takes precedence over concatenation, which in turn takes precedence over alternation.  A whole expression
+       may be enclosed in parentheses to override these precedence rules and form a subexpression.
+
+   Back References and Subexpressions
+       The back-reference \n, where n is a single digit, matches the substring previously matched by the  nth  parenthesized
+       subexpression of the regular expression.
+
+   Basic vs Extended Regular Expressions
+       In  basic  regular  expressions  the meta-characters ?, +, {, |, (, and ) lose their special meaning; instead use the
+       backslashed versions \?, \+, \{, \|, \(, and \).
+
+       Traditional egrep did not support the { meta-character,  and  some  egrep  implementations  support  \{  instead,  so
+       portable scripts should avoid { in grep -E patterns and should use [{] to match a literal {.
+
+       GNU  grep -E  attempts  to support traditional usage by assuming that { is not special if it would be the start of an
+       invalid interval specification.  For example, the command grep -E '{1'  searches  for  the  two-character  string  {1
+       instead  of  reporting  a  syntax  error  in the regular expression.  POSIX allows this behavior as an extension, but
+       portable scripts should avoid it.
+
+ENVIRONMENT VARIABLES
+       The behavior of grep is affected by the following environment variables.
+
+       The locale for category LC_foo is specified by examining the three environment variables  LC_ALL,  LC_foo,  LANG,  in
+       that  order.   The first of these variables that is set specifies the locale.  For example, if LC_ALL is not set, but
+       LC_MESSAGES is set to pt_BR, then the Brazilian Portuguese locale is used for the LC_MESSAGES category.  The C locale
+       is  used  if  none of these environment variables are set, if the locale catalog is not installed, or if grep was not
+       compiled with national language support (NLS).
+
+       GREP_OPTIONS
+              This variable specifies default options to be placed in front  of  any  explicit  options.   For  example,  if
+              GREP_OPTIONS  is  '--binary-files=without-match  --directories=skip',  grep  behaves  as  if  the  two options
+              --binary-files=without-match and --directories=skip had been specified before any  explicit  options.   Option
+              specifications  are  separated  by  whitespace.   A backslash escapes the next character, so it can be used to
+              specify an option containing whitespace or a backslash.
+
+       GREP_COLOR
+              This variable specifies the color used to highlight matched (non-empty) text.  It is deprecated  in  favor  of
+              GREP_COLORS,  but  still supported.  The mt, ms, and mc capabilities of GREP_COLORS have priority over it.  It
+              can only specify the color used to highlight the matching non-empty text in any matching line (a selected line
+              when  the  -v  command-line option is omitted, or a context line when -v is specified).  The default is 01;31,
+              which means a bold red foreground text on the terminal's default background.
+
+       GREP_COLORS
+              Specifies the colors and other attributes used to highlight various parts of  the  output.   Its  value  is  a
+              colon-separated  list  of capabilities that defaults to ms=01;31:mc=01;31:sl=:cx=:fn=35:ln=32:bn=32:se=36 with
+              the rv and ne boolean capabilities omitted (i.e., false).  Supported capabilities are as follows.
+
+              sl=    SGR substring for whole selected lines (i.e.,  matching  lines  when  the  -v  command-line  option  is
+                     omitted,  or non-matching lines when -v is specified).  If however the boolean rv capability and the -v
+                     command-line option are both specified, it applies to context matching lines instead.  The  default  is
+                     empty (i.e., the terminal's default color pair).
+
+              cx=    SGR  substring  for  whole  context  lines (i.e., non-matching lines when the -v command-line option is
+                     omitted, or matching lines when -v is specified).  If however the boolean  rv  capability  and  the  -v
+                     command-line option are both specified, it applies to selected non-matching lines instead.  The default
+                     is empty (i.e., the terminal's default color pair).
+
+              rv     Boolean value that reverses (swaps) the meanings of the sl= and cx= capabilities when the  -v  command-
+                     line option is specified.  The default is false (i.e., the capability is omitted).
+
+              mt=01;31
+                     SGR  substring  for  matching  non-empty  text  in any matching line (i.e., a selected line when the -v
+                     command-line option is omitted, or a context line when -v is specified).  Setting this is equivalent to
+                     setting both ms= and mc= at once to the same value.  The default is a bold red text foreground over the
+                     current line background.
+
+              ms=01;31
+                     SGR substring for matching non-empty text in a selected line.  (This is only used when the -v  command-
+                     line  option  is  omitted.)   The  effect of the sl= (or cx= if rv) capability remains active when this
+                     kicks in.  The default is a bold red text foreground over the current line background.
+
+              mc=01;31
+                     SGR substring for matching non-empty text in a context line.  (This is only used when the  -v  command-
+                     line  option  is  specified.)  The effect of the cx= (or sl= if rv) capability remains active when this
+                     kicks in.  The default is a bold red text foreground over the current line background.
+
+              fn=35  SGR substring for file names prefixing any content line.  The default is a magenta text foreground over
+                     the terminal's default background.
+
+              ln=32  SGR substring for line numbers prefixing any content line.  The default is a green text foreground over
+                     the terminal's default background.
+
+              bn=32  SGR substring for byte offsets prefixing any content line.  The default is a green text foreground over
+                     the terminal's default background.
+
+              se=36  SGR  substring  for separators that are inserted between selected line fields (:), between context line
+                     fields, (-), and between groups of adjacent lines when nonzero context is specified (--).  The  default
+                     is a cyan text foreground over the terminal's default background.
+
+              ne     Boolean  value that prevents clearing to the end of line using Erase in Line (EL) to Right (\33[K) each
+                     time a colorized item ends.  This is needed on terminals on which EL is not supported.  It is otherwise
+                     useful  on  terminals  for which the back_color_erase (bce) boolean terminfo capability does not apply,
+                     when the chosen highlight colors do not affect the background, or when EL is too  slow  or  causes  too
+                     much flicker.  The default is false (i.e., the capability is omitted).
+
+              Note  that boolean capabilities have no =...  part.  They are omitted (i.e., false) by default and become true
+              when specified.
+
+              See the Select Graphic Rendition (SGR) section in the documentation of the text  terminal  that  is  used  for
+              permitted  values  and  their meaning as character attributes.  These substring values are integers in decimal
+              representation and can be concatenated with semicolons.  grep takes care  of  assembling  the  result  into  a
+              complete  SGR  sequence  (\33[...m).   Common values to concatenate include 1 for bold, 4 for underline, 5 for
+              blink, 7 for inverse, 39 for default foreground color, 30 to 37 for foreground colors, 90 to 97  for  16-color
+              mode  foreground colors, 38;5;0 to 38;5;255 for 88-color and 256-color modes foreground colors, 49 for default
+              background color, 40 to 47 for background colors, 100 to 107 for 16-color mode background colors,  and  48;5;0
+              to 48;5;255 for 88-color and 256-color modes background colors.
+
+       LC_ALL, LC_COLLATE, LANG
+              These  variables  specify the locale for the LC_COLLATE category, which determines the collating sequence used
+              to interpret range expressions like [a-z].
+
+       LC_ALL, LC_CTYPE, LANG
+              These variables specify the locale for the LC_CTYPE category, which determines the type of  characters,  e.g.,
+              which characters are whitespace.
+
+       LC_ALL, LC_MESSAGES, LANG
+              These  variables specify the locale for the LC_MESSAGES category, which determines the language that grep uses
+              for messages.  The default C locale uses American English messages.
+
+       POSIXLY_CORRECT
+              If set, grep behaves as POSIX requires; otherwise, grep behaves more like other GNU programs.  POSIX  requires
+              that  options  that  follow file names must be treated as file names; by default, such options are permuted to
+              the front of the operand list and are treated as options.  Also, POSIX requires that unrecognized  options  be
+              diagnosed  as  “illegal”,  but  since  they  are not really against the law the default is to diagnose them as
+              “invalid”.  POSIXLY_CORRECT also disables _N_GNU_nonoption_argv_flags_, described below.
+
+       _N_GNU_nonoption_argv_flags_
+              (Here N is grep's numeric process ID.)  If the ith character of this environment variable's value is 1, do not
+              consider the ith operand of grep to be an option, even if it appears to be one.  A shell can put this variable
+              in the environment for each command it runs, specifying which operands are the results of file  name  wildcard
+              expansion  and  therefore  should  not  be treated as options.  This behavior is available only with the GNU C
+              library, and only when POSIXLY_CORRECT is not set.
+
+EXIT STATUS
+       The exit status is 0 if selected lines are found, and 1 if not found.  If an error occurred the  exit  status  is  2.
+       (Note: POSIX error handling code should check for '2' or greater.)
+
+COPYRIGHT
+       Copyright 1998-2000, 2002, 2005-2014 Free Software Foundation, Inc.
+
+       This  is free software; see the source for copying conditions.  There is NO warranty; not even for MERCHANTABILITY or
+       FITNESS FOR A PARTICULAR PURPOSE.
+
+BUGS
+   Reporting Bugs
+       Email     bug     reports     to     <bug-grep@gnu.org>,     a     mailing     list     whose     web     page     is
+       <http://lists.gnu.org/mailman/listinfo/bug-grep>.      grep's     Savannah     bug     tracker    is    located    at
+       <http://savannah.gnu.org/bugs/?group=grep>.
+
+   Known Bugs
+       Large repetition counts in the {n,m} construct may cause grep to use lots of  memory.   In  addition,  certain  other
+       obscure regular expressions require exponential time and space, and may cause grep to run out of memory.
+
+       Back-references are very slow, and may require exponential time.
+
+SEE ALSO
+   Regular Manual Pages
+       awk(1),  cmp(1),  diff(1), find(1), gzip(1), perl(1), sed(1), sort(1), xargs(1), zgrep(1), mmap(2), read(2), pcre(3),
+       pcresyntax(3), pcrepattern(3), terminfo(5), glob(7), regex(7).
+
+   POSIX Programmer's Manual Page
+       grep(1p).
+
+   TeXinfo Documentation
+       The  full   documentation   for   grep   is   maintained   as   a   TeXinfo   manual,   which   you   can   read   at
+       http://www.gnu.org/software/grep/manual/.   If  the  info  and grep programs are properly installed at your site, the
+       command
+
+              info grep
+
+       should give you access to the complete manual.
+
+NOTES
+       This man page is maintained only fitfully; the full documentation is often more up-to-date.
+
+       GNU's not Unix, but Unix is a beast; its plural form is Unixen.
+
+
+
+User Commands                                           GNU grep 2.16                                                GREP(1)
+HEAD(1)                                                 User Commands                                                HEAD(1)
+
+
+
+NAME
+       head - output the first part of files
+
+SYNOPSIS
+       head [OPTION]... [FILE]...
+
+DESCRIPTION
+       Print the first 10 lines of each FILE to standard output.  With more than one FILE, precede each with a header giving
+       the file name.  With no FILE, or when FILE is -, read standard input.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -c, --bytes=[-]K
+              print the first K bytes of each file; with the leading '-', print all but the last K bytes of each file
+
+       -n, --lines=[-]K
+              print the first K lines instead of the first 10; with the leading '-', print all but the last K lines of  each
+              file
+
+       -q, --quiet, --silent
+              never print headers giving file names
+
+       -v, --verbose
+              always print headers giving file names
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       K  may  have  a  multiplier  suffix:  b  512,  kB  1000,  K  1024,  MB  1000*1000,  M 1024*1024, GB 1000*1000*1000, G
+       1024*1024*1024, and so on for T, P, E, Z, Y.
+
+AUTHOR
+       Written by David MacKenzie and Jim Meyering.
+
+REPORTING BUGS
+       Report head bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report head translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright  ©  2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3   or   later
+       <http://gnu.org/licenses/gpl.html>.
+       This  is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted by
+       law.
+
+SEE ALSO
+       The full documentation for head is maintained as a Texinfo manual.  If  the  info  and  head  programs  are  properly
+       installed at your site, the command
+
+              info coreutils 'head invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                  HEAD(1)
+PASTE(1)                                                User Commands                                               PASTE(1)
+
+
+
+NAME
+       paste - merge lines of files
+
+SYNOPSIS
+       paste [OPTION]... [FILE]...
+
+DESCRIPTION
+       Write lines consisting of the sequentially corresponding lines from each FILE, separated by TABs, to standard output.
+       With no FILE, or when FILE is -, read standard input.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -d, --delimiters=LIST
+              reuse characters from LIST instead of TABs
+
+       -s, --serial
+              paste one file at a time instead of in parallel
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+AUTHOR
+       Written by David M. Ihnat and David MacKenzie.
+
+REPORTING BUGS
+       Report paste bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report paste translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright  ©  2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3   or   later
+       <http://gnu.org/licenses/gpl.html>.
+       This  is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted by
+       law.
+
+SEE ALSO
+       The full documentation for paste is maintained as a Texinfo manual.  If the info  and  paste  programs  are  properly
+       installed at your site, the command
+
+              info coreutils 'paste invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                 PASTE(1)
+REV(1)                                                  User Commands                                                 REV(1)
+
+NAME
+     rev — reverse lines of a file or files
+
+SYNOPSIS
+     rev [-V] [-h] [file ...]
+
+DESCRIPTION
+     The rev utility copies the specified files to standard output, reversing the order of characters in every line.  If no
+     files are specified, standard input is read.
+
+     -V, --version
+             Output version information and exit.
+
+     -h, --help
+             Output help and exit.
+
+AVAILABILITY
+     The rev command is part of the util-linux package and is available from ftp://ftp.kernel.org/pub/linux/utils/util-
+     linux/.
+
+util-linux                                              April 2011                                                util-linux
+SED(1)                                                  User Commands                                                 SED(1)
+
+
+
+NAME
+       sed - stream editor for filtering and transforming text
+
+SYNOPSIS
+       sed [OPTION]... {script-only-if-no-other-script} [input-file]...
+
+DESCRIPTION
+       Sed  is a stream editor.  A stream editor is used to perform basic text transformations on an input stream (a file or
+       input from a pipeline).  While in some ways similar to an editor which permits scripted edits (such as ed), sed works
+       by  making  only  one  pass over the input(s), and is consequently more efficient.  But it is sed's ability to filter
+       text in a pipeline which particularly distinguishes it from other types of editors.
+
+       -n, --quiet, --silent
+
+              suppress automatic printing of pattern space
+
+       -e script, --expression=script
+
+              add the script to the commands to be executed
+
+       -f script-file, --file=script-file
+
+              add the contents of script-file to the commands to be executed
+
+       --follow-symlinks
+
+              follow symlinks when processing in place
+
+       -i[SUFFIX], --in-place[=SUFFIX]
+
+              edit files in place (makes backup if SUFFIX supplied)
+
+       -l N, --line-length=N
+
+              specify the desired line-wrap length for the `l' command
+
+       --posix
+
+              disable all GNU extensions.
+
+       -r, --regexp-extended
+
+              use extended regular expressions in the script.
+
+       -s, --separate
+
+              consider files as separate rather than as a single continuous long stream.
+
+       -u, --unbuffered
+
+              load minimal amounts of data from the input files and flush the output buffers more often
+
+       -z, --null-data
+
+              separate lines by NUL characters
+
+       --help
+              display this help and exit
+
+       --version
+              output version information and exit
+
+       If no -e, --expression, -f, or --file option is given, then the first non-option argument is taken as the sed  script
+       to  interpret.   All remaining arguments are names of input files; if no input files are specified, then the standard
+       input is read.
+
+       GNU sed home page: <http://www.gnu.org/software/sed/>.  General help using  GNU  software:  <http://www.gnu.org/geth‐
+       elp/>.   E-mail bug reports to: <bug-sed@gnu.org>.  Be sure to include the word ``sed'' somewhere in the ``Subject:''
+       field.
+
+COMMAND SYNOPSIS
+       This is just a brief synopsis of sed commands to serve as a reminder to those who already know sed; other  documenta‐
+       tion (such as the texinfo document) must be consulted for fuller descriptions.
+
+   Zero-address ``commands''
+       : label
+              Label for b and t commands.
+
+       #comment
+              The comment extends until the next newline (or the end of a -e script fragment).
+
+       }      The closing bracket of a { } block.
+
+   Zero- or One- address commands
+       =      Print the current line number.
+
+       a \
+
+       text   Append text, which has each embedded newline preceded by a backslash.
+
+       i \
+
+       text   Insert text, which has each embedded newline preceded by a backslash.
+
+       q [exit-code]
+              Immediately  quit  the sed script without processing any more input, except that if auto-print is not disabled
+              the current pattern space will be printed.  The exit code argument is a GNU extension.
+
+       Q [exit-code]
+              Immediately quit the sed script without processing any more input.  This is a GNU extension.
+
+       r filename
+              Append text read from filename.
+
+       R filename
+              Append a line read from filename.  Each invocation of the command reads a line from the file.  This is  a  GNU
+              extension.
+
+   Commands which accept address ranges
+       {      Begin a block of commands (end with a }).
+
+       b label
+              Branch to label; if label is omitted, branch to end of script.
+
+       c \
+
+       text   Replace the selected lines with text, which has each embedded newline preceded by a backslash.
+
+       d      Delete pattern space.  Start next cycle.
+
+       D      If  pattern  space  contains  no newline, start a normal new cycle as if the d command was issued.  Otherwise,
+              delete text in the pattern space up to the first newline, and restart cycle with the resultant pattern  space,
+              without reading a new line of input.
+
+       h H    Copy/append pattern space to hold space.
+
+       g G    Copy/append hold space to pattern space.
+
+       l      List out the current line in a ``visually unambiguous'' form.
+
+       l width
+              List  out the current line in a ``visually unambiguous'' form, breaking it at width characters.  This is a GNU
+              extension.
+
+       n N    Read/append the next line of input into the pattern space.
+
+       p      Print the current pattern space.
+
+       P      Print up to the first embedded newline of the current pattern space.
+
+       s/regexp/replacement/
+              Attempt to match regexp against the pattern space.  If successful, replace that portion matched with  replace‐
+              ment.  The replacement may contain the special character & to refer to that portion of the pattern space which
+              matched, and the special escapes \1 through \9 to refer to the corresponding matching sub-expressions  in  the
+              regexp.
+
+       t label
+              If a s/// has done a successful substitution since the last input line was read and since the last t or T com‐
+              mand, then branch to label; if label is omitted, branch to end of script.
+
+       T label
+              If no s/// has done a successful substitution since the last input line was read and since the  last  t  or  T
+              command, then branch to label; if label is omitted, branch to end of script.  This is a GNU extension.
+
+       w filename
+              Write the current pattern space to filename.
+
+       W filename
+              Write the first line of the current pattern space to filename.  This is a GNU extension.
+
+       x      Exchange the contents of the hold and pattern spaces.
+
+       y/source/dest/
+              Transliterate  the  characters  in  the pattern space which appear in source to the corresponding character in
+              dest.
+
+Addresses
+       Sed commands can be given with no addresses, in which case the command will be executed for all input lines; with one
+       address,  in  which  case  the  command  will  only be executed for input lines which match that address; or with two
+       addresses, in which case the command will be executed for all input lines which match the inclusive  range  of  lines
+       starting from the first address and continuing to the second address.  Three things to note about address ranges: the
+       syntax is addr1,addr2 (i.e., the addresses are separated by a comma); the line which addr1  matched  will  always  be
+       accepted,  even  if  addr2  selects an earlier line; and if addr2 is a regexp, it will not be tested against the line
+       that addr1 matched.
+
+       After the address (or address-range), and before the command, a !  may be inserted, which specifies that the  command
+       shall only be executed if the address (or address-range) does not match.
+
+       The following address types are supported:
+
+       number Match  only  the  specified  line  number (which increments cumulatively across files, unless the -s option is
+              specified on the command line).
+
+       first~step
+              Match every step'th line starting with line first.  For example, ``sed -n 1~2p'' will print all  the  odd-num‐
+              bered  lines  in  the input stream, and the address 2~5 will match every fifth line, starting with the second.
+              first can be zero; in this case, sed operates as if it were equal to step.  (This is an extension.)
+
+       $      Match the last line.
+
+       /regexp/
+              Match lines matching the regular expression regexp.
+
+       \cregexpc
+              Match lines matching the regular expression regexp.  The c may be any character.
+
+       GNU sed also supports some special 2-address forms:
+
+       0,addr2
+              Start out in "matched first address" state, until addr2 is found.  This is similar to 1,addr2, except that  if
+              addr2  matches  the  very  first  line  of input the 0,addr2 form will be at the end of its range, whereas the
+              1,addr2 form will still be at the beginning of its range.  This works only when addr2 is a regular expression.
+
+       addr1,+N
+              Will match addr1 and the N lines following addr1.
+
+       addr1,~N
+              Will match addr1 and the lines following addr1 until the next line whose input line number is a multiple of N.
+
+REGULAR EXPRESSIONS
+       POSIX.2 BREs should be supported, but they aren't completely because of performance problems.  The \n sequence  in  a
+       regular expression matches the newline character, and similarly for \a, \t, and other sequences.
+
+BUGS
+       E-mail  bug  reports  to  bug-sed@gnu.org.   Also, please include the output of ``sed --version'' in the body of your
+       report if at all possible.
+
+AUTHOR
+       Written by Jay Fenlason, Tom Lord, Ken Pizzini, and Paolo Bonzini.   GNU  sed  home  page:  <http://www.gnu.org/soft‐
+       ware/sed/>.   General  help  using  GNU  software:  <http://www.gnu.org/gethelp/>.   E-mail  bug  reports  to:  <bug-
+       sed@gnu.org>.  Be sure to include the word ``sed'' somewhere in the ``Subject:'' field.
+
+COPYRIGHT
+       Copyright  ©  2012   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3   or   later
+       <http://gnu.org/licenses/gpl.html>.
+       This  is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted by
+       law.
+
+SEE ALSO
+       awk(1), ed(1), grep(1), tr(1), perlre(1), sed.info, any of various books on sed, the sed FAQ (http://sed.sf.net/grab‐
+       bag/tutorials/sedfaq.txt), http://sed.sf.net/grabbag/.
+
+       The full documentation for sed is maintained as a Texinfo manual.  If the info and sed programs are properly
+       installed at your site, the command
+
+              info sed
+
+       should give you access to the complete manual.
+
+
+
+sed 4.2.2                                               December 2012                                                 SED(1)
+SORT(1)                                                 User Commands                                                SORT(1)
+
+
+
+NAME
+       sort - sort lines of text files
+
+SYNOPSIS
+       sort [OPTION]... [FILE]...
+       sort [OPTION]... --files0-from=F
+
+DESCRIPTION
+       Write sorted concatenation of all FILE(s) to standard output.
+
+       Mandatory arguments to long options are mandatory for short options too.  Ordering options:
+
+       -b, --ignore-leading-blanks
+              ignore leading blanks
+
+       -d, --dictionary-order
+              consider only blanks and alphanumeric characters
+
+       -f, --ignore-case
+              fold lower case to upper case characters
+
+       -g, --general-numeric-sort
+              compare according to general numerical value
+
+       -i, --ignore-nonprinting
+              consider only printable characters
+
+       -M, --month-sort
+              compare (unknown) < 'JAN' < ... < 'DEC'
+
+       -h, --human-numeric-sort
+              compare human readable numbers (e.g., 2K 1G)
+
+       -n, --numeric-sort
+              compare according to string numerical value
+
+       -R, --random-sort
+              sort by random hash of keys
+
+       --random-source=FILE
+              get random bytes from FILE
+
+       -r, --reverse
+              reverse the result of comparisons
+
+       --sort=WORD
+              sort according to WORD: general-numeric -g, human-numeric -h, month -M, numeric -n, random -R, version -V
+
+       -V, --version-sort
+              natural sort of (version) numbers within text
+
+       Other options:
+
+       --batch-size=NMERGE
+              merge at most NMERGE inputs at once; for more use temp files
+
+       -c, --check, --check=diagnose-first
+              check for sorted input; do not sort
+
+       -C, --check=quiet, --check=silent
+              like -c, but do not report first bad line
+
+       --compress-program=PROG
+              compress temporaries with PROG; decompress them with PROG -d
+
+       --debug
+              annotate the part of the line used to sort, and warn about questionable usage to stderr
+
+       --files0-from=F
+              read input from the files specified by NUL-terminated names in file F; If F is - then read names from standard
+              input
+
+       -k, --key=KEYDEF
+              sort via a key; KEYDEF gives location and type
+
+       -m, --merge
+              merge already sorted files; do not sort
+
+       -o, --output=FILE
+              write result to FILE instead of standard output
+
+       -s, --stable
+              stabilize sort by disabling last-resort comparison
+
+       -S, --buffer-size=SIZE
+              use SIZE for main memory buffer
+
+       -t, --field-separator=SEP
+              use SEP instead of non-blank to blank transition
+
+       -T, --temporary-directory=DIR
+              use DIR for temporaries, not $TMPDIR or /tmp; multiple options specify multiple directories
+
+       --parallel=N
+              change the number of sorts run concurrently to N
+
+       -u, --unique
+              with -c, check for strict ordering; without -c, output only the first of an equal run
+
+       -z, --zero-terminated
+              end lines with 0 byte, not newline
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       KEYDEF is F[.C][OPTS][,F[.C][OPTS]] for start and stop position, where F is a field number and C a character position
+       in  the  field;  both  are  origin  1,  and the stop position defaults to the line's end.  If neither -t nor -b is in
+       effect, characters in a field are counted from the beginning of the preceding whitespace.  OPTS is one or  more  sin‐
+       gle-letter  ordering options [bdfgiMhnRrV], which override global ordering options for that key.  If no key is given,
+       use the entire line as the key.
+
+       SIZE may be followed by the following multiplicative suffixes: % 1% of memory, b 1, K 1024 (default), and so  on  for
+       M, G, T, P, E, Z, Y.
+
+       With no FILE, or when FILE is -, read standard input.
+
+       *** WARNING *** The locale specified by the environment affects sort order.  Set LC_ALL=C to get the traditional sort
+       order that uses native byte values.
+
+AUTHOR
+       Written by Mike Haertel and Paul Eggert.
+
+REPORTING BUGS
+       Report sort bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report sort translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright  ©  2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3   or   later
+       <http://gnu.org/licenses/gpl.html>.
+       This  is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted by
+       law.
+
+SEE ALSO
+       uniq(1)
+
+       The full documentation for sort is maintained as a Texinfo manual.  If  the  info  and  sort  programs  are  properly
+       installed at your site, the command
+
+              info coreutils 'sort invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                  SORT(1)
+SPLIT(1)                                                User Commands                                               SPLIT(1)
+
+
+
+NAME
+       split - split a file into pieces
+
+SYNOPSIS
+       split [OPTION]... [INPUT [PREFIX]]
+
+DESCRIPTION
+       Output  fixed-size pieces of INPUT to PREFIXaa, PREFIXab, ...; default size is 1000 lines, and default PREFIX is 'x'.
+       With no INPUT, or when INPUT is -, read standard input.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -a, --suffix-length=N
+              generate suffixes of length N (default 2)
+
+       --additional-suffix=SUFFIX
+              append an additional SUFFIX to file names.
+
+       -b, --bytes=SIZE
+              put SIZE bytes per output file
+
+       -C, --line-bytes=SIZE
+              put at most SIZE bytes of lines per output file
+
+       -d, --numeric-suffixes[=FROM]
+              use numeric suffixes instead of alphabetic.  FROM changes the start value (default 0).
+
+       -e, --elide-empty-files
+              do not generate empty output files with '-n'
+
+       --filter=COMMAND
+              write to shell COMMAND; file name is $FILE
+
+       -l, --lines=NUMBER
+              put NUMBER lines per output file
+
+       -n, --number=CHUNKS
+              generate CHUNKS output files.  See below
+
+       -u, --unbuffered
+              immediately copy input to output with '-n r/...'
+
+       --verbose
+              print a diagnostic just before each output file is opened
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       SIZE is an integer and optional unit (example: 10M is 10*1024*1024).  Units are K, M, G, T, P, E,  Z,  Y  (powers  of
+       1024) or KB, MB, ... (powers of 1000).
+
+       CHUNKS may be: N       split into N files based on size of input K/N     output Kth of N to stdout l/N     split into
+       N files without splitting lines l/K/N   output Kth of N to stdout without splitting lines r/N     like  'l'  but  use
+       round robin distribution r/K/N   likewise but only output Kth of N to stdout
+
+AUTHOR
+       Written by Torbjorn Granlund and Richard M. Stallman.
+
+REPORTING BUGS
+       Report split bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report split translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       The  full  documentation  for  split  is maintained as a Texinfo manual.  If the info and split programs are properly
+       installed at your site, the command
+
+              info coreutils 'split invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                 SPLIT(1)
+TAC(1)                                                  User Commands                                                 TAC(1)
+
+
+
+NAME
+       tac - concatenate and print files in reverse
+
+SYNOPSIS
+       tac [OPTION]... [FILE]...
+
+DESCRIPTION
+       Write each FILE to standard output, last line first.  With no FILE, or when FILE is -, read standard input.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -b, --before
+              attach the separator before instead of after
+
+       -r, --regex
+              interpret the separator as a regular expression
+
+       -s, --separator=STRING
+              use STRING as the separator instead of newline
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+AUTHOR
+       Written by Jay Lepreau and David MacKenzie.
+
+REPORTING BUGS
+       Report tac bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report tac translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       rev(1)
+
+       The  full  documentation  for  tac  is  maintained  as  a  Texinfo manual.  If the info and tac programs are properly
+       installed at your site, the command
+
+              info coreutils 'tac invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                   TAC(1)
+TAIL(1)                                                 User Commands                                                TAIL(1)
+
+
+
+NAME
+       tail - output the last part of files
+
+SYNOPSIS
+       tail [OPTION]... [FILE]...
+
+DESCRIPTION
+       Print  the last 10 lines of each FILE to standard output.  With more than one FILE, precede each with a header giving
+       the file name.  With no FILE, or when FILE is -, read standard input.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -c, --bytes=K
+              output the last K bytes; alternatively, use -c +K to output bytes starting with the Kth of each file
+
+       -f, --follow[={name|descriptor}]
+              output appended data as the file grows; -f, --follow, and --follow=descriptor are equivalent
+
+       -F     same as --follow=name --retry
+
+       -n, --lines=K
+              output the last K lines, instead of the last 10; or use -n +K to output lines starting with the Kth
+
+       --max-unchanged-stats=N
+              with --follow=name, reopen a FILE which has not changed size after N (default 5) iterations to see if  it  has
+              been  unlinked  or renamed (this is the usual case of rotated log files).  With inotify, this option is rarely
+              useful.
+
+       --pid=PID
+              with -f, terminate after process ID, PID dies
+
+       -q, --quiet, --silent
+              never output headers giving file names
+
+       --retry
+              keep trying to open a file even when it is or becomes inaccessible; useful when following by name, i.e.,  with
+              --follow=name
+
+       -s, --sleep-interval=N
+              with  -f, sleep for approximately N seconds (default 1.0) between iterations.  With inotify and --pid=P, check
+              process P at least once every N seconds.
+
+       -v, --verbose
+              always output headers giving file names
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       If the first character of K (the number of bytes or lines) is a '+', print beginning with the Kth item from the start
+       of each file, otherwise, print the last K items in the file.  K may have a multiplier suffix: b 512, kB 1000, K 1024,
+       MB 1000*1000, M 1024*1024, GB 1000*1000*1000, G 1024*1024*1024, and so on for T, P, E, Z, Y.
+
+       With --follow (-f), tail defaults to following the file descriptor, which means  that  even  if  a  tail'ed  file  is
+       renamed,  tail  will continue to track its end.  This default behavior is not desirable when you really want to track
+       the actual name of the file, not the file descriptor (e.g., log rotation).  Use --follow=name  in  that  case.   That
+       causes tail to track the named file in a way that accommodates renaming, removal and creation.
+
+AUTHOR
+       Written by Paul Rubin, David MacKenzie, Ian Lance Taylor, and Jim Meyering.
+
+REPORTING BUGS
+       Report tail bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report tail translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright   ©   2013   Free   Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3  or  later
+       <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted  by
+       law.
+
+SEE ALSO
+       The  full  documentation  for  tail  is  maintained  as a Texinfo manual.  If the info and tail programs are properly
+       installed at your site, the command
+
+              info coreutils 'tail invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.21                                       March 2016                                                  TAIL(1)
+# Learn Basic Shell Command
+- env, set
+- cat
+- grep, sed, awk
+- sort, head
