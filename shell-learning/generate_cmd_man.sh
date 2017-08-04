@@ -11,5 +11,5 @@ mv *.md doc/
 
 echo
 echo "...comand manual list"
-cat doc/* > doc/all.mdi
+cat doc/* > doc/all.md
 ls -CF doc/
